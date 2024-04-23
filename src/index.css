@@ -1,7 +1,43 @@
+/* Font Definitions */
+@font-face {
+  font-family: SFPro;
+  src: url('./fonts/SF-Pro-Display-Regular.otf');
+}
+
+@font-face {
+  font-family: SFProItalic;
+  src: url('./fonts/SF-Pro-Display-RegularItalic.otf');
+}
+
+@font-face {
+  font-family: SFProBold;
+  src: url('./fonts/SF-Pro-Display-Bold.otf');
+}
+
+@font-face {
+  font-family: SFProBoldItalic;
+  src: url('./fonts/SF-Pro-Display-BoldItalic.otf');
+}
+
+/* Variables */
+:root {
+  --header-font: SFProBold;
+  --header-font-italic: SFProBoldItalic;
+  --body-font: SFPro;
+  --body-font-italic: SFProItalic;  
+}
+
+/* General stylings */
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif;
-  margin: auto;
-  max-width: 38rem;
-  padding: 2rem;
+  font-family: var(--body-font);
+}
+
+.title {
+  font-family: var(--header-font);
+  font-size: 8rem;
+  letter-spacing: 0;
 }

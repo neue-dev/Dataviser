@@ -11,6 +11,7 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    frame: false,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -18,9 +19,7 @@ const createWindow = () => {
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  mainWindow.maximize();
 };
 
 // This method will be called when Electron has finished
