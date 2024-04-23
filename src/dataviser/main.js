@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-23 17:46:11
+ * @ Modified time: 2024-04-24 07:48:02
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -16,45 +16,72 @@ import '../ui/Slider.component'
 export const dataviser = (function() {
   const _ = {};
   const root = document.getElementsByClassName('root')[0];
+  const files = {};
 
   // Dataviser menu elements
-  const dataviser_window = document.createElement('grid-component');
+  const dataviserWindow = document.createElement('grid-component');
 
   /**
    * Update this so it doesnt become messy over time
    */
   _.init = function() {
     
-    const title_cell = document.createElement('grid-cell-component');
-    const title_node = document.createElement('div');
-    const import_cell = document.createElement('grid-cell-component');
-    const import_button = document.createElement('button-component');
+    const titleCell = document.createElement('grid-cell-component');
+    const titleNode = document.createElement('div');
+    const importCell = document.createElement('grid-cell-component');
+    const importButton = document.createElement('button-component');
 
     // Create the title
-    title_node.classList.add('dataviser-title');
-    title_node.innerHTML = 'Dataviser';
-    title_cell.setPlacement(1, 1);
-    title_cell.appendChild(title_node);
+    titleNode.classList.add('dataviser-title');
+    titleNode.innerHTML = 'Dataviser';
+    titleCell.setPlacement(1, 1);
+    titleCell.appendChild(titleNode);
 
     // Create the import button and its prompt
-    import_button.innerHTML = 'select folder';
-    import_button.classList.add('dataviser-import-button');
-    import_button.mouseDownCallback = e => {
-      
-      // Let the user pick a directory
-      showDirectoryPicker({ id: 'default', mode: 'read' })
-        .then(folder => { window.fileManager.openFolder(folder) })
-        .catch(error => alert(`No or bad folder selected.\n(${error})`))
+    importButton.innerHTML = 'select folder';
+    importButton.classList.add('dataviser-import-button');
+    importButton.mouseDownCallback = e => {
+      _.selectDirectory();
     }
 
-    import_cell.setPlacement(1, 2);
-    import_cell.innerHTML = 'Select folder to begin.';
-    import_cell.appendChild(import_button);
+    importCell.setPlacement(1, 2);
+    importCell.innerHTML = 'Select folder to begin.';
+    importCell.appendChild(importButton);
 
     // Construct the tree
-    dataviser_window.appendChild(title_cell);
-    dataviser_window.appendChild(import_cell);
-    root.appendChild(dataviser_window);
+    dataviserWindow.appendChild(titleCell);
+    dataviserWindow.appendChild(importCell);
+    root.appendChild(dataviserWindow);
+  }
+
+  /**
+   * Selects a directory for the user.
+   */
+  _.selectDirectory = function() {
+    
+    // Let the user pick a directory
+    showDirectoryPicker({ id: 'default', mode: 'read' })
+
+      // After selecting a folder
+      .then(async folderHandle => {
+      
+        // Go through each of the files in the directory and save them to file table
+        for await(let fileHandle of folderHandle.values()) {
+          const file = await fileHandle.getFile();
+          const key = file.name.split('.').slice(0, -1).join('.');
+
+          // Makes sure the key is the filename minus extension
+          files[key] = file;
+        }
+
+        // Success
+        return true;
+      })
+
+      // Catch any errors
+      .catch(error => {
+        alert(`Error: \n(${error})`)
+      })
   }
 
   return {
