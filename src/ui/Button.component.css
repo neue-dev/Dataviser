@@ -1,12 +1,19 @@
 button-component {
   display: block;
-  padding: 1em 1.5em;
+  padding: 1em;
+  margin: 0;
 
-  font-size: 2rem;
+  border-radius: 0.1em;
+  background-color: rgba(var(--black), 0.08);
+  color: rgba(var(--black), 0.8);
+
+  font-size: 1rem;
   font-family: var(--body-font);
+  text-align: center;
 }
 
 button-component:hover {
+  background-color: rgba(var(--white), 1);
   box-shadow: var(--default-shadow);
   cursor: pointer;
   scale: 1.003;

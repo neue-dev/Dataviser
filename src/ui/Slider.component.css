@@ -6,6 +6,8 @@
 slider-component {
   width: 256px;
   height: 32px;
+  margin: 0;
+  
   font-size: 2rem;
   font-family: var(--body-font);
   box-shadow: var(--default-shadow);
