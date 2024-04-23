@@ -21,11 +21,18 @@
 
 /* Variables */
 :root {
+  --root-rows: 4;
+  --root-columns: 5;
   --root-margin: 11vh;
-  --root-line-height: 1.1;
-  --root-font-size: calc(2vh / var(--root-line-height)); 
-  --root-margin-size: 2vh;
-
+  --root-lines-per-cell: 8;
+  --root-base-font-size: calc((100vh - 2 * var(--root-margin)) / (var(--root-rows) * var(--root-lines-per-cell) + var(--root-rows)));
+  --root-border-size: var(--root-base-font-size);
+  
+  --root-line-height: 1.5;
+  --root-font-size: calc(var(--root-base-font-size) / var(--root-line-height)); 
+  --root-cell-width: calc((100vw - 2 * var(--root-margin) - var(--root-border-size) * (var(--root-columns))) / var(--root-columns));
+  --root-cell-height: calc((100vh - 2 * var(--root-margin) - var(--root-border-size) * (var(--root-rows))) / var(--root-rows));
+  
   --header-font: SFProBold;
   --header-font-italic: SFProBoldItalic;
   --body-font: SFPro;
@@ -56,12 +63,122 @@ body {
 }
 
 .root {
+  position: absolute;
   margin: var(--root-margin);
+  padding: 0;
   font-size: var(--root-font-size);
 }
 
-.grid-0-0 {
+.grid-cell {
   position: absolute;
+  color: rgba(var(--black), 0.69);
+  overflow: hidden;
+}
+
+.grid-cell-w1 {
+  width: var(--root-cell-width);
+}
+
+.grid-cell-h1 {
+  height: var(--root-cell-height);
+}
+
+.grid-1-1 {
   top: 0;
   left: 0;
+}
+
+.grid-2-1 {
+  top: 0;
+  left: calc(var(--root-cell-width) + var(--root-border-size));
+}
+
+.grid-3-1 {
+  top: 0;
+  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
+}
+
+.grid-4-1 {
+  top: 0;
+  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
+}
+
+.grid-5-1 {
+  top: 0;
+  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
+}
+
+.grid-1-2 {
+  top: calc(var(--root-cell-height) + var(--root-border-size));
+  left: 0;
+}
+
+.grid-2-2 {
+  top: calc(var(--root-cell-height) + var(--root-border-size));
+  left: calc(var(--root-cell-width) + var(--root-border-size));
+}
+
+.grid-3-2 {
+  top: calc(var(--root-cell-height) + var(--root-border-size));
+  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
+}
+
+.grid-4-2 {
+  top: calc(var(--root-cell-height) + var(--root-border-size));
+  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
+}
+
+.grid-5-2 {
+  top: calc(var(--root-cell-height) + var(--root-border-size));
+  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
+}
+
+.grid-1-3 {
+  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
+  left: 0;
+}
+
+.grid-2-3 {
+  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
+  left: calc(var(--root-cell-width) + var(--root-border-size));
+}
+
+.grid-3-3 {
+  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
+  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
+}
+
+.grid-4-3 {
+  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
+  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
+}
+
+.grid-5-3 {
+  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
+  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
+}
+
+.grid-1-4 {
+  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
+  left: 0;
+}
+
+.grid-2-4 {
+  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
+  left: calc(var(--root-cell-width) + var(--root-border-size));
+}
+
+.grid-3-4 {
+  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
+  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
+}
+
+.grid-4-4 {
+  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
+  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
+}
+
+.grid-5-4 {
+  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
+  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
 }
