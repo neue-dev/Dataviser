@@ -72,7 +72,6 @@ body {
 .grid-cell {
   position: absolute;
   color: rgba(var(--black), 0.69);
-  overflow: hidden;
 }
 
 .grid-cell-w1 {
@@ -115,102 +114,42 @@ body {
   height: calc(var(--root-cell-height) * 5 + var(--root-border-size) * 4);
 }
 
-.grid-1-1 {
-  top: 0;
+.grid-cell-x1 {
   left: 0;
 }
 
-.grid-2-1 {
-  top: 0;
+.grid-cell-x2 {
   left: calc(var(--root-cell-width) + var(--root-border-size));
 }
 
-.grid-3-1 {
+.grid-cell-x3 {
+  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
+}
+
+.grid-cell-x4 {
+  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
+}
+
+.grid-cell-x5 {
+  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
+}
+
+.grid-cell-y1 {
   top: 0;
-  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
 }
 
-.grid-4-1 {
-  top: 0;
-  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
-}
-
-.grid-5-1 {
-  top: 0;
-  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
-}
-
-.grid-1-2 {
+.grid-cell-y2 {
   top: calc(var(--root-cell-height) + var(--root-border-size));
-  left: 0;
 }
 
-.grid-2-2 {
-  top: calc(var(--root-cell-height) + var(--root-border-size));
-  left: calc(var(--root-cell-width) + var(--root-border-size));
-}
-
-.grid-3-2 {
-  top: calc(var(--root-cell-height) + var(--root-border-size));
-  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
-}
-
-.grid-4-2 {
-  top: calc(var(--root-cell-height) + var(--root-border-size));
-  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
-}
-
-.grid-5-2 {
-  top: calc(var(--root-cell-height) + var(--root-border-size));
-  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
-}
-
-.grid-1-3 {
+.grid-cell-y3 {
   top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
-  left: 0;
 }
 
-.grid-2-3 {
-  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
-  left: calc(var(--root-cell-width) + var(--root-border-size));
-}
-
-.grid-3-3 {
-  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
-  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
-}
-
-.grid-4-3 {
-  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
-  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
-}
-
-.grid-5-3 {
-  top: calc(2 * var(--root-cell-height) + 2 * var(--root-border-size));
-  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
-}
-
-.grid-1-4 {
+.grid-cell-y4 {
   top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
-  left: 0;
 }
 
-.grid-2-4 {
-  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
-  left: calc(var(--root-cell-width) + var(--root-border-size));
-}
-
-.grid-3-4 {
-  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
-  left: calc(2 * var(--root-cell-width) + 2 * var(--root-border-size));
-}
-
-.grid-4-4 {
-  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
-  left: calc(3 * var(--root-cell-width) + 3 * var(--root-border-size));
-}
-
-.grid-5-4 {
-  top: calc(3 * var(--root-cell-height) + 3 * var(--root-border-size));
-  left: calc(4 * var(--root-cell-width) + 4 * var(--root-border-size));
+.grid-cell-y5 {
+  top: calc(4 * var(--root-cell-height) + 4 * var(--root-border-size));
 }
