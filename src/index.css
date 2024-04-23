@@ -25,19 +25,25 @@
   --header-font-italic: SFProBoldItalic;
   --body-font: SFPro;
   --body-font-italic: SFProItalic;  
+  --default-shadow: 
+    0 1px 1px rgba(0, 0, 0, 0.04),
+    0 2px 2px rgba(0, 0, 0, 0.04),
+    0 4px 4px rgba(0, 0, 0, 0.04),
+    0 8px 8px rgba(0, 0, 0, 0.04),
+    0 16px 16px rgba(0, 0, 0, 0.04);
+
+  --black: 21, 21, 21;
+  --white: 255, 255, 255;
 }
 
 /* General stylings */
 * {
   box-sizing: border-box;
+  transition: 0.2s;
+
+  color: rgba(var(--black), 1);
 }
 
 body {
   font-family: var(--body-font);
-}
-
-.title {
-  font-family: var(--header-font);
-  font-size: 8rem;
-  letter-spacing: 0;
 }

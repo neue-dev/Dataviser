@@ -1,0 +1,13 @@
+button-component {
+  display: block;
+  padding: 1em 1.5em;
+
+  font-size: 2rem;
+  font-family: var(--body-font);
+}
+
+button-component:hover {
+  box-shadow: var(--default-shadow);
+  cursor: pointer;
+  scale: 1.003;
+}

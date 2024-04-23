@@ -1,11 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-23 08:51:52
+ * @ Modified time: 2024-04-23 10:48:34
  * @ Description:
  * 
  * Manages all the dataviser functionality.
  */
+
+import './main.css'
+import '../ui/Slider.component'
 
 // Handles all the data vis
 export const dataviser = (function() {
@@ -18,8 +21,13 @@ export const dataviser = (function() {
   _.init = function() {
     
     root.innerHTML = `
-      <div class='title'>
-        Dataviser
+      <div class='dataviser-window'>
+        <div class='dataviser-title'>
+          Dataviser
+
+          <slider-component>
+          </slider-component>
+        </div>
       </div>
     `;
   }

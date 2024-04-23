@@ -1,0 +1,9 @@
+.dataviser-window {
+  padding: 4em 6em;
+}
+
+.dataviser-title {
+  font-family: var(--header-font);
+  font-size: 8rem;
+  letter-spacing: 0;
+}
