@@ -24,7 +24,7 @@
   --root-rows: 4;
   --root-columns: 5;
   --root-margin: 11vh;
-  --root-lines-per-cell: 8;
+  --root-lines-per-cell: 6;
   --root-base-font-size: calc((100vh - 2 * var(--root-margin)) / (var(--root-rows) * var(--root-lines-per-cell) + var(--root-rows)));
   --root-border-size: var(--root-base-font-size);
   
@@ -79,8 +79,40 @@ body {
   width: var(--root-cell-width);
 }
 
+.grid-cell-w2 {
+  width: calc(var(--root-cell-width) * 2 + var(--root-border-size));
+}
+
+.grid-cell-w3 {
+  width: calc(var(--root-cell-width) * 3 + var(--root-border-size) * 2);
+}
+
+.grid-cell-w4 {
+  width: calc(var(--root-cell-width) * 4 + var(--root-border-size) * 3);
+}
+
+.grid-cell-w5 {
+  width: calc(var(--root-cell-width) * 5 + var(--root-border-size) * 4);
+}
+
 .grid-cell-h1 {
   height: var(--root-cell-height);
+}
+
+.grid-cell-h2 {
+  height: calc(var(--root-cell-height) * 2 + var(--root-border-size));
+}
+
+.grid-cell-h3 {
+  height: calc(var(--root-cell-height) * 3 + var(--root-border-size) * 2);
+}
+
+.grid-cell-h4 {
+  height: calc(var(--root-cell-height) * 4 + var(--root-border-size) * 3);
+}
+
+.grid-cell-h5 {
+  height: calc(var(--root-cell-height) * 5 + var(--root-border-size) * 4);
 }
 
 .grid-1-1 {
