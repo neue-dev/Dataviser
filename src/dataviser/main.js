@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-23 10:48:34
+ * @ Modified time: 2024-04-23 11:42:10
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -24,10 +24,9 @@ export const dataviser = (function() {
       <div class='dataviser-window'>
         <div class='dataviser-title'>
           Dataviser
-
-          <slider-component>
-          </slider-component>
         </div>
+
+        the quick brown fox jumped over the lazy dog.
       </div>
     `;
   }

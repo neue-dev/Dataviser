@@ -21,6 +21,11 @@
 
 /* Variables */
 :root {
+  --root-margin: 11vh;
+  --root-line-height: 1.1;
+  --root-font-size: calc(2vh / var(--root-line-height)); 
+  --root-margin-size: 2vh;
+
   --header-font: SFProBold;
   --header-font-italic: SFProBoldItalic;
   --body-font: SFPro;
@@ -42,8 +47,21 @@
   transition: 0.2s;
 
   color: rgba(var(--black), 1);
+  font-size: var(--root-font-size);
+  line-height: calc(var(--root-line-height) * 1em);
 }
 
 body {
   font-family: var(--body-font);
+}
+
+.root {
+  margin: var(--root-margin);
+  font-size: var(--root-font-size);
+}
+
+.grid-0-0 {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
