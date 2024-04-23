@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:59:53
- * @ Modified time: 2024-04-23 09:44:28
+ * @ Modified time: 2024-04-23 17:27:58
  * @ Description:
  * 
  * Defines a custom button element.
@@ -33,8 +33,6 @@ export class ButtonComponent extends Component {
    * This gets called when the mouse clicks the element.
    */
   mouseDown(e) {
-    console.log(e);
-
     if(this.mouseDownCallback)
       this.mouseDownCallback(e);
   }
