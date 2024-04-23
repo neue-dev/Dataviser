@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-23 17:13:38
+ * @ Modified time: 2024-04-23 17:20:21
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -11,7 +11,7 @@ import './main.css'
 import '../ui/Grid.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
-import { ipcRenderer } from 'electron';
+// import { ipcRenderer } from 'electron';
 
 // Handles all the data vis
 export const dataviser = (function() {
@@ -43,9 +43,9 @@ export const dataviser = (function() {
     import_button.mouseDownCallback = e => {
         
       // Let the user pick a directory
-      showDirectoryPicker({ id: 'default' })
-        .then(folder => { console.log(folder.entries()) })
-        .catch(console.log('No or bad directory picked.'))
+      // showDirectoryPicker({ id: 'default' })
+      //   .then(folder => { console.log(folder) })
+      //   .catch(console.log('No or bad directory picked.'))
     }
 
     import_cell.setPlacement(1, 2);
