@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-24 07:48:02
+ * @ Modified time: 2024-04-24 08:07:46
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -44,6 +44,7 @@ export const dataviser = (function() {
       _.selectDirectory();
     }
 
+    // This cell stores the import button
     importCell.setPlacement(1, 2);
     importCell.innerHTML = 'Select folder to begin.';
     importCell.appendChild(importButton);
@@ -67,11 +68,18 @@ export const dataviser = (function() {
       
         // Go through each of the files in the directory and save them to file table
         for await(let fileHandle of folderHandle.values()) {
+          const reader = new FileReader();
           const file = await fileHandle.getFile();
           const key = file.name.split('.').slice(0, -1).join('.');
 
           // Makes sure the key is the filename minus extension
           files[key] = file;
+
+          // Read the text file and send the data to the api when done
+          reader.readAsText(file)
+          reader.onload = e => {
+            window.api.unpickle(e.target.result, () => { console.log('sent')});
+          } 
         }
 
         // Success
