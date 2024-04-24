@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-25 07:01:05
+ * @ Modified time: 2024-04-25 07:02:58
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -132,6 +132,15 @@ Dataset.prototype.get = function(key) {
   if(key in this.assets)
     return this.assets[key];
   return null;
+}
+
+/**
+ * Retrieves the list of data assets in the data set.
+ * 
+ * @return  { array }   The list of data asset keys.
+ */
+Dataset.prototype.getList = function(key) {
+  return Object.keys(this.assets);
 }
 
 /**

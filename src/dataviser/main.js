@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 06:59:53
+ * @ Modified time: 2024-04-25 07:09:06
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -28,6 +28,10 @@ export const dataviser = (function() {
   // Dataviser d3 canvas
   const dataviserCanvas = document.createElement('div');
   dataviserCanvas.classList.add('canvas');
+
+  // Dataviser file list
+  const dataviserFileList = document.createElement('div');
+  dataviserFileList.classList.add('file-list');
   
   /**
    * Update this so it doesnt become messy over time
@@ -38,6 +42,7 @@ export const dataviser = (function() {
     const titleCell = document.createElement('grid-cell-component');
     const importCell = document.createElement('grid-cell-component');
     const canvasCell = document.createElement('grid-cell-component');
+    const fileListCell = document.createElement('grid-cell-component');
 
     // Other elements
     const titleNode = document.createElement('div');
@@ -66,10 +71,16 @@ export const dataviser = (function() {
     canvasCell.setDimensions(3, 1);
     canvasCell.appendChild(dataviserCanvas);
 
+    // Create the file list cell
+    fileListCell.setPlacement(1, 3);
+    fileListCell.setDimensions(1, 2);
+    fileListCell.appendChild(dataviserFileList);
+
     // Construct the tree
     dataviserWindow.appendChild(titleCell);
     dataviserWindow.appendChild(importCell);
     dataviserWindow.appendChild(canvasCell);
+    dataviserWindow.appendChild(fileListCell);
     root.appendChild(dataviserWindow);
   }
 
@@ -213,6 +224,17 @@ export const dataviser = (function() {
 
         // While we have stuff in the queue
         } while(i < folderHandles.length);
+
+        // Display the list of read files
+        let dataAssets = dataset.getList();
+        dataviserFileList.innerHTML = 'List of files:'
+
+        for(let i = 0; i < dataAssets.length; i++) {
+          let dataAssetButton = document.createElement('button-component');
+          dataAssetButton.innerHTML = dataAssets[i];
+
+          dataviserFileList.appendChild(dataAssetButton);
+        }
 
         // Success
         return true;
