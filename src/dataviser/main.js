@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-24 15:04:43
+ * @ Modified time: 2024-04-24 15:59:59
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -101,6 +101,8 @@ export const dataviser = (function() {
 
     // The matrices we're gonna create
     const matrices = {};
+    const names = [];
+    const colors = [];
 
     // The actual graphs and stuff
     d3Assets.chords = {};
@@ -112,44 +114,64 @@ export const dataviser = (function() {
       
       for(let dataRow in data[dataSetKey]) {
         let matrixRow = [];
-
-        for(let dataEntry in data[dataSetKey][dataRow]) 
-          matrixRow.push(data[dataSetKey][dataRow][dataEntry]);
+        let count = 0, c = '';
         
+        for(let dataEntry in data[dataSetKey][dataRow]) { 
+          matrixRow.push(data[dataSetKey][dataRow][dataEntry]);
+          names[count] = dataEntry;
+          
+          c = (count * 3).toString(16).length < 2 ? '0' + count.toString(16) : count.toString(16);
+          colors.push(`#${c}3232`);
+          count++;
+          console.log(count);
+        }
+
         matrix.push(matrixRow);
       }
 
       matrices[dataSetKey] = matrix;
       d3Assets.chords[dataSetKey] = d3
         .chord()
-        .padAngle(0.02)
+        .padAngle(0.01)
         .sortSubgroups(d3.descending)
         (matrix);
+
+      // Hover tooltip
+      const tooltip = d3.select(".canvas")
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "1px")
+        .style("border-radius", "5px")
+        .style("padding", "10px")
+        .style("display", "fixed")
+
+      const showTooltip = function(e, d) {
+        tooltip
+          .style("opacity", 1)
+          .style("left", (e.screenX + 15) + "px")
+          .style("top", (e.screenY - 28) + "px")
+          .html("From: " + names[d.source.index] + " To: " + names[d.target.index])
+      }
+
+      const hideTooltip = function(e, d) {
+        tooltip
+          .transition()
+          .duration(1000)
+          .style("opacity", 0)
+      }
       
       // Create the svg area first
       const svg = d3
         .select(".canvas")
         .append("svg")
-          .attr("width", 880)
-          .attr("height", 880)
+          .attr("width", 640)
+          .attr("height", 640)
         .append("g")
-          .attr("transform", "translate(440,440)")
-      
-      svg
-        .datum(d3Assets.chords[dataSetKey])
-        .append("g")
-        .selectAll("g")
-        .data(function(d) { return d.groups; })
-        .enter()
-        .append("g")
-        .append("path")
-          .style("fill", "grey")
-          .style("stroke", "transparent")
-          .attr("d", d3.arc()
-            .innerRadius(400)
-            .outerRadius(410)
-          )
-
+          .attr("transform", "translate(320,320)")
+          
       svg
         .datum(d3Assets.chords[dataSetKey])
         .append("g")
@@ -158,10 +180,27 @@ export const dataviser = (function() {
         .enter()
         .append("path")
           .attr("d", d3.ribbon()
-            .radius(400)
+            .radius(300)
           )
-          .style("fill", "#69b3a2")
-          .style("stroke", "transparent");
+          .style("fill", function(d){ return colors[d.source.index] })
+          .style("stroke", "transparent")
+          .on("mouseover", showTooltip )
+          .on("mouseleave", hideTooltip )
+          
+      svg
+        .datum(d3Assets.chords[dataSetKey])
+        .append("g")
+        .selectAll("g")
+        .data(function(d) { return d.groups; })
+        .enter()
+        .append("g")
+        .append("path")
+          .style("fill", function(d,i){ return colors[i] })          
+          .style("stroke", "transparent")
+          .attr("d", d3.arc()
+            .innerRadius(310)
+            .outerRadius(320)
+          )
 
       return;
     }

@@ -8,7 +8,6 @@ grid-cell-component {
 
 .grid-cell {
   position: absolute;
-  overflow: hidden;
   color: rgba(var(--black), 0.69);
 }
 
