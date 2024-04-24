@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-24 12:28:57
+ * @ Modified time: 2024-04-24 12:32:46
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -56,6 +56,13 @@ export const dataviser = (function() {
     dataviserWindow.appendChild(titleCell);
     dataviserWindow.appendChild(importCell);
     root.appendChild(dataviserWindow);
+  }
+
+  /**
+   * Loads the existing data to be represented on the UI.
+   */
+  _.loadData = function() {
+    
   }
 
   /**
