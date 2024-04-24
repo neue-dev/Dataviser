@@ -34,7 +34,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0",
-    "node-pickle": "^0.0.2"
+    "electron-squirrel-startup": "^1.0.0"
   }
 }

@@ -1,21 +1,25 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-24 08:07:46
+ * @ Modified time: 2024-04-24 12:02:48
  * @ Description:
  * 
  * Manages all the dataviser functionality.
  */
 
 import './main.css'
+
 import '../ui/Grid.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
+
+import d3 from '../libs/d3.v7.min'
 
 // Handles all the data vis
 export const dataviser = (function() {
   const _ = {};
   const root = document.getElementsByClassName('root')[0];
+  const reader = new FileReader();
   const files = {};
 
   // Dataviser menu elements
@@ -68,18 +72,17 @@ export const dataviser = (function() {
       
         // Go through each of the files in the directory and save them to file table
         for await(let fileHandle of folderHandle.values()) {
-          const reader = new FileReader();
+
+          // Grab the file and the filename (without extension)
           const file = await fileHandle.getFile();
           const key = file.name.split('.').slice(0, -1).join('.');
-
-          // Makes sure the key is the filename minus extension
-          files[key] = file;
 
           // Read the text file and send the data to the api when done
           reader.readAsText(file)
           reader.onload = e => {
-            window.api.unpickle(e.target.result, () => { console.log('sent')});
-          } 
+            console.log(e.target.result);
+            files[key] = e.target.result;
+          }
         }
 
         // Success
