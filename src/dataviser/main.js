@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-24 18:40:24
+ * @ Modified time: 2024-04-25 06:59:53
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -79,7 +79,7 @@ export const dataviser = (function() {
   _.configData = function() {
 
     // This parser converts the raw data into a 2x2 matrix
-    dataset.addParser('matrix', asset => {
+    dataset.addParser('matrix', (asset, options) => {
 
       // We define a matrix
       let m = [];
@@ -101,7 +101,7 @@ export const dataviser = (function() {
     });
 
     // This parser converts the raw data into a 2x2 matrix
-    dataset.addParser('matrix-reduced', asset => {
+    dataset.addParser('matrix-reduced', (asset, options) => {
 
       // We define a matrix
       let m = [];
@@ -123,7 +123,7 @@ export const dataviser = (function() {
       // Get only the 20 most prominent locations
       let i = 0;
       
-      for(; i < 2 && i < sums.length; i++) {
+      for(; i < (options.maxCount ?? 16) && i < sums.length; i++) {
         let mrow = [];
         let row = sums[i][0];
 
@@ -134,7 +134,6 @@ export const dataviser = (function() {
         m.push(mrow);
         m.labels.push(row);
       }
-
 
       // The last matrix row
       let mlastrow = [];
@@ -168,7 +167,13 @@ export const dataviser = (function() {
 
     // For each data set, we create a matrix
     for(let dataSetKey in dataset.assets) {
-      dataset.renderChord(dataSetKey, { assetParserKey: 'matrix-reduced' });
+      dataset.renderChord(dataSetKey, { 
+        assetParserKey: 'matrix-reduced',
+        assetParserOptions: {
+          maxCount: 10,
+        } 
+      });
+      
       return;
     }
   }

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-24 18:18:55
+ * @ Modified time: 2024-04-25 07:01:05
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -16,15 +16,21 @@ import d3 from '../libs/d3.v7.min.js'
  * 
  * @param   { function }  keyParser       Parses the file key and extracts data from it. 
  * @param   { object }    assetParsers    Functions that transform the raw data into something we can use to display stuff.
+ * @param   { function }  columnParser    A function that derives the columns from the data.
+ * @param   { function }  rowParser       A function that derives the rows from the data.
  * @return  { Dataset }                   The created instance.
  */
-export function Dataset(keyParser, assetParsers) {
+export function Dataset(keyParser, assetParsers, columnParser, rowParser) {
   this.metadata = {};
   this.assets = {};
   this.assetCount = 0;
+  this.columns = {};
+  this.rows = {};
 
   this.keyParser = keyParser || (d => d);
   this.assetParsers = { default: d => d, ...assetParsers };
+  this.columnParser = columnParser || (d => Object.keys(d[0]));
+  this.rowParser = rowParser || (d => Object.keys(d));
 
   return this;
 }
@@ -42,10 +48,7 @@ Dataset.prototype.readJSON = function(file) {
 
   // Note that the filekey above is just the filename minus the extension
   reader.readAsText(file);
-  reader.onload = e => {
-    this.assets[key] = JSON.parse(e.target.result);
-    this.assetCount++;
-  }
+  reader.onload = e => this.add(key, JSON.parse(e.target.result));
 
   return this;
 }
@@ -61,7 +64,62 @@ Dataset.prototype.add = function(key, asset) {
   this.assets[key] = asset;
   this.assetCount++;
 
+  this.addColumns(key);
+  this.addRows(key);
+
   return this;
+}
+
+/**
+ * Adds columns to the column list from a particular asset.
+ * 
+ * @param     { string }  assetKey  Which instance to get the column info.
+ * @return    { object }            The current instance.
+ */
+Dataset.prototype.addColumns = function(assetKey) {
+  const columns = this.columnParser(this.assets[assetKey]);
+  const columnKeys = Object.keys(columns);
+
+  for(let i = 0; i < columnKeys.length; i++)
+    if(!(columnKeys[i] in this.columns))
+      this.columns[columnKeys[i]] = columns[columnKeys[i]];
+
+  return this;
+}
+
+/**
+ * Adds rows to the row list from a particular asset.
+ * 
+ * @param     { string }  assetKey  Which instance to get the row info.
+ * @return    { object }            The row instance.
+ */
+Dataset.prototype.addRows = function(assetKey) {
+  const rows = this.rowParser(this.assets[assetKey]);
+  const rowKeys = Object.keys(rows);
+
+  for(let i = 0; i < rowKeys.length; i++)
+    if(!(rowKeys[i] in this.rows))
+      this.rows[rowKeys[i]] = rows[rowKeys[i]];
+
+  return this;
+}
+
+/**
+ * Gets all the columns present in all the asset data instances.
+ * 
+ * @return  { object }  An ordinally-indexed object with the column names.
+ */
+Dataset.prototype.getColumns = function(assetKey) {
+  return this.columns;
+}
+
+/**
+ * Gets all the rows present in all the asset data instances.
+ * 
+ * @return  { object }  An ordinally-indexed object with the row names.
+ */
+Dataset.prototype.getRows = function(assetKey) {
+  return this.rows;
 }
 
 /**
@@ -104,7 +162,7 @@ Dataset.prototype.renderChord = function(key, options={}) {
 
   // This is how we transform the raw data into data we can present
   const assetParser = this.assetParsers[options.assetParserKey ?? 'default'];
-  const data = assetParser(this.assets[key]);
+  const data = assetParser(this.assets[key], options.assetParserOptions ?? {});
 
   // Define the data structure we use to present the asset
   const chord = d3
