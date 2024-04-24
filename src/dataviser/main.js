@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-24 12:32:46
+ * @ Modified time: 2024-04-24 12:38:52
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -13,13 +13,16 @@ import '../ui/Grid.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
 
-import d3 from '../libs/d3.v7.min'
+import d3 from '../libs/d3/d3.v7.min'
+import { DataFrame } from '../libs/jandas/DataFrame'
 
 // Handles all the data vis
 export const dataviser = (function() {
   const _ = {};
   const root = document.getElementsByClassName('root')[0];
   const data = {};
+
+  console.log(Object.keys(jd));
 
   // Dataviser menu elements
   const dataviserWindow = document.createElement('grid-component');
