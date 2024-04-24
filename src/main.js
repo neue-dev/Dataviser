@@ -1,5 +1,4 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const pickle = require('node-pickle');
 const path = require('node:path');
 const fs = require('node:fs');
 
@@ -47,12 +46,3 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-
-/**
- * IPC listeners.
- */
-ipcMain.handle('unpickle', async(e, data, callback) => {
-  console.log(data);
-
-  return true;
-}); 
