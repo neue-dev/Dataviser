@@ -1,11 +1,13 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 09:03:20
- * @ Modified time: 2024-04-23 10:50:52
+ * @ Modified time: 2024-04-25 07:10:01
  * @ Description:
  * 
  * This acts as a base class for all other components we might define.
  */
+
+import './Component.css'
 
 export class Component extends HTMLElement {
   static observedAttributes = [];

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 07:09:06
+ * @ Modified time: 2024-04-25 07:13:47
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -20,7 +20,7 @@ import d3 from '../libs/d3.v7.min'
 export const dataviser = (function() {
   const _ = {};
   const root = document.getElementsByClassName('root')[0];
-  const dataset = new Dataset();
+  let dataset = new Dataset();
 
   // Dataviser menu elements
   const dataviserWindow = document.createElement('grid-component');
@@ -200,6 +200,10 @@ export const dataviser = (function() {
 
       // After selecting a folder
       .then(async folderHandle => {
+
+        // Clear the dataset and the canvas
+        dataset = new Dataset();
+        dataviserCanvas.innerHTML = '';
 
         // Queue of the different directories to parse
         let folderHandles = [ folderHandle ];

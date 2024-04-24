@@ -1,4 +1,5 @@
 button-component {
+  position: relative;
   display: block;
   padding: 1em;
   margin: 0;
