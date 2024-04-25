@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 23:02:39
+ * @ Modified time: 2024-04-26 07:04:54
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -130,7 +130,10 @@ export const dataviser = (function() {
   _.configData = function() {
 
     // This parser converts the raw data into a 2x2 matrix
-    dataset.addParser('matrix', (asset, options) => {
+    dataset.addParser('matrix', (asset, options={}) => {
+
+      // Clone the object first
+      asset = structuredClone(asset);
 
       // We define a matrix
       let m = [];
@@ -152,19 +155,23 @@ export const dataviser = (function() {
     });
 
     // This parser converts the raw data into a 2x2 matrix
-    dataset.addParser('matrix-reduced', (asset, options) => {
+    dataset.addParser('matrix-reduced', (asset, options={}) => {
+
+      // Clone the object first
+      asset = structuredClone(asset);
 
       // We define a matrix
       let m = [];
       let sums = [];
       m.labels = [];
         
-      // Generate sums per row
+      // Generate sums per row and column
       for(let row in asset) {
         let sum = 0;
         
+        // Add the row and columns
         for(let entry in asset[row])
-          sum += asset[row][entry];
+          sum += asset[row][entry] += asset[entry][row];
         sums.push([row, sum]);
       }
 
@@ -213,6 +220,7 @@ export const dataviser = (function() {
     // Display the list of read files
     let dataAssets = dataset.getList();
     dataviserFileList.parentElement.prepend(`Successfully loaded ${dataAssets.length} files:`);
+    console.log(dataset.getData(dataAssets[0], 'matrix-reduced'));
 
     for(let i = 0; i < dataAssets.length; i++) {
       let dataAssetButton = document.createElement('button-component');
