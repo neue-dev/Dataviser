@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 21:18:04
+ * @ Modified time: 2024-04-25 22:10:34
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -232,7 +232,7 @@ export const dataviser = (function() {
       //   } 
       // });
 
-      dataset.computeTotal();
+      dataset.computeCumulative({ startYear: [2020, 2020] });
 
       // ! remove
       // let data = dataset.get('2020-01-01_2020-01-02');

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-25 21:18:11
+ * @ Modified time: 2024-04-25 22:11:40
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -174,6 +174,8 @@ Dataset.prototype.addParser = function(assetParserKey, assetParser) {
 /**
  * Computes the total (summative) data asset for all the data assets.
  * Basically, it combines all the data assets into one and stores the sum in the asset dict.
+ * 
+ * @return  { object }  The total data for that period.
  */
 Dataset.prototype.computeTotal = function() {
 
@@ -215,7 +217,7 @@ Dataset.prototype.computeTotal = function() {
 
         // Set the new head
         head = head[key];
-    }
+      }
 
       // Push the next object reference into the queue
       refs.push(...Object.keys(refhead.o).map(
@@ -229,6 +231,94 @@ Dataset.prototype.computeTotal = function() {
 
   // Save the total
   this.assets['total'] = total;
+
+  // Return the computed total
+  return this.assets['total'];
+}
+
+/**
+ * Computes the total (summative) data asset for all the data assets.
+ * Basically, it combines all the data assets into one and stores the sum in the asset dict.
+ * 
+ * @return  { object }  The data asset representing the cumulative data for that period.
+ */
+Dataset.prototype.computeCumulative = function(options={}) {
+
+  // The object representing the total
+  const cumulative = {};
+
+  // Grab the asset keys
+  let assetKeys = Object.keys(this.assets);
+
+  // For each asset, we copy their data onto the cumulative object
+  for(let i = 0; i < assetKeys.length; i++) {
+    let asset = this.assets[assetKeys[i]];
+    let refs = [ { path: [], o: asset } ];
+    let optionKeys = Object.keys(options);
+
+    // Check if the asset is within the options
+    let skip = false;
+    for(let j = 0; j < optionKeys.length; j++) {
+      if(!(optionKeys[j] in this.metadata[assetKeys[i]]))
+        continue;
+      
+      if(this.metadata[assetKeys[i]][optionKeys[j]] < options[optionKeys[j]][0] ||
+        this.metadata[assetKeys[i]][optionKeys[j]] > options[optionKeys[j]][1]) {
+        skip = true;
+        break;
+      }
+    }
+
+    // Skip this asset
+    if(skip)
+      continue;
+    
+    // While we have keys to iterate over
+    while(refs.length) {
+
+      // Get the current head object of the src and dest objects
+      let refhead = refs.shift();
+      let head = cumulative;
+      
+      // Create the keys in the dest if they dont exist
+      // Copy data otherwise
+      let keyIndex = 0;
+      while(keyIndex < refhead.path.length) {
+        let key = refhead.path[keyIndex++];
+
+        // Register the key
+        if(keyIndex < refhead.path.length && !head[key])
+          head[key] = {};
+        
+        // Copy the value of the key
+        if(keyIndex == refhead.path.length && !isNaN(parseInt(refhead.o))) {
+          if(!head[key])
+            head[key] = parseInt(refhead.o);
+          else
+            head[key] += parseInt(refhead.o);
+        }
+
+        // Set the new head
+        head = head[key];
+    }
+
+      // Push the next object reference into the queue
+      refs.push(...Object.keys(refhead.o).map(
+        key => { return {
+          path: [...refhead.path, key],
+          o: refhead.o[key]
+        }}
+      ));
+    }
+  }
+
+  // Save cumulative
+  this.assets['cumulative'] = cumulative;
+
+  console.log(cumulative);
+
+  // Return the cumulative
+  return this.assets['cumulative'];
 }
 
 export default {
