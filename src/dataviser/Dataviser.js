@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 14:22:24
+ * @ Modified time: 2024-04-25 15:33:32
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -68,7 +68,7 @@ export const dataviser = (function() {
 
     // Create the canvas cell
     canvasCell.setPlacement(3, 1);
-    canvasCell.setDimensions(3, 1);
+    canvasCell.setDimensions(2, 3);
     canvasCell.appendChild(dataviserCanvas);
 
     // Create the file list cell
@@ -79,7 +79,14 @@ export const dataviser = (function() {
     // ! remove
     let d = new Datagraph({ parent: canvasCell });
     setTimeout(() => {
-      d.init().addTitle('hello world').addSubtitle('this is a graph about hello world');
+      let testdata = ['a', 'b', 'c', 'aa', 'bb', 'ccc', 'dddd'];
+
+      d.init()
+        .addTitle('hello world')
+        .addSubtitle('this is a graph about hello world')
+        .addXAxis({ type: 'linear', start: 2, end: 30, ticks: 5 })
+        .addYAxis({ type: 'linear', start: 69, end: 420, ticks: 3 })
+        .addScatterplot([{ x: 10, y: 250}, { x: 12, y: 80}, { x: 20, y: 283}, { x: 25, y: 199}]);
     })
 
     // Construct the tree

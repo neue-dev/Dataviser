@@ -55,6 +55,7 @@
 
   color: rgba(var(--black), 1);
   font-size: var(--root-font-size);
+  font-family: SFPro;
   line-height: calc(var(--root-line-height) * 1em);
 }
 
