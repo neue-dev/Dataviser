@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-25 19:46:45
+ * @ Modified time: 2024-04-25 20:03:56
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -104,7 +104,7 @@ Datagraph.prototype.addXAxis = function(options={}) {
   switch(options.type ?? 'linear') {
     case 'log': scale = d3.scaleLog(); break;
     case 'time': scale = d3.scaleTime(); break;
-    case 'ordinal': scale = d3.scaleBand(); break;
+    case 'categorical': scale = d3.scaleBand(); break;
     case 'linear': scale = d3.scaleLinear(); break;
     default: scale = d3.scaleLinear(); break;
   }
@@ -112,6 +112,9 @@ Datagraph.prototype.addXAxis = function(options={}) {
   this.xAxis = scale
     .domain(options.domain ?? [ options.start ?? 0, options.end ?? 1 ])
     .range([ 0, this.width ])
+
+  // Store the number of categorical data we have
+  this.xAxisCount = options.domain ? options.domain.length : 0;
 
   // Place the axis on the bottom
   this.canvas
@@ -137,7 +140,7 @@ Datagraph.prototype.addYAxis = function(options={}) {
   switch(options.type ?? 'linear') {
     case 'log': scale = d3.scaleLog(); break;
     case 'time': scale = d3.scaleTime(); break;
-    case 'ordinal': scale = d3.scaleBand(); break;
+    case 'categorical': scale = d3.scaleBand(); break;
     case 'linear': scale = d3.scaleLinear(); break;
     default: scale = d3.scaleLinear(); break;
   }
@@ -145,6 +148,9 @@ Datagraph.prototype.addYAxis = function(options={}) {
   this.yAxis = scale
     .domain(options.domain ?? [ options.start ?? 0, options.end ?? 1 ])
     .range([ this.height, 0 ])
+
+  // Store the number of categorical data we have
+  this.yAxisCount = options.domain ? options.domain.length : 0;
     
   // Place the axis on the left
   this.canvas
@@ -390,8 +396,8 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
     .classed('data-point', true)
     .attr('x', fx)
     .attr('y', fy)
-    .attr('width', this.width / 2)
-    .attr('height', this.height / 2)
+    .attr('width', this.width / this.xAxisCount)
+    .attr('height', this.height / this.yAxisCount)
     .style('fill', fc)
     .on('mouseover', mouseover)
     .on('mouseleave', mouseleave)

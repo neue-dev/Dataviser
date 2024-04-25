@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-25 10:57:25
+ * @ Modified time: 2024-04-25 21:01:33
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -163,189 +163,63 @@ Dataset.prototype.addParser = function(assetParserKey, assetParser) {
 }
 
 /**
- * Renders the selected data asset as a set of chords.
- * 
- * @param   { string }    key       The asset to render.
- * @param   { object }    options   A set of parameters on how to render the asset.
- * @return  { Dataset }             The current instance.
+ * Computes the total (summative) data asset for all the data assets.
+ * Basically, it combines all the data assets into one and stores the sum in the asset dict.
  */
-Dataset.prototype.renderChord = function(key, options={}) {
-  
-  // This is the parent element
-  const canvas = document.getElementsByClassName(options.canvas ?? 'canvas')[0];
-  const canvasClass = ('.' + options.canvas) ?? '.canvas';
-  const width = canvas.getBoundingClientRect().width;
-  const height = width;
+Dataset.prototype.computeTotal = function() {
 
-  // This is how we transform the raw data into data we can present
-  const assetParser = this.assetParsers[options.assetParserKey ?? 'default'];
-  const data = assetParser(this.assets[key], options.assetParserOptions ?? {});
+  // The object representing the total
+  const total = {};
 
-  // Define the data structure we use to present the asset
-  const chord = d3
-    .chord()
-    .padAngle(options.padAngle ?? 0.01)
-    .sortSubgroups(options.sortOrder ?? d3.descending)
-      (data);
+  // Grab the asset keys
+  let assetKeys = Object.keys(this.assets);
 
-  // The svg that we draw to
-  const svg = d3
-    .select(canvasClass)
-    .append('svg')
-      .attr('width', width)
-      .attr('height', height)
-      .style('aspect-ratio', '1')
-    .append('g')
-      .attr('transform', `translate(${width / 2}, ${height / 2})`);
-
-  // Create the connections between the rims
-  svg
-    .datum(chord)
-    .append('g')
-    .selectAll('path')
-    .data(d => d)
-    .enter()
-    .append('path')
-      .attr('d', d3
-        .ribbon()
-        .radius(300))
-      .style('fill', '#dd4400')
-      .style('stroke', 'transparent')
-      .on('mouseover', options.showInfo ?? (e => e))
-      .on('mouseleave', options.hideInfo ?? (e => e))
-     
-  // Create the outer rim
-  svg
-    .datum(chord)
-    .append('g')
-    .selectAll('g')
-    .data(d => d.groups)
-    .enter()
-    .append('g')
-    .append('path')
-      .style('fill', '#ff8800')          
-      .style('stroke', 'transparent')
-      .attr('d', d3
-        .arc()
-        .innerRadius(310)
-        .outerRadius(320))
-
-  return this;
-}
-
-/**
- * Creates a heatmap based on the data.
- * 
- * @param   { string }    key       The data asset we want to render as a heatmap.
- * @param   { object }    options   The options for rendering.
- * @return  { Dataset }             The current instance.
- */
-Dataset.prototype.renderHeatmap = function(key, options={}) {
-  
-  // This is the parent element
-  const canvas = document.getElementsByClassName(options.canvas ?? 'canvas')[0];
-  const canvasClass = ('.' + options.canvas) ?? '.canvas';
-  const width = canvas.getBoundingClientRect().width;
-  const height = width;
-
-  // This is how we transform the raw data into data we can present
-  const assetParser = this.assetParsers[options.assetParserKey ?? 'default'];
-  const data = assetParser(this.assets[key], options.assetParserOptions ?? {});
-
-  var myGroups = d3.map(data, function(d){return d.group;}).keys()
-  var myVars = d3.map(data, function(d){return d.variable;}).keys()
-
-  // The svg that we draw to
-  const svg = d3
-    .select(canvasClass)
-    .append('svg')
-      .attr('width', width)
-      .attr('height', height)
-      .style('aspect-ratio', '1')
-    .append('g')
-      .attr('transform', `translate(${width / 2}, ${height / 2})`);
-
-  const x = d3.scaleBand()
-    .range([ 0, width ])
-    .domain(myGroups)
-    .padding(0.05);
-
-  svg.append("g")
-    .style("font-size", 15)
-    .call(d3.axisBottom(x).tickSize(0))
-    .select(canvasClass).remove()
-
-  // Build Y scales and axis:
-  const y = d3.scaleBand()
-    .range([ height, 0 ])
-    .domain(myVars)
-    .padding(0.05);
+  // For each asset, we copy their data onto the cumulative object
+  for(let i = 0; i < assetKeys.length; i++) {
+    let asset = this.assets[assetKeys[i]];
+    let refs = [ { path: [], o: asset } ];
     
-  svg.append("g")
-    .style("font-size", 15)
-    .call(d3.axisLeft(y).tickSize(0))
-    .select(canvasClass).remove()
+    // While we have keys to iterate over
+    while(refs.length) {
 
-  // Build color scale
-  var myColor = d3.scaleSequential()
-    .interpolator(d3.interpolateInferno)
-    .domain([1,100])
+      // Get the current head object of the src and dest objects
+      let refhead = refs.shift();
+      let head = total;
+      
+      // Create the keys in the dest if they dont exist
+      // Copy data otherwise
+      let keyIndex = 0;
+      while(keyIndex < refhead.path.length) {
+        let key = refhead.path[keyIndex++];
 
-  // add the squares
-  svg.selectAll()
-    .data(data, function(d) {return d.group+':'+d.variable;})
-    .enter()
-    .append("rect")
-      .attr("x", function(d) { return x(d.group) })
-      .attr("y", function(d) { return y(d.variable) })
-      .attr("rx", 4)
-      .attr("ry", 4)
-      .attr("width", x.bandwidth() )
-      .attr("height", y.bandwidth() )
-      .style("fill", function(d) { return myColor(d.value)} )
-      .style("stroke-width", 4)
-      .style("stroke", "none")
-      .style("opacity", 0.8)
-    .on("mouseover", options.showInfo ?? (e => e))
-    .on("mouseleave", options.hideInfo ?? (e => e))
+        // Register the key
+        if(keyIndex < refhead.path.length && !head[key])
+          head[key] = {};
+        
+        // Copy the value of the key
+        if(keyIndex == refhead.path.length && !isNaN(parseInt(refhead.o))) {
+          if(!head[key])
+            head[key] = parseInt(refhead.o);
+          else
+            head[key] += parseInt(refhead.o);
+        }
 
-    // Add title to graph
-    svg.append("text")
-      .attr("x", 0)
-      .attr("y", -50)
-      .attr("text-anchor", "left")
-      .style("font-size", "22px")
-      .text("A d3.js heatmap");
+        // Set the new head
+        head = head[key];
+    }
 
-    // Add subtitle to graph
-    svg.append("text")
-      .attr("x", 0)
-      .attr("y", -20)
-      .attr("text-anchor", "left")
-      .style("font-size", "14px")
-      .style("fill", "grey")
-      .style("max-width", 320)
-      .text("A short description of the take-away message of this chart.");
-
-  return this;
-}
-
-/**
- * Renders a specific data asset from the data set in the given type of graph.
- * 
- * @param   { string }  key   The asset to render.
- * @param   { string }  type  The type of graph to use for rendering.
- */
-Dataset.prototype.render = function(key, type) {
-  switch(type) {
-    case 'chord':
-
-      break;
-
-    default:
-
-      break;
+      // Push the next object reference into the queue
+      refs.push(...Object.keys(refhead.o).map(
+        key => { return {
+          path: [...refhead.path, key],
+          o: refhead.o[key]
+        }}
+      ));
+    }
   }
+
+  // Save the total
+  this.assets['total'] = total;
 }
 
 export default {

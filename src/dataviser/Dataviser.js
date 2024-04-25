@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 19:43:30
+ * @ Modified time: 2024-04-25 20:23:27
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -32,6 +32,9 @@ export const dataviser = (function() {
   // Dataviser file list
   const dataviserFileList = document.createElement('div');
   dataviserFileList.classList.add('dataviser-file-list');
+
+  // !Move back down
+  const canvasCell = document.createElement('grid-cell-component');
   
   /**
    * Update this so it doesnt become messy over time
@@ -41,7 +44,6 @@ export const dataviser = (function() {
     // Cells
     const titleCell = document.createElement('grid-cell-component');
     const importCell = document.createElement('grid-cell-component');
-    const canvasCell = document.createElement('grid-cell-component');
     const fileListCell = document.createElement('grid-cell-component');
 
     // Other elements
@@ -84,8 +86,8 @@ export const dataviser = (function() {
       d.init()
         .addTitle('hello world')
         .addSubtitle('this is a graph about hello world')
-        .addXAxis({ type: 'ordinal', domain: ['a', 'b'] })
-        .addYAxis({ type: 'ordinal' ,domain: ['a', 'b'] })
+        .addXAxis({ type: 'categorical', domain: ['a', 'b', 'c', 'd', 'e'] })
+        .addYAxis({ type: 'categorical' ,domain: ['a', 'b', 'c', 'd', 'e'] })
         .addColorAxis({ start: 0, end: 200, startColor: '#323232', endColor: '#6464dd' })
         .addHeatmap([{ x: 'a', y: 'a', value: 101 }, { x: 'a', y: 'b', value: 69}, { x: 'b', y: 'a', value: 121}, { x: 'b', y: 'b', value: 32}]);
     })
@@ -204,13 +206,40 @@ export const dataviser = (function() {
 
     // For each data set, we create a matrix
     for(let dataSetKey in dataset.assets) {
-      dataset.renderHeatmap(dataSetKey, { 
-        canvas: 'dataviser-canvas',
-        assetParserKey: 'matrix-reduced',
-        assetParserOptions: {
-          maxCount: 10,
-        } 
-      });
+      // dataset.renderHeatmap(dataSetKey, { 
+      //   canvas: 'dataviser-canvas',
+      //   assetParserKey: 'matrix-reduced',
+      //   assetParserOptions: {
+      //     maxCount: 10,
+      //   } 
+      // });
+
+      dataset.computeTotal();
+
+      // ! remove
+      // let data = dataset.get('2020-01-01_2020-01-02');
+      // let formattedData = [];
+      
+      // for(let i = 0; i < Object.keys(data).length / 4; i++) {
+      //   for(let j = 0; j < Object.keys(data[Object.keys(data)[i]]).length / 4; j++) {
+      //     formattedData.push({
+      //       x: i + '',
+      //       y: j + '',
+      //       value: data[Object.keys(data)[i]][Object.keys(data[Object.keys(data)[i]])[j]]
+      //     })
+      //   }
+      // }
+
+      // console.log(formattedData);
+      
+      // let d = new Datagraph({ parent: canvasCell });
+      // d.init()
+      //   .addTitle('hello world')
+      //   .addSubtitle('this is a graph about hello world')
+      //   .addXAxis({ type: 'categorical', domain: Object.keys(data) })
+      //   .addYAxis({ type: 'categorical' ,domain: Object.keys(data) })
+      //   .addColorAxis({ start: 0, end: 1000, startColor: '#323232', endColor: '#6464dd' })
+      //   .addHeatmap(formattedData);
       
       return;
     }
