@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-25 07:02:58
+ * @ Modified time: 2024-04-25 08:15:50
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -40,17 +40,21 @@ export function Dataset(keyParser, assetParsers, columnParser, rowParser) {
  * Note that the file must be a JSON file.
  * 
  * @param   { File }      file  The file object we want to read. 
- * @return  { Dataset }         The current instance.
+ * @return  { Promise }         A promise for the instance.
  */
-Dataset.prototype.readJSON = function(file) {
+Dataset.prototype.readJSON = async function(file) {
   const reader = new FileReader();
   const key = file.name.split('/').at(-1).split('\\').at(-1).split('.').slice(0, -1).join('.');
 
-  // Note that the filekey above is just the filename minus the extension
-  reader.readAsText(file);
-  reader.onload = e => this.add(key, JSON.parse(e.target.result));
-
-  return this;
+  return new Promise((resolve, reject) => {
+    
+    // Note that the filekey above is just the filename minus the extension
+    reader.readAsText(file);
+    reader.onload = e => {
+      this.add(key, JSON.parse(e.target.result))
+      resolve(this);
+    };
+  });
 }
 
 /**

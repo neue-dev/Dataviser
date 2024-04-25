@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 07:13:47
+ * @ Modified time: 2024-04-25 08:16:12
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -169,6 +169,18 @@ export const dataviser = (function() {
 
       return m;
     });
+
+    // Display the list of read files
+    let dataAssets = dataset.getList();
+    dataviserFileList.innerHTML = `Successfully loaded ${dataAssets.length} files:`
+
+    for(let i = 0; i < dataAssets.length; i++) {
+      let dataAssetButton = document.createElement('button-component');
+      dataAssetButton.innerHTML = dataAssets[i];
+      dataAssetButton.style.marginBottom = '8px';
+
+      dataviserFileList.appendChild(dataAssetButton);
+    }
   }
 
   /**
@@ -207,7 +219,7 @@ export const dataviser = (function() {
 
         // Queue of the different directories to parse
         let folderHandles = [ folderHandle ];
-        let i = 0;
+        let i = 0, fileCount = 0;
 
         do {
 
@@ -222,31 +234,37 @@ export const dataviser = (function() {
               folderHandles.push(entryHandle);
 
             // Add file to file list
-            else
-              dataset.readJSON(await entryHandle.getFile());
+            else fileCount++;
           }
 
         // While we have stuff in the queue
-        } while(i < folderHandles.length);
+        } while(i < folderHandles.length)
 
-        // Display the list of read files
-        let dataAssets = dataset.getList();
-        dataviserFileList.innerHTML = 'List of files:'
+        i = 0;
+        do {
 
-        for(let i = 0; i < dataAssets.length; i++) {
-          let dataAssetButton = document.createElement('button-component');
-          dataAssetButton.innerHTML = dataAssets[i];
+          // Go to the next handle
+          folderHandle = folderHandles[i++];
 
-          dataviserFileList.appendChild(dataAssetButton);
-        }
+          // For each thing inside the folder
+          for await(let entryHandle of folderHandle.values()) {
+          
+            // Add file to list
+            if(!(entryHandle instanceof FileSystemDirectoryHandle)) {
+              entryHandle.getFile().then(async file => {
+                await dataset.readJSON(file)
+                
+                // Load data
+                if(!(--fileCount)) {
+                  _.configData();
+                  _.renderData();
+                }
+              });
+            }
+          }
 
-        // Success
-        return true;
-
-      // Load data
-      }).then(() => {
-        _.configData();
-        _.renderData();
+        // While we have stuff in the queue
+        } while(i < folderHandles.length)
       })
 
       // Catch any errors
