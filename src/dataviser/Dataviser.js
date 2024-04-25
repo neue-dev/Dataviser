@@ -1,13 +1,13 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 10:54:11
+ * @ Modified time: 2024-04-25 13:35:36
  * @ Description:
  * 
  * Manages all the dataviser functionality.
  */
 
-import './main.css'
+import './Dataviser.css'
 
 import '../ui/Grid.component'
 import '../ui/Button.component'
