@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 07:04:54
+ * @ Modified time: 2024-04-26 07:55:20
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -137,7 +137,7 @@ export const dataviser = (function() {
 
       // We define a matrix
       let m = [];
-      m.labels = {};
+      m.labels = [];
         
       // Build up the matrix
       for(let row in asset) {
@@ -155,6 +155,7 @@ export const dataviser = (function() {
     });
 
     // This parser converts the raw data into a 2x2 matrix
+    // However, it only gets data from the n most significant parties
     dataset.addParser('matrix-reduced', (asset, options={}) => {
 
       // Clone the object first
@@ -164,6 +165,9 @@ export const dataviser = (function() {
       let m = [];
       let sums = [];
       m.labels = [];
+
+      // Max count
+      const maxCount = options.maxCount ?? 16;
         
       // Generate sums per row and column
       for(let row in asset) {
@@ -171,7 +175,7 @@ export const dataviser = (function() {
         
         // Add the row and columns
         for(let entry in asset[row])
-          sum += asset[row][entry] += asset[entry][row];
+          sum += asset[row][entry] += (entry != row ? asset[entry][row] : 0);
         sums.push([row, sum]);
       }
 
@@ -181,7 +185,7 @@ export const dataviser = (function() {
       // Get only the 20 most prominent locations
       let i = 0;
       
-      for(; i < (options.maxCount ?? 16) && i < sums.length; i++) {
+      for(; i < maxCount && i < sums.length; i++) {
         let mrow = [];
         let row = sums[i][0];
 
@@ -217,10 +221,131 @@ export const dataviser = (function() {
       return m;
     });
 
+    // This parser converts the raw data into a list of associations
+    dataset.addParser('relation', (asset, options={}) => {
+
+      // Clone the object first
+      asset = structuredClone(asset);
+
+      // We define a list
+      let m = [];
+      m.labels = [];
+        
+      // Build up the relation
+      for(let row in asset) {   
+        
+        // Push each of the relationships
+        for(let entry in asset[row]) {
+          m.push({
+            x: entry,
+            y: row,
+            value: asset[row][entry]
+          });
+        }
+
+        // Save the entry label
+        m.labels.push(row);
+      }
+
+      return m;
+    });
+
+    // This parser converts the raw data into a list of associations
+    // However, it only gets data points from the n most significant parties
+    dataset.addParser('relation-reduced', (asset, options={}) => {
+
+      // Clone the object first
+      asset = structuredClone(asset);
+
+      // We define a list
+      let m = [];
+      let sums = [];
+      m.labels = [];
+
+      // Max count
+      const maxCount = options.maxCount ?? 16;
+        
+      // Generate sums per row and column
+      for(let row in asset) {
+        let sum = 0;
+        
+        // Add the row and columns
+        for(let entry in asset[row])
+          sum += asset[row][entry] += (entry != row ? asset[entry][row] : 0);
+        sums.push([row, sum]);
+      }
+
+      // Sort sums by size
+      sums.sort((a, b) => b[1] - a[1]);
+      
+      let i = 0;
+      let sumDict = {};
+      let cumRow = sums[maxCount][0];
+
+      // Save the top sums
+      for(i = 0; i < maxCount + 1 && i < sums.length; i++)
+        sumDict[sums[i][0]] = true;  
+
+      for(let row in asset) {
+        for(let entry in asset[row]) {
+
+          // Accumulate the rest on the cumRow
+          if(!sumDict[row]) {
+            if(!sumDict[entry])
+              asset[cumRow][cumRow] += asset[row][entry];
+            else
+              asset[cumRow][entry] += asset[row][entry];
+          } else {
+            if(!sumDict[entry])
+              asset[row][cumRow] += asset[row][entry];
+          }
+
+          // Set to 0 if unimportant
+          if(!sumDict[row] || !sumDict[entry])
+            asset[row][entry] = 0;
+        }
+      }
+
+      // Accumulate the sum too
+      for(let i = maxCount + 1; i < sums.length; i++)
+        sums[maxCount][1] += sums[i][1];
+
+      // Truncate the sums
+      sums = sums.slice(0, maxCount + 1);
+
+      // Get only the 20 most prominent locations
+      for(i = 0; i < sums.length; i++) { 
+        let row = sums[i][0];
+        
+        // Push each of the relationships
+        for(let entry in asset[row]) {
+          m.push({
+            x: entry,
+            y: row,
+            value: asset[row][entry]
+          });
+
+          // Compute this too
+          if(row != entry) {
+            m.push({
+              x: row,
+              y: entry,
+              value: asset[entry][row]
+            });
+          }
+        }
+
+        // Save the entry label
+        m.labels.push(row);
+      }
+
+      return m;
+    });
+
     // Display the list of read files
     let dataAssets = dataset.getList();
     dataviserFileList.parentElement.prepend(`Successfully loaded ${dataAssets.length} files:`);
-    console.log(dataset.getData(dataAssets[0], 'matrix-reduced'));
+    console.log(dataset.getData(dataAssets[0], 'relation-reduced'));
 
     for(let i = 0; i < dataAssets.length; i++) {
       let dataAssetButton = document.createElement('button-component');
