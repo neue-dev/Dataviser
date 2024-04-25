@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 16:21:09
- * @ Modified time: 2024-04-23 16:57:26
+ * @ Modified time: 2024-04-25 22:47:54
  * @ Description:
  * 
  * The grid class.
@@ -83,7 +83,12 @@ export class GridCellComponent extends Component {
    * Updates the style of the grid cell based on its attributes.
    */
   updateStyle() {
-    this.classList.remove(...this.classList);
+    let classeToRemove = [];
+    for(let i = 0; i < this.classList.length; i++)
+      if(this.classList[i].includes('grid-cell'))
+        classeToRemove.push(this.classList[i]);
+
+    this.classList.remove(...classeToRemove);
     this.classList.add('grid-cell');
     this.classList.add('grid-cell-x' + this.x);
     this.classList.add('grid-cell-y' + this.y);

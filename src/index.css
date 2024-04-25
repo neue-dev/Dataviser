@@ -53,6 +53,7 @@
   box-sizing: border-box;
   transition: 0.2s;
 
+  overflow: visible;
   color: rgba(var(--black), 1);
   font-size: var(--root-font-size);
   font-family: SFPro;
@@ -61,6 +62,7 @@
 
 body {
   font-family: var(--body-font);
+  overflow: hidden;
 }
 
 .root {
@@ -68,4 +70,13 @@ body {
   margin: var(--root-margin);
   padding: 0;
   font-size: var(--root-font-size);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  background-color: rgba(var(--black), 0.2); /* or add it to the track */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(var(--black), 0.8);
 }

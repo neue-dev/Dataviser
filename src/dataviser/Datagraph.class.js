@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-25 20:03:56
+ * @ Modified time: 2024-04-25 23:04:27
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -34,11 +34,11 @@ export function Datagraph(options={}) {
 Datagraph.prototype.init = function(options={}) {
 
   // Some constants
-  this.width = this.parent.getBoundingClientRect().width;
-  this.height = this.parent.getBoundingClientRect().height;
+  this.width = this.parent.getBoundingClientRect().width * 0.84;
+  this.height = this.parent.getBoundingClientRect().height * 0.84;
   this.margins = {
-    top: 32, bottom: 64,
-    left: 48, right: 48,
+    top: 48, bottom: 48,
+    left: 72, right: 72,
   };
 
   // Refers to the access point where we add stuff

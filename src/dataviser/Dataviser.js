@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 22:28:32
+ * @ Modified time: 2024-04-25 23:02:39
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -44,15 +44,12 @@ export const dataviser = (function() {
   const dataviserWindow = document.createElement('grid-component');
 
   // Dataviser d3 canvas
-  const dataviserCanvas = document.createElement('div');
-  dataviserCanvas.classList.add('dataviser-canvas');
+  const dataviserCatalogue = document.createElement('grid-cell-component');
+  dataviserCatalogue.classList.add('dataviser-catalogue');
 
   // Dataviser file list
   const dataviserFileList = document.createElement('div');
   dataviserFileList.classList.add('dataviser-file-list');
-
-  // !Move back down
-  const canvasCell = document.createElement('grid-cell-component');
   
   /**
    * Update this so it doesnt become messy over time
@@ -87,9 +84,9 @@ export const dataviser = (function() {
     importCell.appendChild(importButton);
 
     // Create the canvas cell
-    canvasCell.setPlacement(3, 1);
-    canvasCell.setDimensions(2, 3);
-    canvasCell.appendChild(dataviserCanvas);
+    dataviserCatalogue.setPlacement(3, 1);
+    dataviserCatalogue.setDimensions(3, 4);
+    dataviserCatalogue.classList.add('dataviser-catalogue');
 
     // Create the file list cell
     fileListCell.setPlacement(1, 3);
@@ -97,7 +94,8 @@ export const dataviser = (function() {
     fileListCell.appendChild(dataviserFileList);
 
     // ! remove
-    let d = new Datagraph({ parent: canvasCell });
+    let d = new Datagraph({ parent: dataviserCatalogue });
+    let e = new Datagraph({ parent: dataviserCatalogue });
     setTimeout(() => {
       let testdata = ['a', 'b', 'c', 'aa', 'bb', 'ccc', 'dddd'];
 
@@ -105,16 +103,24 @@ export const dataviser = (function() {
         .addTitle('hello world')
         .addSubtitle('this is a graph about hello world')
         .addXAxis({ type: 'categorical', domain: ['a', 'b', 'c', 'd', 'e'] })
-        .addYAxis({ type: 'categorical' ,domain: ['a', 'b', 'c', 'd', 'e'] })
+        .addYAxis({ type: 'categorical', domain: ['a', 'b', 'c', 'd', 'e'] })
         .addColorAxis({ start: 0, end: 200, startColor: '#323232', endColor: '#6464dd' })
         .addHeatmap([{ x: 'a', y: 'a', value: 101 }, { x: 'a', y: 'b', value: 69}, { x: 'b', y: 'a', value: 121}, { x: 'b', y: 'b', value: 32}]);
+
+      e.init()
+        .addTitle('haagen daas')
+        .addSubtitle('this is a graph about haagen daas')
+        .addXAxis({ type: 'linear', start: 0, end: 100, })
+        .addYAxis({ type: 'linear', start: 0, end: 1000 })
+        .addColorAxis({ start: 0, end: 200, startColor: '#323232', endColor: '#6464dd' })
+        .addScatterplot([{ x: 10, y: 21 }, { x: 55, y: 233 }, { x: 69, y: 721 }, { x: 25, y: 345 } ]);
     })
 
     // Construct the tree
     dataviserWindow.appendChild(titleCell);
     dataviserWindow.appendChild(importCell);
-    dataviserWindow.appendChild(canvasCell);
     dataviserWindow.appendChild(fileListCell);
+    dataviserWindow.appendChild(dataviserCatalogue);
     root.appendChild(dataviserWindow);
   }
 
@@ -275,7 +281,6 @@ export const dataviser = (function() {
 
         // Clear the dataset and the canvas
         dataset = new Dataset(keyParser);
-        dataviserCanvas.innerHTML = '';
 
         // Queue of the different directories to parse
         let folderHandles = [ folderHandle ];

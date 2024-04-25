@@ -21,15 +21,10 @@
   overflow-x: hidden;
 }
 
-.dataviser-file-list::-webkit-scrollbar {
-  width: 8px;
-  background-color: rgba(var(--black), 0.2); /* or add it to the track */
-}
-
-/* Add a thumb */
-.dataviser-file-list::-webkit-scrollbar-thumb {
-  background: rgba(var(--black), 0.8);
-}
+.dataviser-catalogue {
+  overflow-y: auto;
+  overflow-x: hidden;
+} 
 
 .dataviser-import-button {
   position: relative;
