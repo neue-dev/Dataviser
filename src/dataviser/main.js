@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 08:45:34
+ * @ Modified time: 2024-04-25 10:54:11
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -190,7 +190,7 @@ export const dataviser = (function() {
 
     // For each data set, we create a matrix
     for(let dataSetKey in dataset.assets) {
-      dataset.renderChord(dataSetKey, { 
+      dataset.renderHeatmap(dataSetKey, { 
         canvas: 'dataviser-canvas',
         assetParserKey: 'matrix-reduced',
         assetParserOptions: {
