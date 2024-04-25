@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 15:33:32
+ * @ Modified time: 2024-04-25 19:28:00
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -84,9 +84,9 @@ export const dataviser = (function() {
       d.init()
         .addTitle('hello world')
         .addSubtitle('this is a graph about hello world')
-        .addXAxis({ type: 'linear', start: 2, end: 30, ticks: 5 })
-        .addYAxis({ type: 'linear', start: 69, end: 420, ticks: 3 })
-        .addScatterplot([{ x: 10, y: 250}, { x: 12, y: 80}, { x: 20, y: 283}, { x: 25, y: 199}]);
+        .addXAxis({ type: 'ordinal', domain: ['a', 'b'] })
+        .addYAxis({ type: 'ordinal' ,domain: ['a', 'b'] })
+        .addHeatmap([{ x: 'a', y: 'a', value: 101 }, { x: 'a', y: 'b', value: 69}, { x: 'b', y: 'a', value: 121}, { x: 'b', y: 'b', value: 32}]);
     })
 
     // Construct the tree

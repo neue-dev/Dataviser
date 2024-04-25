@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-25 19:19:06
+ * @ Modified time: 2024-04-25 19:37:00
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -248,6 +248,9 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
       fill: unhighlightColor,
       opacity: unhighlightOpacity,
     });
+
+    if(options.mouseover)
+      options.mouseover(e, d);
   }
 
   /**
@@ -266,6 +269,9 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
       fill: defaultColor, 
       opacity: defaultOpacity,
     });
+
+    if(options.mouseleave)
+      options.mouseleave(e, d);
   }
 
   // Create the datapoints
@@ -293,13 +299,93 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
   return this;
 }
 
+/**
+ * 
+ * @param {*} data 
+ * @param {*} options 
+ */
+Datagraph.prototype.addHeatmap = function(data, options={}) {
+  // The datagraph instance
+  const datagraph = this;
+
+  // Default styles
+  const defaultColor = options.color ?? 'black';
+  const defaultRadius = options.radius ?? 10;
+  const defaultOpacity = options.opacity ?? 1;
+
+  // Highlight styles
+  const highlightColor = options.highlightColor ?? 'blue';
+  const highlightRadius = options.highlightRadius ?? 15;
+  const highlightOpacity = options.highlightOpacity ?? 1;
+  const unhighlightColor = options.unhighlightColor ?? 'gray';
+  const unhighlightOpacity = options.unhighlightOpacity ?? 0.5;
+
+  /**
+   * Highlights the scatterplot element when hovering.
+   * 
+   * @param   { event }   e   The event object. 
+   * @param   { datum }   d   The data associated with the instance.
+   */
+  const mouseover = function(e, d) {
+    d3.select(this)
+      .attr('r', highlightRadius)
+      .style('fill', highlightColor)
+      .style('opacity', highlightOpacity)
+      
+    datagraph.setCSSVariables({ 
+      fill: unhighlightColor,
+      opacity: unhighlightOpacity,
+    });
+  }
+
+  /**
+   * Reverts the scatterplot element after hovering.
+   * 
+   * @param {*} e 
+   * @param {*} d 
+   */
+  const mouseleave = function(e, d) {
+    d3.select(this)
+      .attr('r', defaultRadius)
+      .style('fill', '')
+      .style('opacity', '')
+
+    datagraph.setCSSVariables({ 
+      fill: defaultColor, 
+      opacity: defaultOpacity,
+    });
+  }
+
+  // Create the datapoints
+  this.canvas
+    .selectAll('rect')
+    .data(data)
+    .join('rect')
+    .classed(this.id + '-data-point', true)
+    .classed('data-point', true)
+    .attr('x', (d, i) => this.xAxis(d.x))
+    .attr('y', (d, i) => this.yAxis(d.y))
+    .attr('width', this.width / 2)
+    .attr('height', this.height / 2)
+    .on('mouseover', mouseover)
+    .on('mouseleave', mouseleave)
+
+  // Create the style tag if it doesn't exist
+  // These styles represent the default styles of the elements
+  if(!document.getElementsByClassName(this.id + '-style').length) {
+    this.setStyle({
+      fill: defaultColor,
+      opacity: defaultOpacity,
+    });
+  }
+
+  return this;
+}
+
 Datagraph.prototype.addTimeline = function() {
   
 }
 
-Datagraph.prototype.addHeatmap = function() {
-  
-}
 
 Datagraph.prototype.addChordgraph = function() {
   
