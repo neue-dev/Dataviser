@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 19:28:00
+ * @ Modified time: 2024-04-25 19:43:30
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -86,6 +86,7 @@ export const dataviser = (function() {
         .addSubtitle('this is a graph about hello world')
         .addXAxis({ type: 'ordinal', domain: ['a', 'b'] })
         .addYAxis({ type: 'ordinal' ,domain: ['a', 'b'] })
+        .addColorAxis({ start: 0, end: 200, startColor: '#323232', endColor: '#6464dd' })
         .addHeatmap([{ x: 'a', y: 'a', value: 101 }, { x: 'a', y: 'b', value: 69}, { x: 'b', y: 'a', value: 121}, { x: 'b', y: 'b', value: 32}]);
     })
 

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-25 19:37:00
+ * @ Modified time: 2024-04-25 19:46:45
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -158,6 +158,21 @@ Datagraph.prototype.addYAxis = function(options={}) {
 }
 
 /**
+ * Creates a color axis for the graph.
+ * Used when we want to plot data with varying shades.
+ * 
+ * @param   { object }      options   The options for creating the color-axis.
+ * @return  { Datagraph }             The modified instance.
+ */
+Datagraph.prototype.addColorAxis = function(options={}) {
+  this.colorAxis = d3.scaleLinear()
+    .domain(options.domain ?? [ options.start ?? 0, options.end ?? 1 ])
+    .range(options.colors ?? [ options.startColor, options.endColor ])
+
+  return this;
+}
+
+/**
  * Creates the stylesheet for the datagraph.
  * 
  * @param   { object }      style   The options for the styling.
@@ -232,6 +247,11 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
   const unhighlightColor = options.unhighlightColor ?? 'gray';
   const unhighlightOpacity = options.unhighlightOpacity ?? 0.5;
 
+  // Some instance based parameters
+  const fx = (d, i) => this.xAxis(d.x);
+  const fy = (d, i) => this.yAxis(d.y);
+  const fc = (d, y) => this.colorAxis(d.value);
+
   /**
    * Highlights the scatterplot element when hovering.
    * 
@@ -281,8 +301,8 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
     .join('circle')
     .classed(this.id + '-data-point', true)
     .classed('data-point', true)
-    .attr('cx', (d, i) => this.xAxis(d.x))
-    .attr('cy', (d, i) => this.yAxis(d.y))
+    .attr('cx', fx)
+    .attr('cy', fy)
     .attr('r', 10)
     .on('mouseover', mouseover)
     .on('mouseleave', mouseleave)
@@ -320,6 +340,11 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
   const unhighlightColor = options.unhighlightColor ?? 'gray';
   const unhighlightOpacity = options.unhighlightOpacity ?? 0.5;
 
+  // Some instance based parameters
+  const fx = (d, i) => this.xAxis(d.x);
+  const fy = (d, i) => this.yAxis(d.y);
+  const fc = (d, y) => this.colorAxis(d.value);
+
   /**
    * Highlights the scatterplot element when hovering.
    * 
@@ -347,7 +372,7 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
   const mouseleave = function(e, d) {
     d3.select(this)
       .attr('r', defaultRadius)
-      .style('fill', '')
+      .style('fill', fc)
       .style('opacity', '')
 
     datagraph.setCSSVariables({ 
@@ -363,10 +388,11 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
     .join('rect')
     .classed(this.id + '-data-point', true)
     .classed('data-point', true)
-    .attr('x', (d, i) => this.xAxis(d.x))
-    .attr('y', (d, i) => this.yAxis(d.y))
+    .attr('x', fx)
+    .attr('y', fy)
     .attr('width', this.width / 2)
     .attr('height', this.height / 2)
+    .style('fill', fc)
     .on('mouseover', mouseover)
     .on('mouseleave', mouseleave)
 
