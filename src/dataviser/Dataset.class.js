@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-25 21:01:33
+ * @ Modified time: 2024-04-25 21:18:11
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -27,10 +27,10 @@ export function Dataset(keyParser, assetParsers, columnParser, rowParser) {
   this.columns = {};
   this.rows = {};
 
-  this.keyParser = keyParser || (d => d);
+  this.keyParser = keyParser ?? (d => d);
   this.assetParsers = { default: d => d, ...assetParsers };
-  this.columnParser = columnParser || (d => Object.keys(d[0]));
-  this.rowParser = rowParser || (d => Object.keys(d));
+  this.columnParser = columnParser ?? (d => Object.keys(d[0]));
+  this.rowParser = rowParser ?? (d => Object.keys(d));
 
   return this;
 }
@@ -46,6 +46,9 @@ export function Dataset(keyParser, assetParsers, columnParser, rowParser) {
 Dataset.prototype.readJSON = async function(file, options={}) {
   const reader = new FileReader();
   const key = options.name ?? file.name.split('/').at(-1).split('\\').at(-1).split('.').slice(0, -1).join('.');
+
+  // Creates an object with metadata
+  this.metadata[key] = this.keyParser(key);
 
   // Return a promise for the data
   return new Promise((resolve, reject) => {
@@ -67,9 +70,15 @@ Dataset.prototype.readJSON = async function(file, options={}) {
  * @return  { Dataset }           The current instance.
  */
 Dataset.prototype.add = function(key, asset) {
+
+  // Saves the asset
   this.assets[key] = asset;
   this.assetCount++;
 
+  // Creates an object with metadata
+  this.metadata[key] = this.keyParser(key);
+
+  // Adds the key to the columns and rows
   this.addColumns(key);
   this.addRows(key);
 

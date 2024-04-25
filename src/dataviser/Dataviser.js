@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 20:23:27
+ * @ Modified time: 2024-04-25 21:18:04
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -20,7 +20,25 @@ import { Datagraph } from './Datagraph.class'
 export const dataviser = (function() {
   const _ = {};
   const root = document.getElementsByClassName('root')[0];
-  let dataset = new Dataset();
+
+  // ! put this guy elsewhere
+  const keyParser = key => {
+    let startDate = key.split('_')[0];
+    let endDate = key.split('_')[0];
+
+    return {
+      startYear: parseInt(startDate.split('-')[0]),
+      startMonth: parseInt(startDate.split('-')[1]),
+      startDay: parseInt(startDate.split('-')[2]),
+      
+      endYear: parseInt(endDate.split('-')[0]),
+      endMonth: parseInt(endDate.split('-')[1]),
+      endDay: parseInt(endDate.split('-')[2]),
+    }
+  }
+  
+  // ! move this too
+  let dataset = new Dataset(keyParser);
 
   // Dataviser menu elements
   const dataviserWindow = document.createElement('grid-component');
@@ -229,8 +247,6 @@ export const dataviser = (function() {
       //     })
       //   }
       // }
-
-      // console.log(formattedData);
       
       // let d = new Datagraph({ parent: canvasCell });
       // d.init()
@@ -258,7 +274,7 @@ export const dataviser = (function() {
       .then(async folderHandle => {
 
         // Clear the dataset and the canvas
-        dataset = new Dataset();
+        dataset = new Dataset(keyParser);
         dataviserCanvas.innerHTML = '';
 
         // Queue of the different directories to parse
