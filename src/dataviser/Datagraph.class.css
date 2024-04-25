@@ -1,0 +1,22 @@
+.datagraph {
+  background-color: aliceblue;
+}
+
+.datagraph-title {
+  position: relative;
+  transform: translate(0, 1em);
+
+  font-size: 1.6rem;
+  font-family: SFPro;
+  letter-spacing: -0.02em;
+}
+
+.datagraph-subtitle {
+  position: relative;
+  transform: translate(0, 4em);
+
+  font-size: 0.8rem;
+  font-family: SFPro;
+  letter-spacing: -0.02em;
+  opacity: 0.7;
+}

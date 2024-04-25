@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 13:35:36
+ * @ Modified time: 2024-04-25 14:22:24
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -14,7 +14,7 @@ import '../ui/Button.component'
 import '../ui/Slider.component'
 
 import { Dataset } from './Dataset.class'
-import d3 from '../libs/d3.v7.min'
+import { Datagraph } from './Datagraph.class'
 
 // Handles all the data vis
 export const dataviser = (function() {
@@ -75,6 +75,12 @@ export const dataviser = (function() {
     fileListCell.setPlacement(1, 3);
     fileListCell.setDimensions(1, 2);
     fileListCell.appendChild(dataviserFileList);
+
+    // ! remove
+    let d = new Datagraph({ parent: canvasCell });
+    setTimeout(() => {
+      d.init().addTitle('hello world').addSubtitle('this is a graph about hello world');
+    })
 
     // Construct the tree
     dataviserWindow.appendChild(titleCell);
