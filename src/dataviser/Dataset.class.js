@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-25 08:21:44
+ * @ Modified time: 2024-04-25 09:02:19
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -39,13 +39,15 @@ export function Dataset(keyParser, assetParsers, columnParser, rowParser) {
  * Reads a files contents and adds the files contents to its list of assets.
  * Note that the file must be a JSON file.
  * 
- * @param   { File }      file  The file object we want to read. 
- * @return  { Promise }         A promise for the instance.
+ * @param   { File }      file      The file object we want to read.
+ * @param   { object }    options   Additional options we may want to pass.
+ * @return  { Promise }             A promise for the instance.
  */
-Dataset.prototype.readJSON = async function(file) {
+Dataset.prototype.readJSON = async function(file, options={}) {
   const reader = new FileReader();
-  const key = file.name.split('/').at(-1).split('\\').at(-1).split('.').slice(0, -1).join('.');
+  const key = options.name ?? file.name.split('/').at(-1).split('\\').at(-1).split('.').slice(0, -1).join('.');
 
+  // Return a promise for the data
   return new Promise((resolve, reject) => {
     
     // Note that the filekey above is just the filename minus the extension
@@ -166,11 +168,11 @@ Dataset.prototype.addParser = function(assetParserKey, assetParser) {
  * @param   { string }  key       The asset to render.
  * @param   { object }  options   A set of parameters on how to render the asset.
  */
-//! remove m parameter
 Dataset.prototype.renderChord = function(key, options={}) {
   
   // This is the parent element
   const canvas = document.getElementsByClassName(options.canvas ?? 'canvas')[0];
+  const canvasClass = ('.' + options.canvas) ?? '.canvas';
   const width = canvas.getBoundingClientRect().width;
 
   // This is how we transform the raw data into data we can present
@@ -184,84 +186,46 @@ Dataset.prototype.renderChord = function(key, options={}) {
     .sortSubgroups(options.sortOrder ?? d3.descending)
       (data);
 
-      const showTooltip = function(e, d) {
-        tooltip
-          .style('opacity', 1)
-          .style('left', (e.screenX + 15))
-          .style('top', (e.screenY - 28))
-          .html('From: ' + data.labels[d.source.index] + ' To: ' + data.labels[d.target.index])
-      }
-
-      const hideTooltip = function(e, d) {
-        tooltip
-          .transition()
-          .duration(1000)
-          .style('opacity', 0)
-      }
-
   // The svg that we draw to
   const svg = d3
-    .select(('.' + options.canvas) ?? '.canvas')
+    .select(canvasClass)
     .append('svg')
       .attr('width', width)
       .style('aspect-ratio', '1')
     .append('g')
       .attr('transform', `translate(${width / 2}, ${width / 2})`);
 
+  // Create the connections between the rims
   svg
     .datum(chord)
     .append('g')
     .selectAll('path')
-    .data(function(d) { return d; })
+    .data(d => d)
     .enter()
     .append('path')
-      .attr('d', d3.ribbon()
-        .radius(300)
-      )
-      .style('fill', '#aa2200')
-      .style('stroke', 'transparent')
-
-  svg
-    .datum(chord)
-    .append('g')
-    .selectAll('path')
-    .data(function(d) { return d; })
-    .enter()
-    .append('path')
-      .attr('d', d3.ribbon()
-        .radius(300)
-      )
+      .attr('d', d3
+        .ribbon()
+        .radius(300))
       .style('fill', '#dd4400')
       .style('stroke', 'transparent')
-      .on('mouseover', showTooltip)
-      .on('mouseleave', hideTooltip)
-      
+      .on('mouseover', options.showInfo ?? (e => e))
+      .on('mouseleave', options.hideInfo ?? (e => e))
+     
+  // Create the outer rim
   svg
     .datum(chord)
     .append('g')
     .selectAll('g')
-    .data(function(d) { return d.groups; })
+    .data(d => d.groups)
     .enter()
     .append('g')
     .append('path')
       .style('fill', '#ff8800')          
       .style('stroke', 'transparent')
-      .attr('d', d3.arc()
+      .attr('d', d3
+        .arc()
         .innerRadius(310)
-        .outerRadius(320)
-      )
-
-      // Hover tooltip
-      const tooltip = d3.select(('.' + options.canvas) ?? '.canvas')
-        .append('div')
-        .style('opacity', 0)
-        .attr('class', 'tooltip')
-        .style('background-color', 'white')
-        .style('border', 'solid')
-        .style('border-width', '1px')
-        .style('border-radius', '5px')
-        .style('padding', '10px')
-        .style('display', 'fixed')
+        .outerRadius(320))
 }
 
 /**

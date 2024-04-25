@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 08:30:20
+ * @ Modified time: 2024-04-25 08:45:34
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -232,7 +232,7 @@ export const dataviser = (function() {
           for await(let entryHandle of folderHandle.values()) {
           
             // Add subdirectory to queue
-            if(entryHandle instanceof FileSystemDirectoryHandle)
+            if(entryHandle.kind == 'directory')
               folderHandles.push(entryHandle);
 
             // Add file to file list
@@ -254,7 +254,7 @@ export const dataviser = (function() {
           for await(let entryHandle of folderHandle.values()) {
           
             // Add file to list
-            if(!(entryHandle instanceof FileSystemDirectoryHandle)) {
+            if(entryHandle.kind == 'file') {
               entryHandle.getFile().then(async file => {
                 await dataset.readJSON(file)
                 
