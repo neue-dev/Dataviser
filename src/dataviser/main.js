@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-25 08:16:12
+ * @ Modified time: 2024-04-25 08:30:20
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -27,11 +27,11 @@ export const dataviser = (function() {
 
   // Dataviser d3 canvas
   const dataviserCanvas = document.createElement('div');
-  dataviserCanvas.classList.add('canvas');
+  dataviserCanvas.classList.add('dataviser-canvas');
 
   // Dataviser file list
   const dataviserFileList = document.createElement('div');
-  dataviserFileList.classList.add('file-list');
+  dataviserFileList.classList.add('dataviser-file-list');
   
   /**
    * Update this so it doesnt become messy over time
@@ -63,7 +63,7 @@ export const dataviser = (function() {
 
     // This cell stores the import button
     importCell.setPlacement(1, 2);
-    importCell.innerHTML = 'Select folder to begin.';
+    importCell.innerHTML = 'Select folder to begin.<br>';
     importCell.appendChild(importButton);
 
     // Create the canvas cell
@@ -172,7 +172,7 @@ export const dataviser = (function() {
 
     // Display the list of read files
     let dataAssets = dataset.getList();
-    dataviserFileList.innerHTML = `Successfully loaded ${dataAssets.length} files:`
+    dataviserFileList.parentElement.prepend(`Successfully loaded ${dataAssets.length} files:`);
 
     for(let i = 0; i < dataAssets.length; i++) {
       let dataAssetButton = document.createElement('button-component');
@@ -191,6 +191,7 @@ export const dataviser = (function() {
     // For each data set, we create a matrix
     for(let dataSetKey in dataset.assets) {
       dataset.renderChord(dataSetKey, { 
+        canvas: 'dataviser-canvas',
         assetParserKey: 'matrix-reduced',
         assetParserOptions: {
           maxCount: 10,
@@ -221,6 +222,7 @@ export const dataviser = (function() {
         let folderHandles = [ folderHandle ];
         let i = 0, fileCount = 0;
 
+        // This loop counts the number of files first
         do {
 
           // Go to the next handle
@@ -240,6 +242,8 @@ export const dataviser = (function() {
         // While we have stuff in the queue
         } while(i < folderHandles.length)
 
+        // This loop reads each of the files and saves the raw data
+        // After that, it configures the data and some other stuff
         i = 0;
         do {
 

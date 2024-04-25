@@ -13,14 +13,29 @@
 
 .dataviser-file-list {
   position: absolute;
+  margin-top: 1em;
+  width: 100%;
   max-height: 100%;
+
+  box-shadow: var(--default-shadow);
   overflow: auto;
+  overflow-x: hidden;
+}
+
+.dataviser-file-list::-webkit-scrollbar {
+  width: 8px;
+  background-color: rgba(var(--black), 0.2); /* or add it to the track */
+}
+
+/* Add a thumb */
+.dataviser-file-list::-webkit-scrollbar-thumb {
+  background: rgba(var(--black), 0.8);
 }
 
 .dataviser-import-button {
   position: relative;
-  top: 50%;
+  margin-top: 1em;
   left: 50%;
   width: 100%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
 }

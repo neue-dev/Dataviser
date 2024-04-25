@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-25 08:15:50
+ * @ Modified time: 2024-04-25 08:21:44
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -201,7 +201,7 @@ Dataset.prototype.renderChord = function(key, options={}) {
 
   // The svg that we draw to
   const svg = d3
-    .select(options.canvas ?? '.canvas')
+    .select(('.' + options.canvas) ?? '.canvas')
     .append('svg')
       .attr('width', width)
       .style('aspect-ratio', '1')
@@ -252,7 +252,7 @@ Dataset.prototype.renderChord = function(key, options={}) {
       )
 
       // Hover tooltip
-      const tooltip = d3.select('.canvas')
+      const tooltip = d3.select(('.' + options.canvas) ?? '.canvas')
         .append('div')
         .style('opacity', 0)
         .attr('class', 'tooltip')
