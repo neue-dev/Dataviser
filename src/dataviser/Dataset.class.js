@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-26 09:01:42
+ * @ Modified time: 2024-04-26 10:58:51
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -226,27 +226,27 @@ Dataset.prototype.computeCumulative = function(options={}) {
     let asset = this.assets[assetKeys[i]];
     let refs = [ { path: [], o: asset } ];
     let optionKeys = Object.keys(options);
-
+    
     // Check if the asset is within the options
     let skip = false;
     for(let j = 0; j < optionKeys.length; j++) {
       if(!(optionKeys[j] in this.metadata[assetKeys[i]]))
-        continue;
-      
-      if(this.metadata[assetKeys[i]][optionKeys[j]] < options[optionKeys[j]][0] ||
-        this.metadata[assetKeys[i]][optionKeys[j]] > options[optionKeys[j]][1]) {
+      continue;
+    
+    if(this.metadata[assetKeys[i]][optionKeys[j]] < options[optionKeys[j]][0] ||
+      this.metadata[assetKeys[i]][optionKeys[j]] > options[optionKeys[j]][1]) {
         skip = true;
         break;
       }
     }
-
+    
     // Skip this asset
     if(skip)
       continue;
-    
+
     // While we have keys to iterate over
     while(refs.length) {
-
+      
       // Get the current head object of the src and dest objects
       let refhead = refs.shift();
       let head = cumulative;

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 09:25:46
+ * @ Modified time: 2024-04-26 10:59:07
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -24,16 +24,11 @@ export const dataviser = (function() {
   // ! put this guy elsewhere
   const keyParser = key => {
     let startDate = key.split('_')[0];
-    let endDate = key.split('_')[0];
+    let endDate = key.split('_')[1];
 
     return {
-      startYear: parseInt(startDate.split('-')[0]),
-      startMonth: parseInt(startDate.split('-')[1]),
-      startDay: parseInt(startDate.split('-')[2]),
-      
-      endYear: parseInt(endDate.split('-')[0]),
-      endMonth: parseInt(endDate.split('-')[1]),
-      endDay: parseInt(endDate.split('-')[2]),
+      startDate: new Date(startDate).getTime(),
+      endDate: new Date(endDate).getTime(),
     }
   }
   
@@ -397,7 +392,7 @@ export const dataviser = (function() {
     }
 
     // ! remove
-    dataset.computeCumulative({ startYear: [2020, 2020] });
+    dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
     dataset.computeTotal()
 
     let graph = new Datagraph({ parent: dataviserCatalogue });
