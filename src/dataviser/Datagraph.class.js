@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-25 23:04:27
+ * @ Modified time: 2024-04-26 08:50:40
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -37,7 +37,7 @@ Datagraph.prototype.init = function(options={}) {
   this.width = this.parent.getBoundingClientRect().width * 0.84;
   this.height = this.parent.getBoundingClientRect().height * 0.84;
   this.margins = {
-    top: 48, bottom: 48,
+    top: 96, bottom: 48,
     left: 72, right: 72,
   };
 

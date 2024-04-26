@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 07:55:20
+ * @ Modified time: 2024-04-26 09:03:47
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -93,29 +93,6 @@ export const dataviser = (function() {
     fileListCell.setDimensions(1, 2);
     fileListCell.appendChild(dataviserFileList);
 
-    // ! remove
-    let d = new Datagraph({ parent: dataviserCatalogue });
-    let e = new Datagraph({ parent: dataviserCatalogue });
-    setTimeout(() => {
-      let testdata = ['a', 'b', 'c', 'aa', 'bb', 'ccc', 'dddd'];
-
-      d.init()
-        .addTitle('hello world')
-        .addSubtitle('this is a graph about hello world')
-        .addXAxis({ type: 'categorical', domain: ['a', 'b', 'c', 'd', 'e'] })
-        .addYAxis({ type: 'categorical', domain: ['a', 'b', 'c', 'd', 'e'] })
-        .addColorAxis({ start: 0, end: 200, startColor: '#323232', endColor: '#6464dd' })
-        .addHeatmap([{ x: 'a', y: 'a', value: 101 }, { x: 'a', y: 'b', value: 69}, { x: 'b', y: 'a', value: 121}, { x: 'b', y: 'b', value: 32}]);
-
-      e.init()
-        .addTitle('haagen daas')
-        .addSubtitle('this is a graph about haagen daas')
-        .addXAxis({ type: 'linear', start: 0, end: 100, })
-        .addYAxis({ type: 'linear', start: 0, end: 1000 })
-        .addColorAxis({ start: 0, end: 200, startColor: '#323232', endColor: '#6464dd' })
-        .addScatterplot([{ x: 10, y: 21 }, { x: 55, y: 233 }, { x: 69, y: 721 }, { x: 25, y: 345 } ]);
-    })
-
     // Construct the tree
     dataviserWindow.appendChild(titleCell);
     dataviserWindow.appendChild(importCell);
@@ -168,7 +145,7 @@ export const dataviser = (function() {
 
       // Max count
       const maxCount = options.maxCount ?? 16;
-        
+  
       // Generate sums per row and column
       for(let row in asset) {
         let sum = 0;
@@ -181,14 +158,58 @@ export const dataviser = (function() {
 
       // Sort sums by size
       sums.sort((a, b) => b[1] - a[1]);
-
-      // Get only the 20 most prominent locations
-      let i = 0;
       
-      for(; i < maxCount && i < sums.length; i++) {
-        let mrow = [];
-        let row = sums[i][0];
+      let i = 0;
+      let sumDict = {};
+      let cumRow = sums[maxCount][0];
 
+      // Save the top sums
+      for(i = 0; i < maxCount + 1 && i < sums.length; i++)
+        sumDict[sums[i][0]] = true;  
+
+      for(let row in asset) {
+        for(let entry in asset[row]) {
+
+          // Accumulate the rest on the cumRow
+          if(!sumDict[row]) {
+            if(!sumDict[entry])
+              asset[cumRow][cumRow] += asset[row][entry];
+            else
+              asset[cumRow][entry] += asset[row][entry];
+          } else {
+            if(!sumDict[entry])
+              asset[row][cumRow] += asset[row][entry];
+          }
+
+          // Set to 0 if unimportant
+          if(!sumDict[row] || !sumDict[entry]) {
+            asset[row][entry] = 0;
+            asset[entry][row] = 0;
+          }
+        }
+      }
+
+      // Delete the unneeded rowsand columns
+      for(let row in asset) {
+        for(let entry in asset[row])
+          if(!sumDict[entry])
+            delete asset[row][entry];
+
+        if(!sumDict[row])
+          delete asset[row];
+      }
+
+      // Accumulate the sum too
+      for(let i = maxCount + 1; i < sums.length; i++)
+        sums[maxCount][1] += sums[i][1];
+
+      // Truncate the sums
+      sums = sums.slice(0, maxCount + 1);
+
+      // Build up the matrix
+      for(let row in asset) {
+        let mrow = [];
+        
         for(let entry in asset[row])
           mrow.push(asset[row][entry]);
 
@@ -197,26 +218,8 @@ export const dataviser = (function() {
         m.labels.push(row);
       }
 
-      // The last matrix row
-      let mlastrow = [];
-
-      for(; i < sums.length; i++) {
-        let row = sums[i][0];
-        let j = 0;
-
-        // Accumulate the remaining values
-        for(let entry in asset[row]) {
-          if(j >= mlastrow.length)
-            mlastrow[j] = 0;
-          mlastrow[j++] += asset[row][entry];
-        }
-      }
-
-      // If it's not empty
-      if(mlastrow.length) {
-        m.push(mlastrow);
-        m.labels.push('others');
-      }
+      // Change last label
+      m.labels[m.labels.length - 1] = 'other';
 
       return m;
     });
@@ -319,17 +322,22 @@ export const dataviser = (function() {
         
         // Push each of the relationships
         for(let entry in asset[row]) {
+          
+          // It;s a 0 we don't need
+          if(!sumDict[entry])
+            continue;
+
           m.push({
-            x: entry,
-            y: row,
+            x: entry == cumRow ? 'other' : entry,
+            y: row == cumRow ? 'other' : row,
             value: asset[row][entry]
           });
 
           // Compute this too
           if(row != entry) {
             m.push({
-              x: row,
-              y: entry,
+              x: entry == cumRow ? 'other' : entry,
+              y: row == cumRow ? 'other' : row,
               value: asset[entry][row]
             });
           }
@@ -339,15 +347,19 @@ export const dataviser = (function() {
         m.labels.push(row);
       }
 
+      // Change last label
+      m.labels[m.labels.length - 1] = 'other';
+
       return m;
     });
 
-    // Display the list of read files
-    let dataAssets = dataset.getList();
+    // Display the loaded files
+    const dataAssets = dataset.getList();
     dataviserFileList.parentElement.prepend(`Successfully loaded ${dataAssets.length} files:`);
-    console.log(dataset.getData(dataAssets[0], 'relation-reduced'));
 
     for(let i = 0; i < dataAssets.length; i++) {
+
+      // For each file we have a button
       let dataAssetButton = document.createElement('button-component');
       dataAssetButton.innerHTML = dataAssets[i];
       dataAssetButton.style.marginBottom = '8px';
@@ -361,43 +373,42 @@ export const dataviser = (function() {
    */
   _.renderData = function() {
 
-    // For each data set, we create a matrix
-    for(let dataSetKey in dataset.assets) {
-      // dataset.renderHeatmap(dataSetKey, { 
-      //   canvas: 'dataviser-canvas',
-      //   assetParserKey: 'matrix-reduced',
-      //   assetParserOptions: {
-      //     maxCount: 10,
-      //   } 
-      // });
+    const dataAssets = dataset.getList();
 
-      dataset.computeCumulative({ startYear: [2020, 2020] });
-      console.log(dataset.computeTotal());
-      // ! remove
-      // let data = dataset.get('2020-01-01_2020-01-02');
-      // let formattedData = [];
-      
-      // for(let i = 0; i < Object.keys(data).length / 4; i++) {
-      //   for(let j = 0; j < Object.keys(data[Object.keys(data)[i]]).length / 4; j++) {
-      //     formattedData.push({
-      //       x: i + '',
-      //       y: j + '',
-      //       value: data[Object.keys(data)[i]][Object.keys(data[Object.keys(data)[i]])[j]]
-      //     })
-      //   }
-      // }
-      
-      // let d = new Datagraph({ parent: canvasCell });
-      // d.init()
-      //   .addTitle('hello world')
-      //   .addSubtitle('this is a graph about hello world')
-      //   .addXAxis({ type: 'categorical', domain: Object.keys(data) })
-      //   .addYAxis({ type: 'categorical' ,domain: Object.keys(data) })
-      //   .addColorAxis({ start: 0, end: 1000, startColor: '#323232', endColor: '#6464dd' })
-      //   .addHeatmap(formattedData);
-      
-      return;
+    // For each data set, we display data
+    for(let dataSetKey of dataAssets) {
+
+      // Display the list of read files
+      let graph = new Datagraph({ parent: dataviserCatalogue });
+      let data = dataset.getData(dataSetKey, 'relation-reduced', {
+        maxCount: 16,
+      });
+
+      graph.init()
+        .addTitle(dataSetKey)
+        .addSubtitle('this is a graph for the period ' + dataSetKey)
+        .addXAxis({ type: 'categorical', domain: data.labels })
+        .addYAxis({ type: 'categorical', domain: data.labels })
+        .addColorAxis({ start: 0, end: 2500, startColor: '#212121', endColor: '#6464dd' })
+        .addHeatmap(data);
     }
+
+    // ! remove
+    dataset.computeCumulative({ startYear: [2020, 2020] });
+    dataset.computeTotal()
+
+    let graph = new Datagraph({ parent: dataviserCatalogue });
+    let data = dataset.getSummary('total', 'relation-reduced', {
+      maxCount: 16,
+    });
+
+    graph.init()
+      .addTitle('total')
+      .addSubtitle('this is a graph for the total duration')
+      .addXAxis({ type: 'categorical', domain: data.labels })
+      .addYAxis({ type: 'categorical', domain: data.labels })
+      .addColorAxis({ start: 0, end: 10000, startColor: '#212121', endColor: '#6464dd' })
+      .addHeatmap(data);
   }
 
   /**

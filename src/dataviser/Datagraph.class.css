@@ -4,7 +4,7 @@
 
 .datagraph-title {
   position: relative;
-  transform: translate(1rem, 1em);
+  transform: translate(1rem, -1em);
 
   font-size: 2rem;
   font-family: SFProBold;
@@ -14,7 +14,7 @@
 
 .datagraph-subtitle {
   position: relative;
-  transform: translate(1rem, 4.2em);
+  transform: translate(1rem, -0.8em);
 
   font-size: 0.8rem;
   font-family: SFProItalic;

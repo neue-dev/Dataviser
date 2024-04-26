@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-26 06:59:20
+ * @ Modified time: 2024-04-26 09:01:42
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -167,8 +167,21 @@ Dataset.prototype.getList = function(key) {
  * @param   { string }  assetParserKey  The parsed version of the asset.
  * @return  { object }                  The data in the format we wanted.
  */
-Dataset.prototype.getData = function(key, assetParserKey) {
-  return this.assetParsers[assetParserKey](this.assets[key]);
+Dataset.prototype.getData = function(key, assetParserKey, options) {
+  return this.assetParsers[assetParserKey](this.assets[key], options);
+}
+
+/**
+ * Retrieves data from the dataset in a formatted manner.
+ * Calls the selected asset parser to convert the format of the data.
+ * The data retrieved here represents a summary of some interval of the input data.
+ * 
+ * @param   { string }  key             The data summary we want.
+ * @param   { string }  assetParserKey  The parsed version of the asset.
+ * @return  { object }                  The data in the format we wanted.
+ */
+Dataset.prototype.getSummary = function(key, assetParserKey, options) {
+  return this.assetParsers[assetParserKey](this.summaries[key], options);
 }
 
 /**
