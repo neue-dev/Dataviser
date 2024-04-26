@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-26 10:58:51
+ * @ Modified time: 2024-04-26 11:19:44
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -165,10 +165,22 @@ Dataset.prototype.getList = function(key) {
  * 
  * @param   { string }  key             The data asset we want.
  * @param   { string }  assetParserKey  The parsed version of the asset.
+ * @param   { object }  options         Options for the asset parser.
  * @return  { object }                  The data in the format we wanted.
  */
-Dataset.prototype.getData = function(key, assetParserKey, options) {
+Dataset.prototype.getData = function(key, assetParserKey, options={}) {
   return this.assetParsers[assetParserKey](this.assets[key], options);
+}
+
+/**
+ * Retrieves the metadata associated with a particular data asset.
+ * Note that the metadata is always derived from the filename.
+ * 
+ * @param   { string }  key             The metadata we want.
+ * @return  { object }                  The metadata we wanted.
+ */
+Dataset.prototype.getMetadata = function(key) {
+  return this.metadata[key];
 }
 
 /**

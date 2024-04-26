@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-26 11:04:03
+ * @ Modified time: 2024-04-26 11:42:54
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -243,12 +243,12 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
 
   // Default styles
   const defaultColor = options.color ?? 'black';
-  const defaultRadius = options.radius ?? 10;
+  const defaultRadius = options.radius ?? 5;
   const defaultOpacity = options.opacity ?? 1;
 
   // Highlight styles
   const highlightColor = options.highlightColor ?? '#ffc824';
-  const highlightRadius = options.highlightRadius ?? 15;
+  const highlightRadius = options.highlightRadius ?? 10;
   const highlightOpacity = options.highlightOpacity ?? 1;
   const unhighlightColor = options.unhighlightColor ?? 'black';
   const unhighlightOpacity = options.unhighlightOpacity ?? 0.25;
@@ -326,23 +326,131 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
 }
 
 /**
+ * Creates a time series based on the provided data.
  * 
- * @param {*} data 
- * @param {*} options 
+ * @param   { array }       data      An array of objects. 
+ * @param   { object }      options   The options for rendering.
+ * @return  { Datagraph }             The modified instance.
  */
-Datagraph.prototype.addHeatmap = function(data, options={}) {
+Datagraph.prototype.addTimeline = function(data, options={}) {
+  
   // The datagraph instance
   const datagraph = this;
 
   // Default styles
   const defaultColor = options.color ?? 'black';
-  const defaultRadius = options.radius ?? 10;
+  const defaultRadius = options.radius ?? 5;
+  const defaultOpacity = options.opacity ?? 1;
+
+  // Highlight styles
+  const highlightColor = options.highlightColor ?? '#ffc824';
+  const highlightRadius = options.highlightRadius ?? 10;
+  const highlightOpacity = options.highlightOpacity ?? 1;
+  const unhighlightColor = options.unhighlightColor ?? 'black';
+  const unhighlightOpacity = options.unhighlightOpacity ?? 0.25;
+
+  // Some instance based parameters
+  const fx = (d, i) => this.xAxis(d.x);
+  const fy = (d, i) => this.yAxis(d.y);
+  const fc = (d, y) => this.colorAxis(d.value);
+
+  /**
+   * Highlights the timeline element when hovering.
+   * 
+   * @param   { event }   e   The event object. 
+   * @param   { datum }   d   The data associated with the instance.
+   */
+  const mouseover = function(e, d) {
+    d3.select(this)
+      .attr('r', highlightRadius)
+      .style('fill', highlightColor)
+      .style('opacity', highlightOpacity)
+      
+    datagraph.setCSSVariables({ 
+      fill: unhighlightColor,
+      opacity: unhighlightOpacity,
+    });
+
+    if(options.mouseover)
+      options.mouseover(e, d);
+  }
+
+  /**
+   * Reverts the timeline element after hovering.
+   * 
+   * @param {*} e 
+   * @param {*} d 
+   */
+  const mouseleave = function(e, d) {
+    d3.select(this)
+      .attr('r', defaultRadius)
+      .style('fill', '')
+      .style('opacity', '')
+
+    datagraph.setCSSVariables({ 
+      fill: defaultColor, 
+      opacity: defaultOpacity,
+    });
+
+    if(options.mouseleave)
+      options.mouseleave(e, d);
+  }
+
+  // Defines the thing we use to draw a line with our data
+  const line = d3.line(fx, fy);
+
+  // Create the datapoints
+  this.canvas
+    .append('path')
+    .classed(this.id + '-data-point', true)
+    .attr('d', line(data))
+    .attr('stroke', 'black')
+    .attr('fill', 'none')
+    .style('fill', 'none')
+
+  this.canvas
+    .selectAll('circle')
+    .data(data)
+    .join('circle')
+    .classed(this.id + '-data-point', true)
+    .classed('data-point', true)
+    .attr('cx', fx)
+    .attr('cy', fy)
+    .attr('r', 5)
+    .on('mouseover', mouseover)
+    .on('mouseleave', mouseleave)
+
+  // Create the style tag if it doesn't exist
+  // These styles represent the default styles of the elements
+  if(!document.getElementsByClassName(this.id + '-style').length) {
+    this.setStyle({
+      fill: defaultColor,
+      opacity: defaultOpacity,
+    });
+  }
+
+  return this;
+}
+
+/**
+ * 
+ * @param {*} data 
+ * @param {*} options 
+ */
+Datagraph.prototype.addHeatmap = function(data, options={}) {
+  
+  // The datagraph instance
+  const datagraph = this;
+
+  // Default styles
+  const defaultColor = options.color ?? 'black';
+  const defaultRadius = options.radius ?? 5;
   const defaultOpacity = options.opacity ?? 1;
   const defaultFilter = options.defaultFilter ?? '';
 
   // Highlight styles
   const highlightColor = options.highlightColor ?? '#ffc824';
-  const highlightRadius = options.highlightRadius ?? 15;
+  const highlightRadius = options.highlightRadius ?? 10;
   const highlightOpacity = options.highlightOpacity ?? 1;
   const highlightFilter = options.highlightFilter ?? 'saturate(100%)';
   const unhighlightColor = options.unhighlightColor ?? 'black';
@@ -355,7 +463,7 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
   const fc = (d, y) => this.colorAxis(d.value);
 
   /**
-   * Highlights the scatterplot element when hovering.
+   * Highlights the heatmap element when hovering.
    * 
    * @param   { event }   e   The event object. 
    * @param   { datum }   d   The data associated with the instance.
@@ -375,7 +483,7 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
   }
 
   /**
-   * Reverts the scatterplot element after hovering.
+   * Reverts the heatmap element after hovering.
    * 
    * @param {*} e 
    * @param {*} d 
@@ -421,11 +529,6 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
 
   return this;
 }
-
-Datagraph.prototype.addTimeline = function() {
-  
-}
-
 
 Datagraph.prototype.addChordgraph = function() {
   
