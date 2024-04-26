@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 10:59:07
+ * @ Modified time: 2024-04-26 11:04:19
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -407,6 +407,8 @@ export const dataviser = (function() {
       .addYAxis({ type: 'categorical', domain: data.labels })
       .addColorAxis({ start: 0, end: 10000, startColor: '#212121', endColor: '#6464dd' })
       .addHeatmap(data);
+
+    // graph.remove();
   }
 
   /**

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-26 09:25:58
+ * @ Modified time: 2024-04-26 11:04:03
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -429,6 +429,24 @@ Datagraph.prototype.addTimeline = function() {
 
 Datagraph.prototype.addChordgraph = function() {
   
+}
+
+/**
+ * Removes the current graph from the DOM and deletes it from memory.
+ * 
+ * @return  { Datagraph }   The datagraph instance we modified. 
+ */
+Datagraph.prototype.remove = function() {
+  const graphs = document.getElementsByClassName(this.id);
+  
+  // Remove the stuff inside the svgs
+  this.canvas.selectAll('*').remove();
+
+  // Remove the svgs
+  for(let i = 0; i < graphs.length; i++)
+    graphs[i].parentElement.removeChild(graphs[i]);
+
+  return this;
 }
 
 /**
