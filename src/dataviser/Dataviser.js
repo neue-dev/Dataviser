@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 15:06:17
+ * @ Modified time: 2024-04-26 15:28:37
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -106,7 +106,7 @@ export const dataviser = (function() {
     fileListCell.appendChild(dataviserFileList);
 
     // Configure the input cell
-    inputCell.setPlacement(1, 4);
+    inputCell.setPlacement(1, 3);
     inputCell.setDimensions(1, 2);
     inputCell.append('Date filter:');
     inputCell.appendChild(inputRangeField);
@@ -458,8 +458,8 @@ export const dataviser = (function() {
   _.renderData = function() {
 
     // Get the list of data assets first
-    const dataAssets = dataset.getList();
-    const currentSeries = '2';
+    let dataAssets = dataset.getList();
+    let currentSeries = '2';
 
     // Compute summaries
     dataset.computeTotal()
@@ -479,7 +479,40 @@ export const dataviser = (function() {
 
     // When the user presses enter for one of the fields
     const submitIsolate = (e, text) => {
-      console.log(text);
+      
+      // Get the input
+      currentSeries = text.trim()
+      
+      // Not valid
+      if(!(currentSeries in dataset.get(dataAssets[0])))
+        return;
+
+      // Compute the series
+      dataset.computeSeries(currentSeries, { type: 'row', savekey: 'series-row' });
+      dataset.computeSeries(currentSeries, { type: 'column', savekey: 'series-column' });
+      
+      seriesRow = dataset.getSeries('series-row', 'series-list', {});
+      seriesColumn = dataset.getSeries('series-column', 'series-list', {});
+
+      // Clear the graphs
+      datagraphs.seriesSingleColumn.clear();
+      datagraphs.seriesSingleRow.clear();
+
+      // Series for a single series
+      datagraphs.seriesSingleColumn
+        .addTitle('inward migration for ' + currentSeries)
+        .addSubtitle('the number of people who migrated to 2')
+        .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+        .addYAxis({ type: 'linear', start: seriesColumn.min, end: seriesColumn.max })
+        .addTimeline(seriesColumn, { mouseover: mouseoverTimeline });
+
+      // Series for a single series
+      datagraphs.seriesSingleRow 
+        .addTitle('outward migration for ' + currentSeries)
+        .addSubtitle('the number of people who migrated away from 2')
+        .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+        .addYAxis({ type: 'linear', start: seriesRow.min, end: seriesRow.max })
+        .addTimeline(seriesRow, { mouseover: mouseoverTimeline });
     }
 
     // We're hovering over heatmap
@@ -489,6 +522,15 @@ export const dataviser = (function() {
         <span style='opacity: 0.5; font-size: 0.6rem; padding: 0;'>From: ${d.x}</span>
         <span style='opacity: 0.5; font-size: 0.6rem; padding: 0;'>To: ${d.y}</span><br>
         ${d.value}
+      `;
+    }
+
+    // We're hovering over time series
+    const mouseoverTimeline = (e, d) => {
+      dataviserInfoBoard.style.opacity = 1;
+      dataviserInfoBoard.innerHTML = `
+        <span style='opacity: 0.5; font-size: 0.6rem; padding: 0;'>Date: ${d.x.toLocaleDateString()}</span><br>
+        ${d.y}
       `;
     }
     
@@ -518,7 +560,7 @@ export const dataviser = (function() {
       .addSubtitle('the number of people who migrated to 2')
       .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
       .addYAxis({ type: 'linear', start: seriesColumn.min, end: seriesColumn.max })
-      .addTimeline(seriesColumn);
+      .addTimeline(seriesColumn, { mouseover: mouseoverTimeline });
 
     // Series for a single series
     datagraphs.seriesSingleRow.init() 
@@ -526,11 +568,11 @@ export const dataviser = (function() {
       .addSubtitle('the number of people who migrated away from 2')
       .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
       .addYAxis({ type: 'linear', start: seriesRow.min, end: seriesRow.max })
-      .addTimeline(seriesRow);
+      .addTimeline(seriesRow, { mouseover: mouseoverTimeline });
 
     // Add event listeners
     inputRangeField.submitCallback = submitRange;
-    inputRangeField.submitCallback = submitIsolate;
+    inputIsolateField.submitCallback = submitIsolate;
 
     // ! remove
     // dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
