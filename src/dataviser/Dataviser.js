@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 15:28:37
+ * @ Modified time: 2024-04-26 15:48:01
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -108,9 +108,9 @@ export const dataviser = (function() {
     // Configure the input cell
     inputCell.setPlacement(1, 3);
     inputCell.setDimensions(1, 2);
-    inputCell.append('Date filter:');
+    inputCell.append('Date filter (heatmaps):');
     inputCell.appendChild(inputRangeField);
-    inputCell.append('Name filter:');
+    inputCell.append('Name filter (series):');
     inputCell.appendChild(inputIsolateField);
 
     // Populate the fields
@@ -195,6 +195,9 @@ export const dataviser = (function() {
 
       // Sort sums by size
       sums.sort((a, b) => b[1] - a[1]);
+
+      // There's nothing
+      if(!sums.length) return m;
       
       let i = 0;
       let sumDict = {};
@@ -324,6 +327,9 @@ export const dataviser = (function() {
 
       // Sort sums by size
       sums.sort((a, b) => b[1] - a[1]);
+
+      // There's nothing
+      if(!sums.length) return m;
       
       let i = 0;
       let sumDict = {};
@@ -461,6 +467,9 @@ export const dataviser = (function() {
     let dataAssets = dataset.getList();
     let currentSeries = '2';
 
+    let startDate = new Date('2019-01-01');
+    let endDate = new Date('2021-12-31');
+
     // Compute summaries
     dataset.computeTotal()
     dataset.computeSeries(currentSeries, { type: 'row', savekey: 'series-row' });
@@ -474,7 +483,46 @@ export const dataviser = (function() {
 
     // When the user presses enter for one of the fields
     const submitRange = (e, text) => {
-      console.log(text);
+      startDate = new Date(text.trim().split(',')[0].trim());
+      endDate = new Date(text.trim().split(',')[1].trim());
+
+      // Invalid dates
+      if(isNaN(startDate.getTime()) || isNaN(endDate.getTime()))
+        return;
+
+      // Compute the date range
+      dataset.computeCumulative({ savekey: 'cumulative', startDate: [ startDate.getTime(), endDate.getTime() ] });
+      summary = dataset.getSummary('cumulative', 'relation-reduced', { maxCount: 16, });
+
+      // Clear old data graph
+      datagraphs.heatmapCumulative.clear();
+      datagraphs.seriesSingleColumn.clear();
+      datagraphs.seriesSingleRow.clear();
+
+      // Heatmap for cumulative data
+      datagraphs.heatmapCumulative
+        .addTitle(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`)
+        .addSubtitle('this is a heatmap over the specified date range')
+        .addXAxis({ type: 'categorical', domain: summary.labels })
+        .addYAxis({ type: 'categorical', domain: summary.labels })
+        .addColorAxis({ start: summary.min, end: summary.max / 4, startColor: '#212121', endColor: '#6464dd' })
+        .addHeatmap(summary, { mouseover: mouseoverHeatmap });
+
+      // Series for a single series
+      datagraphs.seriesSingleColumn
+        .addTitle('inward migration for ' + currentSeries)
+        .addSubtitle('the number of people who migrated to 2')
+        .addXAxis({ type: 'time', start: startDate, end: endDate })
+        .addYAxis({ type: 'linear', start: seriesColumn.min, end: seriesColumn.max })
+        .addTimeline(seriesColumn, { mouseover: mouseoverTimeline });
+
+      // Series for a single series
+      datagraphs.seriesSingleRow 
+        .addTitle('outward migration for ' + currentSeries)
+        .addSubtitle('the number of people who migrated away from 2')
+        .addXAxis({ type: 'time', start: startDate, end: endDate })
+        .addYAxis({ type: 'linear', start: seriesRow.min, end: seriesRow.max })
+        .addTimeline(seriesRow, { mouseover: mouseoverTimeline });
     }
 
     // When the user presses enter for one of the fields
@@ -502,7 +550,7 @@ export const dataviser = (function() {
       datagraphs.seriesSingleColumn
         .addTitle('inward migration for ' + currentSeries)
         .addSubtitle('the number of people who migrated to 2')
-        .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+        .addXAxis({ type: 'time', start: startDate, end: endDate })
         .addYAxis({ type: 'linear', start: seriesColumn.min, end: seriesColumn.max })
         .addTimeline(seriesColumn, { mouseover: mouseoverTimeline });
 
@@ -510,7 +558,7 @@ export const dataviser = (function() {
       datagraphs.seriesSingleRow 
         .addTitle('outward migration for ' + currentSeries)
         .addSubtitle('the number of people who migrated away from 2')
-        .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+        .addXAxis({ type: 'time', start: startDate, end: endDate })
         .addYAxis({ type: 'linear', start: seriesRow.min, end: seriesRow.max })
         .addTimeline(seriesRow, { mouseover: mouseoverTimeline });
     }
@@ -543,14 +591,15 @@ export const dataviser = (function() {
       .addColorAxis({ start: summary.min, end: summary.max / 4, startColor: '#212121', endColor: '#6464dd' })
       .addHeatmap(summary, { mouseover: mouseoverHeatmap });
 
-    // Heatmap for a single file
-    datagraphs.heatmapSingle.init()
-      .addTitle(dataAssets[0])
-      .addSubtitle('this is a heatmap for the period ' + dataAssets[0])
-      .addXAxis({ type: 'categorical', domain: data.labels })
-      .addYAxis({ type: 'categorical', domain: data.labels })
-      .addColorAxis({ start: data.min, end: data.max / 4, startColor: '#212121', endColor: '#6464dd' })
-      .addHeatmap(data, { mouseover: mouseoverHeatmap });
+    // !Remove this maybe?
+    // // Heatmap for a single file
+    // datagraphs.heatmapSingle.init()
+    //   .addTitle(dataAssets[0])
+    //   .addSubtitle('this is a heatmap for the period ' + dataAssets[0])
+    //   .addXAxis({ type: 'categorical', domain: data.labels })
+    //   .addYAxis({ type: 'categorical', domain: data.labels })
+    //   .addColorAxis({ start: data.min, end: data.max / 4, startColor: '#212121', endColor: '#6464dd' })
+    //   .addHeatmap(data, { mouseover: mouseoverHeatmap });
 
     // ! make sure date ranges here match the input
     // ! create hover for series
@@ -558,7 +607,7 @@ export const dataviser = (function() {
     datagraphs.seriesSingleColumn.init() 
       .addTitle('inward migration for ' + currentSeries)
       .addSubtitle('the number of people who migrated to 2')
-      .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+      .addXAxis({ type: 'time', start: startDate, end: endDate })
       .addYAxis({ type: 'linear', start: seriesColumn.min, end: seriesColumn.max })
       .addTimeline(seriesColumn, { mouseover: mouseoverTimeline });
 
@@ -566,7 +615,7 @@ export const dataviser = (function() {
     datagraphs.seriesSingleRow.init() 
       .addTitle('outward migration for ' + currentSeries)
       .addSubtitle('the number of people who migrated away from 2')
-      .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+      .addXAxis({ type: 'time', start: startDate, end: endDate })
       .addYAxis({ type: 'linear', start: seriesRow.min, end: seriesRow.max })
       .addTimeline(seriesRow, { mouseover: mouseoverTimeline });
 
