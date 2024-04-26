@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 09:03:47
+ * @ Modified time: 2024-04-26 09:25:46
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -376,6 +376,7 @@ export const dataviser = (function() {
     const dataAssets = dataset.getList();
 
     // For each data set, we display data
+    let i = 0;  // ! remove i
     for(let dataSetKey of dataAssets) {
 
       // Display the list of read files
@@ -383,6 +384,8 @@ export const dataviser = (function() {
       let data = dataset.getData(dataSetKey, 'relation-reduced', {
         maxCount: 16,
       });
+
+      if(i++ > 5) break;  // ! remove break
 
       graph.init()
         .addTitle(dataSetKey)

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-26 08:50:40
+ * @ Modified time: 2024-04-26 09:25:58
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -247,11 +247,11 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
   const defaultOpacity = options.opacity ?? 1;
 
   // Highlight styles
-  const highlightColor = options.highlightColor ?? 'blue';
+  const highlightColor = options.highlightColor ?? '#ffc824';
   const highlightRadius = options.highlightRadius ?? 15;
   const highlightOpacity = options.highlightOpacity ?? 1;
-  const unhighlightColor = options.unhighlightColor ?? 'gray';
-  const unhighlightOpacity = options.unhighlightOpacity ?? 0.5;
+  const unhighlightColor = options.unhighlightColor ?? 'black';
+  const unhighlightOpacity = options.unhighlightOpacity ?? 0.25;
 
   // Some instance based parameters
   const fx = (d, i) => this.xAxis(d.x);
@@ -338,13 +338,16 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
   const defaultColor = options.color ?? 'black';
   const defaultRadius = options.radius ?? 10;
   const defaultOpacity = options.opacity ?? 1;
+  const defaultFilter = options.defaultFilter ?? '';
 
   // Highlight styles
-  const highlightColor = options.highlightColor ?? 'blue';
+  const highlightColor = options.highlightColor ?? '#ffc824';
   const highlightRadius = options.highlightRadius ?? 15;
   const highlightOpacity = options.highlightOpacity ?? 1;
-  const unhighlightColor = options.unhighlightColor ?? 'gray';
+  const highlightFilter = options.highlightFilter ?? 'saturate(100%)';
+  const unhighlightColor = options.unhighlightColor ?? 'black';
   const unhighlightOpacity = options.unhighlightOpacity ?? 0.5;
+  const unhighlightFilter = options.unhighlightFilter ?? 'saturate(0%)';
 
   // Some instance based parameters
   const fx = (d, i) => this.xAxis(d.x);
@@ -362,9 +365,11 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
       .attr('r', highlightRadius)
       .style('fill', highlightColor)
       .style('opacity', highlightOpacity)
+      .style('filter', highlightFilter)
       
     datagraph.setCSSVariables({ 
       fill: unhighlightColor,
+      filter: unhighlightFilter,
       opacity: unhighlightOpacity,
     });
   }
@@ -380,9 +385,11 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
       .attr('r', defaultRadius)
       .style('fill', fc)
       .style('opacity', '')
+      .style('filter', '')
 
     datagraph.setCSSVariables({ 
       fill: defaultColor, 
+      filter: defaultFilter,
       opacity: defaultOpacity,
     });
   }
@@ -408,6 +415,7 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
     this.setStyle({
       fill: defaultColor,
       opacity: defaultOpacity,
+      filter: defaultFilter,
     });
   }
 
