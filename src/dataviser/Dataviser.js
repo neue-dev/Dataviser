@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 14:00:16
+ * @ Modified time: 2024-04-26 14:08:23
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -433,57 +433,51 @@ export const dataviser = (function() {
    */
   _.renderData = function() {
 
+    // Get the list of data assets first
     const dataAssets = dataset.getList();
 
-    // For each data set, we display data
-    let i = 0;  // ! remove i
-    for(let dataSetKey of dataAssets) {
 
-      // Display the list of read files
-      let graph = new Datagraph({ parent: dataviserCatalogue });
-      let data = dataset.getData(dataSetKey, 'relation-reduced', {
-        maxCount: 16,
-      });
-
-      if(i++ > 1) break;  // ! remove break
-
-      graph.init()
-        .addTitle(dataSetKey)
-        .addSubtitle('this is a graph for the period ' + dataSetKey)
-        .addXAxis({ type: 'categorical', domain: data.labels })
-        .addYAxis({ type: 'categorical', domain: data.labels })
-        .addColorAxis({ start: 0, end: 2500, startColor: '#212121', endColor: '#6464dd' })
-        .addHeatmap(data);
-    }
-
-    // ! remove
-    dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
-    dataset.computeTotal()
-    dataset.computeSeries('2', { type: 'row', savekey: 'test' });
-    
-    let seriesd = dataset.getSeries('test', 'series-list');
-    let seriesg = new Datagraph({ parent: dataviserCatalogue });
-    let graph = new Datagraph({ parent: dataviserCatalogue });
-    let data = dataset.getSummary('total', 'relation-reduced', {
+    // Our data
+    let data = dataset.getData(dataAssets[0], 'relation-reduced', {
       maxCount: 16,
     });
 
-    console.log(seriesd);
-
-    seriesg.init()
-      .addTitle('series')
-      .addSubtitle('hehe')
-      .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
-      .addYAxis({ type: 'linear', start: seriesd.min, end: seriesd.max })
-      .addTimeline(seriesd);
-
-    graph.init()
-      .addTitle('total')
-      .addSubtitle('this is a graph for the total duration')
+    datagraphs.heatmapSingle.init()
+      .addTitle(dataAssets[0])
+      .addSubtitle('this is a graph for the period ' + dataAssets[0])
       .addXAxis({ type: 'categorical', domain: data.labels })
       .addYAxis({ type: 'categorical', domain: data.labels })
-      .addColorAxis({ start: 0, end: 10000, startColor: '#212121', endColor: '#6464dd' })
+      .addColorAxis({ start: 0, end: 2500, startColor: '#212121', endColor: '#6464dd' })
       .addHeatmap(data);
+
+    // ! remove
+    // dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
+    // dataset.computeTotal()
+    // dataset.computeSeries('2', { type: 'row', savekey: 'test' });
+    
+    // let seriesd = dataset.getSeries('test', 'series-list');
+    // let seriesg = new Datagraph({ parent: dataviserCatalogue });
+    // let graph = new Datagraph({ parent: dataviserCatalogue });
+    // let data = dataset.getSummary('total', 'relation-reduced', {
+    //   maxCount: 16,
+    // });
+
+    // console.log(seriesd);
+
+    // seriesg.init()
+    //   .addTitle('series')
+    //   .addSubtitle('hehe')
+    //   .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+    //   .addYAxis({ type: 'linear', start: seriesd.min, end: seriesd.max })
+    //   .addTimeline(seriesd);
+
+    // graph.init()
+    //   .addTitle('total')
+    //   .addSubtitle('this is a graph for the total duration')
+    //   .addXAxis({ type: 'categorical', domain: data.labels })
+    //   .addYAxis({ type: 'categorical', domain: data.labels })
+    //   .addColorAxis({ start: 0, end: 10000, startColor: '#212121', endColor: '#6464dd' })
+    //   .addHeatmap(data);
 
     // graph.remove();
   }

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-26 12:11:26
+ * @ Modified time: 2024-04-26 14:13:07
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -515,10 +515,10 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
     .join('rect')
     .classed(this.id + '-data-point', true)
     .classed('data-point', true)
-    .attr('x', fx)
-    .attr('y', fy)
-    .attr('width', this.width / this.xAxisCount)
-    .attr('height', this.height / this.yAxisCount)
+    .attr('x', d => fx(d) - 0.5)
+    .attr('y', d => fy(d) - 0.5)
+    .attr('width', this.width / this.xAxisCount + 1)
+    .attr('height', this.height / this.yAxisCount + 1)
     .style('fill', fc)
     .on('mouseover', mouseover)
     .on('mouseleave', mouseleave)
