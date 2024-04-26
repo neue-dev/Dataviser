@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 12:06:18
+ * @ Modified time: 2024-04-26 12:37:10
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -431,6 +431,7 @@ export const dataviser = (function() {
     // ! remove
     dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
     dataset.computeTotal()
+    dataset.computeSeries('2', { type: 'row' });
 
     let graph = new Datagraph({ parent: dataviserCatalogue });
     let data = dataset.getSummary('total', 'relation-reduced', {
