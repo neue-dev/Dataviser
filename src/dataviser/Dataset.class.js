@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-24 17:03:42
- * @ Modified time: 2024-04-26 12:34:57
+ * @ Modified time: 2024-04-26 12:50:05
  * @ Description:
  * 
  * The data set class stores a group of similar data assets.
@@ -262,25 +262,22 @@ Dataset.prototype.computeSeries = function(parameter, options={}) {
 
   for(let assetKey in this.assets) {
     let asset = this.assets[assetKey];
+    series[assetKey] = {
+      metadata: this.metadata[assetKey]
+    };
 
     for(let row in asset) {
       for(let entry in asset[row]) {
 
         // It's column-based
         if(type == 'column') {
-          if(entry == parameter) {
-            if(!series[assetKey])
-              series[assetKey] = {};
+          if(entry == parameter)
             series[assetKey][row] = asset[row][entry];
-          }
         
         // If it's row-based
         } else {
-          if(row == parameter) {
-            if(!series[assetKey])
-              series[assetKey] = {};
+          if(row == parameter)
             series[assetKey][entry] = asset[row][entry];
-          }
         }
       }  
     }

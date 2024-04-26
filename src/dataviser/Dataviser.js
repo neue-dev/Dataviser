@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 12:37:10
+ * @ Modified time: 2024-04-26 13:13:28
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -31,9 +31,6 @@ export const dataviser = (function() {
       endDate: new Date(endDate).getTime(),
     }
   }
-  
-  // ! move this too
-  let dataset = new Dataset(keyParser);
 
   // Dataviser menu elements
   const dataviserWindow = document.createElement('grid-component');
@@ -45,6 +42,14 @@ export const dataviser = (function() {
   // Dataviser file list
   const dataviserFileList = document.createElement('div');
   dataviserFileList.classList.add('dataviser-file-list');
+
+  // The dataset and datagraphs we need
+  let dataset = new Dataset(keyParser);
+  let datagraphs = {
+    heatmapSingle:        new Datagraph({ parent: dataviserCatalogue }),
+    heatmapCumulative:    new Datagraph({ parent: dataviserCatalogue }),
+    series:               new Datagraph({ parent: dataviserCatalogue }),
+  }
   
   /**
    * Update this so it doesnt become messy over time
@@ -94,43 +99,6 @@ export const dataviser = (function() {
     dataviserWindow.appendChild(fileListCell);
     dataviserWindow.appendChild(dataviserCatalogue);
     root.appendChild(dataviserWindow);
-
-    // ! remove
-    let graph = new Datagraph({ parent: dataviserCatalogue });
-    let graph2 = new Datagraph({ parent: dataviserCatalogue });
-    
-    let data = [{
-      x: new Date('2019-05-05'),
-      y: 1000,
-    },
-    {
-      x: new Date('2019-06-05'),
-      y: 1111,
-    },
-    {
-      x: new Date('2019-07-05'),
-      y: 1210,
-    },
-    {
-      x: new Date('2019-08-05'),
-      y: 1299,
-    }];
-
-    setTimeout(() => {
-    graph.init()
-      .addTitle('ah')
-      .addSubtitle('this is a graph for the period ')
-      .addXAxis({ type: 'time', start: new Date('2019-01-01'), end: new Date('2020-01-01') })
-      .addYAxis({ type: 'linear', start: 0, end: 2000 })
-      .addTimeline(data);
-
-      graph2.init()
-      .addTitle('ah')
-      .addSubtitle('this is a graph for the period ')
-      .addXAxis({ type: 'time', start: new Date('2019-01-01'), end: new Date('2020-01-01') })
-      .addYAxis({ type: 'linear', start: 0, end: 2000 })
-      .addTimeline(data);
-    });
   }
 
   /**
@@ -138,7 +106,9 @@ export const dataviser = (function() {
    */
   _.configData = function() {
 
-    // This parser converts the raw data into a 2x2 matrix
+    /**
+     * Parses the raw data and converts into a 2d matrix.
+     */
     dataset.addParser('matrix', (asset, options={}) => {
 
       // Clone the object first
@@ -163,8 +133,10 @@ export const dataviser = (function() {
       return m;
     });
 
-    // This parser converts the raw data into a 2x2 matrix
-    // However, it only gets data from the n most significant parties
+    /**
+     * This parser converts the raw data into a 2x2 matrix
+     * However, it only gets data from the n most significant parties
+     */
     dataset.addParser('matrix-reduced', (asset, options={}) => {
 
       // Clone the object first
@@ -285,8 +257,10 @@ export const dataviser = (function() {
       return m;
     });
 
-    // This parser converts the raw data into a list of associations
-    // However, it only gets data points from the n most significant parties
+    /**
+     * This parser converts the raw data into a list of associations
+     * However, it only gets data points from the n most significant parties
+     */
     dataset.addParser('relation-reduced', (asset, options={}) => {
 
       // Clone the object first
@@ -385,6 +359,43 @@ export const dataviser = (function() {
       return m;
     });
 
+    /**
+     * Parses series data into something we can print
+     */
+    dataset.addParser('series-list', (series, options={}) => {
+      
+      // Duplicate so we don't accidentally modify it
+      series = structuredClone(series);
+
+      // The list and the keys
+      const list = [];
+      const seriesKeys = Object.keys(series);
+
+      // Define maxima
+      list.min = Number.POSITIVE_INFINITY;
+      list.max = Number.NEGATIVE_INFINITY;
+
+      for(let i = 0; i < seriesKeys.length; i++) {
+        let sum = 0;
+        let seriesEntryKeys = Object.keys(series[seriesKeys[i]]);
+        
+        for(let j = 0; j < seriesEntryKeys.length; j++)
+          if(!isNaN(parseInt(series[seriesKeys[i]][seriesEntryKeys[j]])))
+            sum += parseInt(series[seriesKeys[i]][seriesEntryKeys[j]]);
+
+        list.push({
+          x: new Date(parseInt(series[seriesKeys[i]].metadata.startDate)),
+          y: sum,
+        })
+
+        if(list.min > sum) list.min = sum;
+        if(list.max < sum) list.max = sum;
+      }
+
+      return list;
+
+    }, 'series');
+
     // Display the loaded files
     const dataAssets = dataset.getList();
     dataviserFileList.parentElement.prepend(`Successfully loaded ${dataAssets.length} files:`);
@@ -417,7 +428,7 @@ export const dataviser = (function() {
         maxCount: 16,
       });
 
-      if(i++ > 5) break;  // ! remove break
+      if(i++ > 1) break;  // ! remove break
 
       graph.init()
         .addTitle(dataSetKey)
@@ -431,12 +442,23 @@ export const dataviser = (function() {
     // ! remove
     dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
     dataset.computeTotal()
-    dataset.computeSeries('2', { type: 'row' });
-
+    dataset.computeSeries('2', { type: 'row', savekey: 'test' });
+    
+    let seriesd = dataset.getSeries('test', 'series-list');
+    let seriesg = new Datagraph({ parent: dataviserCatalogue });
     let graph = new Datagraph({ parent: dataviserCatalogue });
     let data = dataset.getSummary('total', 'relation-reduced', {
       maxCount: 16,
     });
+
+    console.log(seriesd);
+
+    seriesg.init()
+      .addTitle('series')
+      .addSubtitle('hehe')
+      .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+      .addYAxis({ type: 'linear', start: seriesd.min, end: seriesd.max })
+      .addTimeline(seriesd);
 
     graph.init()
       .addTitle('total')
