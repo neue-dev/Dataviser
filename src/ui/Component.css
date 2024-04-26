@@ -12,7 +12,8 @@
 .component {
   opacity: 0;
   display: block;
-  
+  font-size: 1rem;
+
   animation-duration: 0.3s;
   animation-name: component-intro;
   animation-fill-mode: forwards;

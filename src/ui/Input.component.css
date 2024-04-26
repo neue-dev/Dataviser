@@ -1,5 +1,6 @@
 input-component {
-  padding: 8px 16px;
+  margin: 0.5em 0 2em 0;
+  padding: 0.8em 1em;
   border-left: 4px solid rgba(var(--black), 0.4);
 
   font-family: SFProItalic;

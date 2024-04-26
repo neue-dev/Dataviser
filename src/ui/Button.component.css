@@ -8,7 +8,6 @@ button-component {
   background-color: rgba(var(--black), 0.08);
   color: rgba(var(--black), 0.8);
 
-  font-size: 1rem;
   font-family: var(--body-font);
   text-align: center;
 }

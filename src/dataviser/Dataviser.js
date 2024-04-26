@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 13:45:10
+ * @ Modified time: 2024-04-26 14:00:16
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -100,12 +100,14 @@ export const dataviser = (function() {
     // Configure the input cell
     inputCell.setPlacement(1, 3);
     inputCell.setDimensions(1, 2);
+    inputCell.append('Date filter:');
     inputCell.appendChild(inputRangeField);
+    inputCell.append('Name filter:');
     inputCell.appendChild(inputIsolateField);
 
     // Populate the fields
-    inputRangeField.innerHTML = 'haagen dass';
-    inputIsolateField.innerHTML = 'haagen dass';
+    inputRangeField.innerHTML = '2020-01-01, 2021-01-01';
+    inputIsolateField.innerHTML = 'type location name here';
 
     // Construct the tree
     dataviserWindow.appendChild(titleCell);
