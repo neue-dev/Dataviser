@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 14:08:23
+ * @ Modified time: 2024-04-26 14:23:00
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -44,6 +44,10 @@ export const dataviser = (function() {
   const dataviserFileList = document.createElement('div');
   dataviserFileList.classList.add('dataviser-file-list');
 
+  // Where we put the info highlights
+  const dataviserInfoBoard = document.createElement('div');
+  dataviserInfoBoard.classList.add('dataviser-info-board');
+  
   // The dataset and datagraphs we need
   let dataset = new Dataset(keyParser);
   let datagraphs = {
@@ -287,6 +291,8 @@ export const dataviser = (function() {
       let m = [];
       let sums = [];
       m.labels = [];
+      m.min = Number.POSITIVE_INFINITY;
+      m.max = Number.NEGATIVE_INFINITY;
 
       // Max count
       const maxCount = options.maxCount ?? 16;
@@ -355,6 +361,9 @@ export const dataviser = (function() {
             y: row == cumRow ? 'other' : row,
             value: asset[row][entry]
           });
+
+          if(m.min > asset[row][entry]) m.min = asset[row][entry]
+          if(m.max < asset[row][entry]) m.max = asset[row][entry]
 
           // Compute this too
           if(row != entry) {
@@ -436,23 +445,33 @@ export const dataviser = (function() {
     // Get the list of data assets first
     const dataAssets = dataset.getList();
 
+    // Compute summaries
+    dataset.computeTotal()
 
     // Our data
-    let data = dataset.getData(dataAssets[0], 'relation-reduced', {
-      maxCount: 16,
-    });
+    let data = dataset.getData(dataAssets[0], 'relation-reduced', { maxCount: 16 });
+    let summary = dataset.getSummary('total', 'relation-reduced', { maxCount: 16, });
+    
+    // Heatmap for cumulative data
+    datagraphs.heatmapSingle.init()
+      .addTitle('total')
+      .addSubtitle('this is a graph over the total date range')
+      .addXAxis({ type: 'categorical', domain: summary.labels })
+      .addYAxis({ type: 'categorical', domain: summary.labels })
+      .addColorAxis({ start: summary.min, end: summary.max / 4, startColor: '#212121', endColor: '#6464dd' })
+      .addHeatmap(summary);
 
+    // Heatmap for a single file
     datagraphs.heatmapSingle.init()
       .addTitle(dataAssets[0])
       .addSubtitle('this is a graph for the period ' + dataAssets[0])
       .addXAxis({ type: 'categorical', domain: data.labels })
       .addYAxis({ type: 'categorical', domain: data.labels })
-      .addColorAxis({ start: 0, end: 2500, startColor: '#212121', endColor: '#6464dd' })
+      .addColorAxis({ start: data.min, end: data.max / 4, startColor: '#212121', endColor: '#6464dd' })
       .addHeatmap(data);
 
     // ! remove
     // dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
-    // dataset.computeTotal()
     // dataset.computeSeries('2', { type: 'row', savekey: 'test' });
     
     // let seriesd = dataset.getSeries('test', 'series-list');
