@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-26 11:42:54
+ * @ Modified time: 2024-04-26 12:11:26
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -37,8 +37,8 @@ Datagraph.prototype.init = function(options={}) {
   this.width = this.parent.getBoundingClientRect().width * 0.84;
   this.height = this.parent.getBoundingClientRect().height * 0.84;
   this.margins = {
-    top: 96, bottom: 48,
-    left: 72, right: 72,
+    top: 96, bottom: 160,
+    left: 72, right: 0,
   };
 
   // Refers to the access point where we add stuff
@@ -48,14 +48,17 @@ Datagraph.prototype.init = function(options={}) {
     .append('svg')
     .classed(this.id, true)
     .classed('datagraph', true)
-    .attr('width', this.width + this.margins.left + this.margins.right)
-    .attr('height', this.height + this.margins.top + this.margins.bottom)
+    .attr('width', this.width + this.margins.left)
+    .attr('height', this.height + this.margins.top)
 
     // The frame within the svg where we add stuff
     .append('g')
-    .attr('width', this.width)
-    .attr('height', this.height)
+    .attr('width', this.width - this.margins.right)
+    .attr('height', this.height - this.margins.bottom)
     .style('transform', `translate(${this.margins.left}px, ${this.margins.top}px)`)
+
+  this.width -= this.margins.right;
+  this.height -= this.margins.bottom;
 
   return this;
 }
@@ -117,13 +120,16 @@ Datagraph.prototype.addXAxis = function(options={}) {
   this.xAxisCount = options.domain ? options.domain.length : 0;
 
   // Place the axis on the bottom
-  this.canvas
+  this.xAxisElement = this.canvas
     .append('g')
     .classed('datagraph-x-axis', true)
     .call(d3
       .axisBottom(this.xAxis)
       .ticks(options.ticks ?? 10))
-    .style('transform', `translate(0, ${this.height}px)`);
+    .style('transform', `translate(0, ${this.height}px)`)
+    .selectAll('text')
+      .style('text-anchor', 'end')
+      .attr('transform', `rotate(${options.angle ?? -45})`)
 
   return this;
 }
@@ -153,12 +159,12 @@ Datagraph.prototype.addYAxis = function(options={}) {
   this.yAxisCount = options.domain ? options.domain.length : 0;
     
   // Place the axis on the left
-  this.canvas
+  this.yAxisElement = this.canvas
     .append('g')
     .classed('datagraph-y-axis', true)
     .call(d3
       .axisLeft(this.yAxis)
-      .ticks(options.ticks ?? 10));
+      .ticks(options.ticks ?? 10))
 
   return this;
 }

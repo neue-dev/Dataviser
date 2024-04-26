@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 11:37:01
+ * @ Modified time: 2024-04-26 12:06:18
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -97,6 +97,8 @@ export const dataviser = (function() {
 
     // ! remove
     let graph = new Datagraph({ parent: dataviserCatalogue });
+    let graph2 = new Datagraph({ parent: dataviserCatalogue });
+    
     let data = [{
       x: new Date('2019-05-05'),
       y: 1000,
@@ -116,6 +118,13 @@ export const dataviser = (function() {
 
     setTimeout(() => {
     graph.init()
+      .addTitle('ah')
+      .addSubtitle('this is a graph for the period ')
+      .addXAxis({ type: 'time', start: new Date('2019-01-01'), end: new Date('2020-01-01') })
+      .addYAxis({ type: 'linear', start: 0, end: 2000 })
+      .addTimeline(data);
+
+      graph2.init()
       .addTitle('ah')
       .addSubtitle('this is a graph for the period ')
       .addXAxis({ type: 'time', start: new Date('2019-01-01'), end: new Date('2020-01-01') })
