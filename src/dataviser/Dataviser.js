@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 13:13:28
+ * @ Modified time: 2024-04-26 13:45:10
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -10,6 +10,7 @@
 import './Dataviser.css'
 
 import '../ui/Grid.component'
+import '../ui/Input.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
 
@@ -35,7 +36,7 @@ export const dataviser = (function() {
   // Dataviser menu elements
   const dataviserWindow = document.createElement('grid-component');
 
-  // Dataviser d3 canvas
+  // Dataviser d3 canvases
   const dataviserCatalogue = document.createElement('grid-cell-component');
   dataviserCatalogue.classList.add('dataviser-catalogue');
 
@@ -60,10 +61,13 @@ export const dataviser = (function() {
     const titleCell = document.createElement('grid-cell-component');
     const importCell = document.createElement('grid-cell-component');
     const fileListCell = document.createElement('grid-cell-component');
+    const inputCell = document.createElement('grid-cell-component');
 
     // Other elements
     const titleNode = document.createElement('div');
     const importButton = document.createElement('button-component');
+    const inputRangeField = document.createElement('input-component');
+    const inputIsolateField = document.createElement('input-component');
 
     // Create the title
     titleNode.classList.add('dataviser-title');
@@ -89,14 +93,25 @@ export const dataviser = (function() {
     dataviserCatalogue.classList.add('dataviser-catalogue');
 
     // Create the file list cell
-    fileListCell.setPlacement(1, 3);
+    fileListCell.setPlacement(2, 2);
     fileListCell.setDimensions(1, 2);
     fileListCell.appendChild(dataviserFileList);
+
+    // Configure the input cell
+    inputCell.setPlacement(1, 3);
+    inputCell.setDimensions(1, 2);
+    inputCell.appendChild(inputRangeField);
+    inputCell.appendChild(inputIsolateField);
+
+    // Populate the fields
+    inputRangeField.innerHTML = 'haagen dass';
+    inputIsolateField.innerHTML = 'haagen dass';
 
     // Construct the tree
     dataviserWindow.appendChild(titleCell);
     dataviserWindow.appendChild(importCell);
     dataviserWindow.appendChild(fileListCell);
+    dataviserWindow.appendChild(inputCell);
     dataviserWindow.appendChild(dataviserCatalogue);
     root.appendChild(dataviserWindow);
   }

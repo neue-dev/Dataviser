@@ -1,0 +1,16 @@
+input-component {
+  padding: 8px 16px;
+  border-left: 4px solid rgba(var(--black), 0.4);
+
+  font-family: SFProItalic;
+  color: rgba(var(--black), 0.4);
+}
+
+input-component:focus {
+  background-color: rgba(var(--highlight), 0.16);
+  border-color: rgba(var(--highlight), 1);
+  
+  font-family: SFPro;
+  color: rgba(var(--black), 0.8);
+  outline: none;
+}

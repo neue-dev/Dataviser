@@ -46,6 +46,7 @@
 
   --black: 21, 21, 21;
   --white: 255, 255, 255;
+  --highlight: 160, 160, 255;
 }
 
 /* General stylings */
