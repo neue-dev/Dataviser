@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-26 13:32:19
- * @ Modified time: 2024-04-26 13:57:11
+ * @ Modified time: 2024-04-26 14:55:35
  * @ Description:
  * 
  * Defines an input component.
@@ -30,7 +30,7 @@ export class InputComponent extends Component {
    * @param   { event }   e   The event object. 
    */
   keyDown(e) {
-
+    
     // Unfocus on enter and execute callback
     if(e.keyCode == 13) {
       if(this.submitCallback)

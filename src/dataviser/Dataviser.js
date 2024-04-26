@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 14:46:07
+ * @ Modified time: 2024-04-26 15:06:17
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -47,13 +47,18 @@ export const dataviser = (function() {
   // Where we put the info highlights
   const dataviserInfoBoard = document.createElement('div');
   dataviserInfoBoard.classList.add('dataviser-info-board');
+
+  // The input fields
+  const inputRangeField = document.createElement('input-component');
+  const inputIsolateField = document.createElement('input-component');
   
   // The dataset and datagraphs we need
   let dataset = new Dataset(keyParser);
   let datagraphs = {
     heatmapSingle:        new Datagraph({ parent: dataviserCatalogue }),
     heatmapCumulative:    new Datagraph({ parent: dataviserCatalogue }),
-    series:               new Datagraph({ parent: dataviserCatalogue }),
+    seriesSingleColumn:   new Datagraph({ parent: dataviserCatalogue }),
+    seriesSingleRow:      new Datagraph({ parent: dataviserCatalogue }),
   }
   
   /**
@@ -71,8 +76,6 @@ export const dataviser = (function() {
     // Other elements
     const titleNode = document.createElement('div');
     const importButton = document.createElement('button-component');
-    const inputRangeField = document.createElement('input-component');
-    const inputIsolateField = document.createElement('input-component');
 
     // Create the title
     titleNode.classList.add('dataviser-title');
@@ -456,13 +459,28 @@ export const dataviser = (function() {
 
     // Get the list of data assets first
     const dataAssets = dataset.getList();
+    const currentSeries = '2';
 
     // Compute summaries
     dataset.computeTotal()
+    dataset.computeSeries(currentSeries, { type: 'row', savekey: 'series-row' });
+    dataset.computeSeries(currentSeries, { type: 'column', savekey: 'series-column' });
 
     // Our data
     let data = dataset.getData(dataAssets[0], 'relation-reduced', { maxCount: 16 });
     let summary = dataset.getSummary('total', 'relation-reduced', { maxCount: 16, });
+    let seriesRow = dataset.getSeries('series-row', 'series-list', {});
+    let seriesColumn = dataset.getSeries('series-column', 'series-list', {});
+
+    // When the user presses enter for one of the fields
+    const submitRange = (e, text) => {
+      console.log(text);
+    }
+
+    // When the user presses enter for one of the fields
+    const submitIsolate = (e, text) => {
+      console.log(text);
+    }
 
     // We're hovering over heatmap
     const mouseoverHeatmap = (e, d) => {
@@ -492,6 +510,28 @@ export const dataviser = (function() {
       .addColorAxis({ start: data.min, end: data.max / 4, startColor: '#212121', endColor: '#6464dd' })
       .addHeatmap(data, { mouseover: mouseoverHeatmap });
 
+    // ! make sure date ranges here match the input
+    // ! create hover for series
+    // Series for a single series
+    datagraphs.seriesSingleColumn.init() 
+      .addTitle('inward migration for ' + currentSeries)
+      .addSubtitle('the number of people who migrated to 2')
+      .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+      .addYAxis({ type: 'linear', start: seriesColumn.min, end: seriesColumn.max })
+      .addTimeline(seriesColumn);
+
+    // Series for a single series
+    datagraphs.seriesSingleRow.init() 
+      .addTitle('outward migration for ' + currentSeries)
+      .addSubtitle('the number of people who migrated away from 2')
+      .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
+      .addYAxis({ type: 'linear', start: seriesRow.min, end: seriesRow.max })
+      .addTimeline(seriesRow);
+
+    // Add event listeners
+    inputRangeField.submitCallback = submitRange;
+    inputRangeField.submitCallback = submitIsolate;
+
     // ! remove
     // dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
     // dataset.computeSeries('2', { type: 'row', savekey: 'test' });
@@ -511,16 +551,6 @@ export const dataviser = (function() {
     //   .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
     //   .addYAxis({ type: 'linear', start: seriesd.min, end: seriesd.max })
     //   .addTimeline(seriesd);
-
-    // graph.init()
-    //   .addTitle('total')
-    //   .addSubtitle('this is a graph for the total duration')
-    //   .addXAxis({ type: 'categorical', domain: data.labels })
-    //   .addYAxis({ type: 'categorical', domain: data.labels })
-    //   .addColorAxis({ start: 0, end: 10000, startColor: '#212121', endColor: '#6464dd' })
-    //   .addHeatmap(data);
-
-    // graph.remove();
   }
 
   /**

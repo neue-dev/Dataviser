@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-26 14:37:00
+ * @ Modified time: 2024-04-26 14:49:10
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -543,7 +543,21 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
 }
 
 Datagraph.prototype.addChordgraph = function() {
+  // !todo
+}
+
+/**
+ * Clears the current graph.
+ * This only removes its children.
+ * 
+ * @return  { Datagraph }   The datagraph instance we modified. 
+ */
+Datagraph.prototype.clear = function() {
   
+  // Remove the stuff inside the svg
+  this.canvas.selectAll('*').remove();
+
+  return this;
 }
 
 /**
