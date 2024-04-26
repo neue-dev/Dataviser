@@ -11,6 +11,13 @@
   letter-spacing: 0;
 }
 
+.dataviser-info-board {
+  opacity: 0;
+  box-shadow: var(--default-shadow);
+  color: rgba(var(--black), 0.8);
+  padding: 0.8em 1em;
+}
+
 .dataviser-file-list {
   position: absolute;
   margin-top: 1em;

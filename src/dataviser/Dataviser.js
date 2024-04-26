@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 14:23:00
+ * @ Modified time: 2024-04-26 14:46:07
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -65,6 +65,7 @@ export const dataviser = (function() {
     const titleCell = document.createElement('grid-cell-component');
     const importCell = document.createElement('grid-cell-component');
     const fileListCell = document.createElement('grid-cell-component');
+    const dataInfoCell = document.createElement('grid-cell-component');
     const inputCell = document.createElement('grid-cell-component');
 
     // Other elements
@@ -98,11 +99,11 @@ export const dataviser = (function() {
 
     // Create the file list cell
     fileListCell.setPlacement(2, 2);
-    fileListCell.setDimensions(1, 2);
+    fileListCell.setDimensions(1, 1);
     fileListCell.appendChild(dataviserFileList);
 
     // Configure the input cell
-    inputCell.setPlacement(1, 3);
+    inputCell.setPlacement(1, 4);
     inputCell.setDimensions(1, 2);
     inputCell.append('Date filter:');
     inputCell.appendChild(inputRangeField);
@@ -113,11 +114,17 @@ export const dataviser = (function() {
     inputRangeField.innerHTML = '2020-01-01, 2021-01-01';
     inputIsolateField.innerHTML = 'type location name here';
 
+    // Data info cell
+    dataInfoCell.setPlacement(2, 4);
+    dataInfoCell.setDimensions(1, 2);
+    dataInfoCell.appendChild(dataviserInfoBoard);
+
     // Construct the tree
     dataviserWindow.appendChild(titleCell);
     dataviserWindow.appendChild(importCell);
     dataviserWindow.appendChild(fileListCell);
     dataviserWindow.appendChild(inputCell);
+    dataviserWindow.appendChild(dataInfoCell);
     dataviserWindow.appendChild(dataviserCatalogue);
     root.appendChild(dataviserWindow);
   }
@@ -129,6 +136,8 @@ export const dataviser = (function() {
 
     /**
      * Parses the raw data and converts into a 2d matrix.
+     * 
+     * // ! store min and max!
      */
     dataset.addParser('matrix', (asset, options={}) => {
 
@@ -177,7 +186,7 @@ export const dataviser = (function() {
         
         // Add the row and columns
         for(let entry in asset[row])
-          sum += asset[row][entry] += (entry != row ? asset[entry][row] : 0);
+          sum += asset[row][entry] + (entry != row ? asset[entry][row] : 0);
         sums.push([row, sum]);
       }
 
@@ -249,7 +258,10 @@ export const dataviser = (function() {
       return m;
     });
 
-    // This parser converts the raw data into a list of associations
+    /**
+     * This parser converts the raw data into a list of associations
+     * ! makr sure to store min and max
+     */
     dataset.addParser('relation', (asset, options={}) => {
 
       // Clone the object first
@@ -303,7 +315,7 @@ export const dataviser = (function() {
         
         // Add the row and columns
         for(let entry in asset[row])
-          sum += asset[row][entry] += (entry != row ? asset[entry][row] : 0);
+          sum += asset[row][entry] + (entry != row ? asset[entry][row] : 0);
         sums.push([row, sum]);
       }
 
@@ -451,24 +463,34 @@ export const dataviser = (function() {
     // Our data
     let data = dataset.getData(dataAssets[0], 'relation-reduced', { maxCount: 16 });
     let summary = dataset.getSummary('total', 'relation-reduced', { maxCount: 16, });
+
+    // We're hovering over heatmap
+    const mouseoverHeatmap = (e, d) => {
+      dataviserInfoBoard.style.opacity = 1;
+      dataviserInfoBoard.innerHTML = `
+        <span style='opacity: 0.5; font-size: 0.6rem; padding: 0;'>From: ${d.x}</span>
+        <span style='opacity: 0.5; font-size: 0.6rem; padding: 0;'>To: ${d.y}</span><br>
+        ${d.value}
+      `;
+    }
     
     // Heatmap for cumulative data
-    datagraphs.heatmapSingle.init()
+    datagraphs.heatmapCumulative.init()
       .addTitle('total')
-      .addSubtitle('this is a graph over the total date range')
+      .addSubtitle('this is a heatmap over the total date range')
       .addXAxis({ type: 'categorical', domain: summary.labels })
       .addYAxis({ type: 'categorical', domain: summary.labels })
       .addColorAxis({ start: summary.min, end: summary.max / 4, startColor: '#212121', endColor: '#6464dd' })
-      .addHeatmap(summary);
+      .addHeatmap(summary, { mouseover: mouseoverHeatmap });
 
     // Heatmap for a single file
     datagraphs.heatmapSingle.init()
       .addTitle(dataAssets[0])
-      .addSubtitle('this is a graph for the period ' + dataAssets[0])
+      .addSubtitle('this is a heatmap for the period ' + dataAssets[0])
       .addXAxis({ type: 'categorical', domain: data.labels })
       .addYAxis({ type: 'categorical', domain: data.labels })
       .addColorAxis({ start: data.min, end: data.max / 4, startColor: '#212121', endColor: '#6464dd' })
-      .addHeatmap(data);
+      .addHeatmap(data, { mouseover: mouseoverHeatmap });
 
     // ! remove
     // dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-26 14:13:07
+ * @ Modified time: 2024-04-26 14:37:00
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -486,6 +486,9 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
       filter: unhighlightFilter,
       opacity: unhighlightOpacity,
     });
+
+    if(options.mouseover)
+      options.mouseover(e, d);
   }
 
   /**
@@ -506,6 +509,9 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
       filter: defaultFilter,
       opacity: defaultOpacity,
     });
+
+    if(options.mouseleave)
+      options.mouseleave(e, d);
   }
 
   // Create the datapoints
