@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 21:03:54
+ * @ Modified time: 2024-04-27 21:23:12
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -20,7 +20,10 @@ import { DataviserPyAPI } from './Dataviser.pyapi'
 
 // Handles all the data vis
 export const Dataviser = (function() {
-  const _ = {};
+  const _ = {
+    fileList: {},
+    fileData: {},
+  };
   const root = document.getElementsByClassName('root')[0];
 
   // ! put this guy elsewhere
@@ -650,16 +653,25 @@ export const Dataviser = (function() {
    * 
    * @param   { Uint8Array }  uint8array  The data we want to convert. 
    */
-  _.unpickleBinaryFile = function(file) {
+  _.readBinaryFile = function(file) {
+    
+    // Create a file reader to read the files and store the filename
     const fileReader = new FileReader();
+    const fileName = file.name;
             
+    // Read the file, then save the data when done
     fileReader.readAsArrayBuffer(file);
-    fileReader.onload = (e) => {
-      const uint8array = new Uint8Array(e.target.result);
-      DataviserPyAPI.readPickle(uint8array, d => console.log(d));
+    fileReader.onload = e => {
+      _.fileData[fileName] = new Uint8Array(e.target.result);
     }
   }
 
+  /**
+   * Traverses the directory and reads all the files therein.
+   * 
+   * //! finish the jsdoc: directoryhandle object
+   * @param   { } directoryHandle 
+   */
   _.traverseDirectory = async function(directoryHandle) {
     
     // Queue of the different directories to parse
@@ -699,11 +711,19 @@ export const Dataviser = (function() {
       
         // Add file to list
         if(entryHandle.kind == 'file')
-          entryHandle.getFile().then(file => _.unpickleBinaryFile(file));
+          entryHandle.getFile().then(file => _.readBinaryFile(file));
       }
 
     // While we have stuff in the queue
     } while(i < directoryHandles.length)
+
+    //! remoe settimeout, store state about file reading instead
+    setTimeout(() => {
+
+      DataviserPyAPI.readPickles(_.fileData, d => console.log(d));
+
+      console.log(_.fileData);
+    }, 2000); 
   }
 
   /**
