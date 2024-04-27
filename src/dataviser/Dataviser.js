@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 23:38:27
+ * @ Modified time: 2024-04-28 00:24:51
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -24,20 +24,14 @@ import { Datagraph } from './Datagraph.class'
 // Handles all the data vis
 export const Dataviser = (function() {
   const _ = {
-    fileList: {},
-    fileData: {},
     dfs: {},
   };
   const root = document.getElementsByClassName('root')[0];
 
   // ! put this guy elsewhere
   const keyParser = key => {
-    let startDate = key.split('_')[0];
-    let endDate = key.split('_')[1];
-
     return {
-      startDate: new Date(startDate).getTime(),
-      endDate: new Date(endDate).getTime(),
+      date: new Date(key).getTime(),
     }
   }
 
@@ -599,16 +593,6 @@ export const Dataviser = (function() {
       .addColorAxis({ start: summary.min, end: summary.max / 4, startColor: '#212121', endColor: '#6464dd' })
       .addHeatmap(summary, { mouseover: mouseoverHeatmap });
 
-    // !Remove this maybe?
-    // // Heatmap for a single file
-    // datagraphs.heatmapSingle.init()
-    //   .addTitle(dataAssets[0])
-    //   .addSubtitle('this is a heatmap for the period ' + dataAssets[0])
-    //   .addXAxis({ type: 'categorical', domain: data.labels })
-    //   .addYAxis({ type: 'categorical', domain: data.labels })
-    //   .addColorAxis({ start: data.min, end: data.max / 4, startColor: '#212121', endColor: '#6464dd' })
-    //   .addHeatmap(data, { mouseover: mouseoverHeatmap });
-
     // ! make sure date ranges here match the input
     // ! create hover for series
     // Series for a single series
@@ -630,26 +614,6 @@ export const Dataviser = (function() {
     // Add event listeners
     inputRangeField.submitCallback = submitRange;
     inputIsolateField.submitCallback = submitIsolate;
-
-    // ! remove
-    // dataset.computeCumulative({ startDate: [new Date('2019-12-31').getTime(), new Date('2020-12-31').getTime()] });
-    // dataset.computeSeries('2', { type: 'row', savekey: 'test' });
-    
-    // let seriesd = dataset.getSeries('test', 'series-list');
-    // let seriesg = new Datagraph({ parent: dataviserCatalogue });
-    // let graph = new Datagraph({ parent: dataviserCatalogue });
-    // let data = dataset.getSummary('total', 'relation-reduced', {
-    //   maxCount: 16,
-    // });
-
-    // console.log(seriesd);
-
-    // seriesg.init()
-    //   .addTitle('series')
-    //   .addSubtitle('hehe')
-    //   .addXAxis({ type: 'time', start: new Date('2020-01-01'), end: new Date('2021-12-01') })
-    //   .addYAxis({ type: 'linear', start: seriesd.min, end: seriesd.max })
-    //   .addTimeline(seriesd);
   }
 
   /**
