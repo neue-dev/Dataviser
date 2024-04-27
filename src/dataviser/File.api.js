@@ -1,14 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 22:22:47
- * @ Modified time: 2024-04-27 23:02:31
+ * @ Modified time: 2024-04-27 23:07:48
  * @ Description:
  * 
  * Creates an API for handling files and other related tasks.
  * Also helps with browsing directories, etc.
  */
 
-export const File = (function() {
+export const FileAPI = (function() {
 
   // Stores all the pertinent methods for the api
   const _ = {
@@ -106,5 +106,5 @@ export const File = (function() {
 })();
 
 export default {
-  File,
+  FileAPI,
 }

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 23:06:40
+ * @ Modified time: 2024-04-27 23:08:28
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -14,7 +14,7 @@ import '../ui/Input.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
 
-import { File } from './File'
+import { FileAPI } from './File.api'
 import { DataviserPyAPI } from './Dataviser.pyapi'
 
 import { Dataset } from './Dataset.class'
@@ -662,9 +662,9 @@ export const Dataviser = (function() {
 
       // After selecting a folder
       .then(directoryHandle => 
-        File.getDirectoryFiles(directoryHandle, 
+        FileAPI.getDirectoryFiles(directoryHandle, 
           files => files.forEach(
-            file => File.readBinaryFile(file, 
+            file => FileAPI.readBinaryFile(file, 
               blob => DataviserPyAPI.readPickle(blob, d => console.log(d))))))
 
       // Catch any errors

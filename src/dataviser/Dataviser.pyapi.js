@@ -1,13 +1,13 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-27 22:34:42
+ * @ Modified time: 2024-04-27 23:09:34
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
  */
 
-import { PyodideAPI } from "./Pyodide";
+import { PyodideAPI } from "./Pyodide.api";
 
 export const DataviserPyAPI = (function() {
 
