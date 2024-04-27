@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 19:26:25
+ * @ Modified time: 2024-04-27 19:34:56
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -647,9 +647,10 @@ export const dataviser = (function() {
 
   /**
    * Converts the raw binary we read from a file into a Python object.
+   * 
    * @param   { Uint8Array }  uint8array  The data we want to convert. 
    */
-  _.unpickleBinary = function(uint8array) {
+  _.unpickleBinaryData = function(uint8array) {
     PyodideAPI.runProcess(`
       import pickle
       from js import byte_array
@@ -662,6 +663,67 @@ export const dataviser = (function() {
   }
 
   /**
+   * Converts the raw binary we read from a file into a Python object.
+   * 
+   * @param   { Uint8Array }  uint8array  The data we want to convert. 
+   */
+  _.unpickleBinaryFile = function(file) {
+    const fileReader = new FileReader();
+            
+    fileReader.readAsArrayBuffer(file);
+    fileReader.onload = (e) => {
+      const uint8array = new Uint8Array(e.target.result);
+      _.unpickleBinaryData(uint8array);
+    }
+  }
+
+  _.traverseDirectory = async function(directoryHandle) {
+    
+    // Queue of the different directories to parse
+    let directoryHandles = [ directoryHandle ];
+    let i = 0, fileCount = 0;
+
+    // This loop counts the number of files first
+    do {
+
+      // Go to the next handle
+      directoryHandle = directoryHandles[i++];
+
+      // For each thing inside the folder
+      for await(let entryHandle of directoryHandle.values()) {
+      
+        // Add subdirectory to queue
+        if(entryHandle.kind == 'directory')
+        directoryHandles.push(entryHandle);
+
+        // Add file to file list
+        else fileCount++;
+      }
+
+    // While we have stuff in the queue
+    } while(i < directoryHandles.length)
+
+    // This loop reads each of the files and saves the raw data
+    // After that, it configures the data and some other stuff
+    i = 0;
+    do {
+
+      // Go to the next handle
+      directoryHandle = directoryHandles[i++];
+
+      // For each thing inside the folder
+      for await(let entryHandle of directoryHandle.values()) {
+      
+        // Add file to list
+        if(entryHandle.kind == 'file')
+          entryHandle.getFile().then(file => _.unpickleBinaryFile(file));
+      }
+
+    // While we have stuff in the queue
+    } while(i < directoryHandles.length)
+  }
+
+  /**
    * Selects a directory for the user.
    * This function reads all the JSON files within a directory and stores them as is within our JS object.
    */
@@ -671,66 +733,7 @@ export const dataviser = (function() {
     showDirectoryPicker({ id: 'default', mode: 'read' })
 
       // After selecting a folder
-      .then(async folderHandle => {
-
-        // Queue of the different directories to parse
-        let folderHandles = [ folderHandle ];
-        let i = 0, fileCount = 0;
-
-        // This loop counts the number of files first
-        do {
-
-          // Go to the next handle
-          folderHandle = folderHandles[i++];
-
-          // For each thing inside the folder
-          for await(let entryHandle of folderHandle.values()) {
-          
-            // Add subdirectory to queue
-            if(entryHandle.kind == 'directory')
-              folderHandles.push(entryHandle);
-
-            // Add file to file list
-            else fileCount++;
-          }
-
-        // While we have stuff in the queue
-        } while(i < folderHandles.length)
-
-        // This loop reads each of the files and saves the raw data
-        // After that, it configures the data and some other stuff
-        i = 0;
-        do {
-
-          // Go to the next handle
-          folderHandle = folderHandles[i++];
-
-          // For each thing inside the folder
-          for await(let entryHandle of folderHandle.values()) {
-          
-            // Add file to list
-            if(entryHandle.kind == 'file') {
-              entryHandle.getFile().then(async file => {
-                
-                const fileReader = new FileReader();
-                
-                fileReader.readAsArrayBuffer(file);
-                fileReader.onload = (e) => {
-                  const uint8array = new Uint8Array(e.target.result);
-                  _.unpickleBinary(uint8array);
-                }
-                // Load data
-                // if(!(--fileCount)) {
-                //   _.configData();
-                //   _.renderData();
-                // }
-              });
-            }
-          }
-
-        // While we have stuff in the queue
-        } while(i < folderHandles.length)
-      })
+      .then(directoryHandle => _.traverseDirectory(directoryHandle))
 
       // Catch any errors
       .catch(error => {
