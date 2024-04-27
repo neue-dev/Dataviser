@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 22:50:52
+ * @ Modified time: 2024-04-27 23:06:40
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -652,127 +652,6 @@ export const Dataviser = (function() {
   }
 
   /**
-     * Reads the text file as is.
-     * 
-     * @param   { File }  file  The file we want to read. 
-     */
-  _.readTextFile = function(file) {
-      
-    // Create a file reader to read the files and store the filename
-    const fileReader = new FileReader();
-    const fileName = file.name;
-            
-    // Read the file, then save the data when done
-    fileReader.readAsText(file);
-    fileReader.onload = e => {
-      _.fileData[fileName] = e.target.result;
-    }
-  }
-
-  /**
-   * Reads the binary file we have and stores the contents in a Uint8Array.
-   * 
-   * @param   { File }  file  The file we want to read. 
-   */
-  _.readBinaryFile = function(file) {
-    
-    // Create a file reader to read the files and store the filename
-    const fileReader = new FileReader();
-    const fileName = file.name;
-            
-    // Read the file, then save the data when done
-    fileReader.readAsArrayBuffer(file);
-    fileReader.onload = e => {
-      _.fileData[fileName] = new Uint8Array(e.target.result);
-    }
-  }
-
-  /**
-   * Registers a file in our bank of files.
-   * We do this so we know when we've read all our files.
-   * 
-   * @param   { File }  file  The file we want to register. 
-   */
-  _.registerFile = function(file) {
-    _.registry[file.name] = {
-      name: file.name,
-      file: file,
-      isRead: false,
-    }
-  }
-
-  /**
-   * Traverses the directory and reads all the files therein.
-   * 
-   * @param   { FileSystemDirectoryHandle }   directoryHandle   A handle to some folder in our system. 
-   * @param   { object }                      options           Options on what files to read.
-   */
-  _.readDirectory = async function(directoryHandle, options={}) {
-    
-    // Queue of the different directories to parse
-    let directoryHandlesQueue = [ directoryHandle ];
-    let i = 0, fileCount = 0;
-
-    // This loop counts the number of files first
-    do {
-
-      // Go to the next handle
-      directoryHandle = directoryHandlesQueue[i++];
-
-      // For each thing inside the folder
-      for await(let entryHandle of directoryHandle.values()) {
-      
-        // Add subdirectory to queue
-        if(entryHandle.kind == 'directory')
-        directoryHandlesQueue.push(entryHandle);
-
-        // Add file to file list
-        else fileCount++;
-      }
-
-    // While we have stuff in the queue
-    } while(i < directoryHandlesQueue.length)
-
-    // This loop reads each of the files and saves the raw data
-    // After that, it configures the data and some other stuff
-    i = 0;
-    do {
-
-      // Go to the next handle
-      directoryHandle = directoryHandlesQueue[i++];
-
-      // For each thing inside the folder
-      for await(let entryHandle of directoryHandle.values()) {
-      
-        // Add file to list
-        if(entryHandle.kind == 'file')
-          entryHandle.getFile().then(file => _.readBinaryFile(file));
-      }
-
-    // While we have stuff in the queue
-    } while(i < directoryHandlesQueue.length)
-
-    //! remoe settimeout, store state about file reading instead
-    setTimeout(() => {
-
-      DataviserPyAPI.readPickles(_.fileData, data => {
-        _.dfs = {
-          ..._.dfs,
-          ...data,
-        }
-
-        console.log(_.dfs);
-
-        setTimeout(() => {
-          DataviserPyAPI.readPickles(_.fileData, d => d);
-        }, 2000);
-      });
-
-      console.log(_.dfs);
-    }, 2000); 
-  }
-
-  /**
    * Selects a directory for the user.
    * This function reads all the JSON files within a directory and stores them as is within our JS object.
    */
@@ -782,7 +661,11 @@ export const Dataviser = (function() {
     showDirectoryPicker({ id: 'default', mode: 'read' })
 
       // After selecting a folder
-      .then(directoryHandle => File.getDirectoryFiles(directoryHandle, d => console.log(d)))
+      .then(directoryHandle => 
+        File.getDirectoryFiles(directoryHandle, 
+          files => files.forEach(
+            file => File.readBinaryFile(file, 
+              blob => DataviserPyAPI.readPickle(blob, d => console.log(d))))))
 
       // Catch any errors
       .catch(error => {

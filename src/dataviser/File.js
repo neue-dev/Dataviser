@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 22:22:47
- * @ Modified time: 2024-04-27 22:58:24
+ * @ Modified time: 2024-04-27 23:02:31
  * @ Description:
  * 
  * Creates an API for handling files and other related tasks.
@@ -46,7 +46,7 @@ export const File = (function() {
             
     // Read the file, then save the data when done
     fileReader.readAsArrayBuffer(file);
-    fileReader.onload = e => fileReader.onload = e => callback(new Uint8Array(e.target.result));
+    fileReader.onload = e => callback(new Uint8Array(e.target.result));
   }
 
   /**
