@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-27 23:41:30
+ * @ Modified time: 2024-04-27 23:55:30
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -73,13 +73,17 @@ export const DataviserPyAPI = (function() {
       from js import json_dfs
       from js import rows
 
+      # Convert to something Python can understand
+      print('Converting JSON to Python objects...')
+      json_dfs = json_dfs.to_py()
+
       # All our resulting dataframes
       dfs = {}
 
       # Convert each of the json objects into a df 
       for key, json_df in json_dfs.items():
         dfs[key] = pd.DataFrame(json_df)                      # Convert the JSON objects into dataframes
-        dfs[key] = dfs[key][dfs.index in rows]                # Filter the df by the specified rows
+        dfs[key] = dfs[key][dfs[key].index.isin(rows)]        # Filter the df by the specified rows
         dfs[key] = dfs[key].to_dict('index')                  # Convert the dfs into dicts
 
       # Return the final collection of dfs
@@ -189,7 +193,7 @@ export const DataviserPyAPI = (function() {
     PyodideAPI.runProcess(
       _.scripts['dfs_filter_rows'],
       { 
-        json_dataframes: jsonDataFrames, 
+        json_dfs: jsonDataFrames, 
         rows: rows 
       },
       data => callback(JSON.parse(data))
@@ -202,7 +206,7 @@ export const DataviserPyAPI = (function() {
   _.dfsConcat = function(jsonDataFrames, callback) {
     PyodideAPI.runProcess(
       _.scripts['dfs_concat'], 
-      { json_dataframes: jsonDataFrames }, 
+      { json_dfs: jsonDataFrames }, 
       data => callback(JSON.parse(data))
     );
   }
