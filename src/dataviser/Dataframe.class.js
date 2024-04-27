@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-27 23:50:27
+ * @ Modified time: 2024-04-28 00:22:33
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -63,20 +63,35 @@ Dataframe.prototype.getCols = function() {
 }
 
 /**
+ * Filters the rows of the dataframe by the specified names.
  * 
+ * @param   { array }   rows  An array of the rows we want.
+ * @param   { function }  callback  The function to receive the filtered dataframe.
  */
-Dataframe.prototype.filterRows = function(rows) {
+Dataframe.prototype.filterRows = function(rows, callback) {
   const df = {};
   df[this.index] = this.data;
-  DataviserPyAPI.dfsFilterRows(df, rows, d => console.log(d));
+
+  DataviserPyAPI.dfsFilterRows(df, rows, df_new => callback(df_new));
+}
+
+/**
+ * Filters the cols of the dataframe by the specified names.
+ * 
+ * @param   { array }     cols      An array of the cols we want.
+ * @param   { function }  callback  The function to receive the filtered dataframe.
+ */
+Dataframe.prototype.filterCols = function(cols, callback) {
+  const df = {};
+  df[this.index] = this.data;
+  
+  DataviserPyAPI.dfsFilterCols(df, cols, df_new => callback(df_new));
 }
 
 const test = new Dataframe('1', {
   '1': { '1': '10', '2': '20' },
   '2': { '1': '30', '2': '40' }
 })
-
-test.filterRows(['1']);
 
 /**
  * Manages all our dataframes.

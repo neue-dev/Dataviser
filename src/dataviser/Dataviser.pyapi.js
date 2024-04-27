@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-27 23:55:30
+ * @ Modified time: 2024-04-28 00:00:54
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -16,6 +16,7 @@ export const DataviserPyAPI = (function() {
 
       // Unpickles an array of bytes and converts to df
       // The df is returned in JSON
+      // ! add print statements, convert to py obj first
       'read_pickle': 
       `
       import pickle
@@ -81,12 +82,14 @@ export const DataviserPyAPI = (function() {
       dfs = {}
 
       # Convert each of the json objects into a df 
+      print('Filtering rows...')
       for key, json_df in json_dfs.items():
         dfs[key] = pd.DataFrame(json_df)                      # Convert the JSON objects into dataframes
         dfs[key] = dfs[key][dfs[key].index.isin(rows)]        # Filter the df by the specified rows
         dfs[key] = dfs[key].to_dict('index')                  # Convert the dfs into dicts
 
       # Return the final collection of dfs
+      print('Returning results.')
       json.dumps(dfs)
       `,
 
@@ -98,21 +101,28 @@ export const DataviserPyAPI = (function() {
       from js import json_dfs
       from js import cols
 
+      # Convert to something Python can understand
+      print('Converting JSON to Python objects...')
+      json_dfs = json_dfs.to_py()
+
       # All our resulting dataframes
       dfs = {}
 
       # Convert each of the json objects into a df 
+      print('Filtering cols...')
       for key, json_df in json_dfs.items():
         dfs[key] = pd.DataFrame(json_df)                      # Convert the JSON objects into dataframes
         dfs[key] = dfs[key].filter(items=list(cols))          # Filter the df by the specified cols
         dfs[key] = dfs[key].to_dict('index')                  # Convert the dfs into dicts
 
       # Return the final collection of dfs
+      print('Returning results.')
       json.dumps(dfs)
       `,
 
       // Inserts a new column into a dataframe
       // The column will usually be defined by the filename
+      // ! add print statements
       'dfs_serialize': 
       `
       import json
@@ -133,6 +143,7 @@ export const DataviserPyAPI = (function() {
       `,
 
       // Concatenates two dataframes together
+      // ! add print statements
       'dfs_concat':
       `
       import pandas as pd
@@ -184,7 +195,6 @@ export const DataviserPyAPI = (function() {
     );
   }
 
-  
   /**
    * Filters the dataframe content by the specified rows.
    * Returns the result to the callback.
@@ -195,6 +205,21 @@ export const DataviserPyAPI = (function() {
       { 
         json_dfs: jsonDataFrames, 
         rows: rows 
+      },
+      data => callback(JSON.parse(data))
+    )
+  }
+
+  /**
+   * Filters the dataframe content by the specified cols.
+   * Returns the result to the callback.
+   */
+  _.dfsFilterCols = function(jsonDataFrames, cols, callback) {
+    PyodideAPI.runProcess(
+      _.scripts['dfs_filter_cols'],
+      { 
+        json_dfs: jsonDataFrames, 
+        cols: cols
       },
       data => callback(JSON.parse(data))
     )
