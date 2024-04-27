@@ -1,4 +1,6 @@
 D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\.dummy\data-json
 
-d3                https://d3js.org/
-d3 guide          https://d3-graph-gallery.com/graph/chord_basic.html
+d3                          https://d3js.org/
+d3 guide                    https://d3-graph-gallery.com/graph/chord_basic.html
+another cors problem        https://stackoverflow.com/questions/70132291/electron-content-security-policy-error-when-connecting-to-my-api
+importScripts not defined   https://stackoverflow.com/questions/14500091/uncaught-referenceerror-importscripts-is-not-defined
