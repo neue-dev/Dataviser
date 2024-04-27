@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-27 23:43:32
+ * @ Modified time: 2024-04-27 23:44:19
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -69,3 +69,19 @@ Dataframe.prototype.filterRows = function(rows) {
   DataviserPyAPI.dfsFilterRows([ this.data ], rows, d => console.log(d));
 }
 
+/**
+ * Manages all our dataframes.
+ */
+export const DataframeManager = (function() {
+  
+  // The manager
+  const _ = {};
+
+  return {
+    ..._,
+  }
+})();
+
+export default {
+  DataframeManager,
+}
