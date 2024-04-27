@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 19:47:35
+ * @ Modified time: 2024-04-27 21:03:54
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -16,10 +16,10 @@ import '../ui/Slider.component'
 
 import { Dataset } from './Dataset.class'
 import { Datagraph } from './Datagraph.class'
-import { PyodideAPI } from './Pyodide'
+import { DataviserPyAPI } from './Dataviser.pyapi'
 
 // Handles all the data vis
-export const dataviser = (function() {
+export const Dataviser = (function() {
   const _ = {};
   const root = document.getElementsByClassName('root')[0];
 
@@ -650,33 +650,13 @@ export const dataviser = (function() {
    * 
    * @param   { Uint8Array }  uint8array  The data we want to convert. 
    */
-  _.unpickleBinaryData = function(uint8array) {
-    PyodideAPI.runProcess(`
-      import pickle
-      import pandas as pd
-      from js import byte_array
-
-      byte_string = bytes(byte_array)
-      df = pd.DataFrame(pickle.loads(byte_string))
-      df.to_json()
-      `,
-      { byte_array: uint8array },
-      (data) => console.log('this is the data in json', JSON.parse(data))
-    );
-  }
-
-  /**
-   * Converts the raw binary we read from a file into a Python object.
-   * 
-   * @param   { Uint8Array }  uint8array  The data we want to convert. 
-   */
   _.unpickleBinaryFile = function(file) {
     const fileReader = new FileReader();
             
     fileReader.readAsArrayBuffer(file);
     fileReader.onload = (e) => {
       const uint8array = new Uint8Array(e.target.result);
-      _.unpickleBinaryData(uint8array);
+      DataviserPyAPI.readPickle(uint8array, d => console.log(d));
     }
   }
 
@@ -750,5 +730,5 @@ export const dataviser = (function() {
 })();
 
 export default {
-  dataviser
+  Dataviser
 }

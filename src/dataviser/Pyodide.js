@@ -86,8 +86,6 @@ export const PyodideAPI = (function() {
     try {
       const { results, error } = await _.dispatchProcess(script, context);
 
-      console.log('haagen', results)
-
       // We got something back
       if (results)
         callback(results);
