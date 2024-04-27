@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 19:34:56
+ * @ Modified time: 2024-04-27 19:47:35
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -653,12 +653,15 @@ export const dataviser = (function() {
   _.unpickleBinaryData = function(uint8array) {
     PyodideAPI.runProcess(`
       import pickle
+      import pandas as pd
       from js import byte_array
 
       byte_string = bytes(byte_array)
-      print(pickle.loads(byte_string))
+      df = pd.DataFrame(pickle.loads(byte_string))
+      df.to_json()
       `,
-      { byte_array: uint8array }
+      { byte_array: uint8array },
+      (data) => console.log('this is the data in json', JSON.parse(data))
     );
   }
 

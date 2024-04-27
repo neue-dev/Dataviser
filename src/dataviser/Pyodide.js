@@ -74,18 +74,23 @@ export const PyodideAPI = (function() {
   /**
    * Wraps dispatch process around a try catch statement.
    * Also allows the user to do something after the process exits.
-   * @param {*} script 
-   * @param {*} context 
+   * 
+   * @param   { string }    script    The string literal representing the script. 
+   * @param   { object }    context   The data we want to pass to the script.
+   * @param   { function }  callback  The function we want to execute upon the end of the script.
+   *                                  Note that we pass the result of the script to the callback.
    */
-  _.runProcess = async(script, context) => {
+  _.runProcess = async(script, context, callback) => {
 
     // Try the script
     try {
       const { results, error } = await _.dispatchProcess(script, context);
 
+      console.log('haagen', results)
+
       // We got something back
       if (results)
-        console.log("Python script results: ", results);
+        callback(results);
 
       // The script encountered an error
       else if (error)
@@ -93,7 +98,7 @@ export const PyodideAPI = (function() {
  
     // Something wrong happened with the JS
     } catch (e) {
-      console.log(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`);
+      console.error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`);
     }
   }
   
