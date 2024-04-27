@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 22:05:50
+ * @ Modified time: 2024-04-27 22:34:24
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -14,9 +14,11 @@ import '../ui/Input.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
 
+import { File } from './File'
+import { DataviserPyAPI } from './Dataviser.pyapi'
+
 import { Dataset } from './Dataset.class'
 import { Datagraph } from './Datagraph.class'
-import { DataviserPyAPI } from './Dataviser.pyapi'
 
 // Handles all the data vis
 export const Dataviser = (function() {
@@ -650,9 +652,27 @@ export const Dataviser = (function() {
   }
 
   /**
-   * Converts the raw binary we read from a file into a Python object.
+     * Reads the text file as is.
+     * 
+     * @param   { File }  file  The file we want to read. 
+     */
+  _.readTextFile = function(file) {
+      
+    // Create a file reader to read the files and store the filename
+    const fileReader = new FileReader();
+    const fileName = file.name;
+            
+    // Read the file, then save the data when done
+    fileReader.readAsText(file);
+    fileReader.onload = e => {
+      _.fileData[fileName] = e.target.result;
+    }
+  }
+
+  /**
+   * Reads the binary file we have and stores the contents in a Uint8Array.
    * 
-   * @param   { Uint8Array }  uint8array  The data we want to convert. 
+   * @param   { File }  file  The file we want to read. 
    */
   _.readBinaryFile = function(file) {
     
@@ -668,36 +688,50 @@ export const Dataviser = (function() {
   }
 
   /**
+   * Registers a file in our bank of files.
+   * We do this so we know when we've read all our files.
+   * 
+   * @param   { File }  file  The file we want to register. 
+   */
+  _.registerFile = function(file) {
+    _.registry[file.name] = {
+      name: file.name,
+      file: file,
+      isRead: false,
+    }
+  }
+
+  /**
    * Traverses the directory and reads all the files therein.
    * 
-   * //! finish the jsdoc: directoryhandle object
-   * @param   { } directoryHandle 
+   * @param   { FileSystemDirectoryHandle }   directoryHandle   A handle to some folder in our system. 
+   * @param   { object }                      options           Options on what files to read.
    */
-  _.traverseDirectory = async function(directoryHandle) {
+  _.readDirectory = async function(directoryHandle, options={}) {
     
     // Queue of the different directories to parse
-    let directoryHandles = [ directoryHandle ];
+    let directoryHandlesQueue = [ directoryHandle ];
     let i = 0, fileCount = 0;
 
     // This loop counts the number of files first
     do {
 
       // Go to the next handle
-      directoryHandle = directoryHandles[i++];
+      directoryHandle = directoryHandlesQueue[i++];
 
       // For each thing inside the folder
       for await(let entryHandle of directoryHandle.values()) {
       
         // Add subdirectory to queue
         if(entryHandle.kind == 'directory')
-        directoryHandles.push(entryHandle);
+        directoryHandlesQueue.push(entryHandle);
 
         // Add file to file list
         else fileCount++;
       }
 
     // While we have stuff in the queue
-    } while(i < directoryHandles.length)
+    } while(i < directoryHandlesQueue.length)
 
     // This loop reads each of the files and saves the raw data
     // After that, it configures the data and some other stuff
@@ -705,7 +739,7 @@ export const Dataviser = (function() {
     do {
 
       // Go to the next handle
-      directoryHandle = directoryHandles[i++];
+      directoryHandle = directoryHandlesQueue[i++];
 
       // For each thing inside the folder
       for await(let entryHandle of directoryHandle.values()) {
@@ -716,7 +750,7 @@ export const Dataviser = (function() {
       }
 
     // While we have stuff in the queue
-    } while(i < directoryHandles.length)
+    } while(i < directoryHandlesQueue.length)
 
     //! remoe settimeout, store state about file reading instead
     setTimeout(() => {
@@ -748,7 +782,7 @@ export const Dataviser = (function() {
     showDirectoryPicker({ id: 'default', mode: 'read' })
 
       // After selecting a folder
-      .then(directoryHandle => _.traverseDirectory(directoryHandle))
+      .then(directoryHandle => File.getDirectoryFiles(directoryHandle))
 
       // Catch any errors
       .catch(error => {
