@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 21:23:12
+ * @ Modified time: 2024-04-27 22:05:50
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -23,6 +23,7 @@ export const Dataviser = (function() {
   const _ = {
     fileList: {},
     fileData: {},
+    dfs: {},
   };
   const root = document.getElementsByClassName('root')[0];
 
@@ -720,9 +721,20 @@ export const Dataviser = (function() {
     //! remoe settimeout, store state about file reading instead
     setTimeout(() => {
 
-      DataviserPyAPI.readPickles(_.fileData, d => console.log(d));
+      DataviserPyAPI.readPickles(_.fileData, data => {
+        _.dfs = {
+          ..._.dfs,
+          ...data,
+        }
 
-      console.log(_.fileData);
+        console.log(_.dfs);
+
+        setTimeout(() => {
+          DataviserPyAPI.readPickles(_.fileData, d => d);
+        }, 2000);
+      });
+
+      console.log(_.dfs);
     }, 2000); 
   }
 

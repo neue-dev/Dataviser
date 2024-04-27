@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-04-27 17:53:02
+ * @ Modified time: 2024-04-27 22:07:50
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -25,8 +25,7 @@ async function configPyodide() {
 
   // Load the packages we need
   await self.pyodide.loadPackage([ 
-    // Currently none since we load imports by default,
-    // but we can put smth like 'pandas' here
+    'pandas',
   ]);
 }
 

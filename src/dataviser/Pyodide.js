@@ -99,6 +99,13 @@ export const PyodideAPI = (function() {
       console.error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`);
     }
   }
+
+  // Ensures pyodide runs faster on subsequent calls
+  _.runProcess(`
+    import pandas as pd
+    print('Warm-up script...')
+    print('Pyodide configured.')
+  `, e => e);
   
   return {
     ..._,

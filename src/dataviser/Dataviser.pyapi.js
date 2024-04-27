@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-27 21:51:03
+ * @ Modified time: 2024-04-27 22:05:20
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -41,6 +41,8 @@ export const DataviserPyAPI = (function() {
       import pandas as pd
       from js import byte_arrays
 
+      # Convert to Python-readable structures
+      print('Comverting JS byte_arrays to Py objects...')
       byte_arrays = byte_arrays.to_py()
 
       # Where we store the resulting byte strings
@@ -49,14 +51,17 @@ export const DataviserPyAPI = (function() {
       dfs = {}
 
       # Convert to byte strings 
+      print('Converting byte_arrays to byte_strings...')
       for key, byte_array in byte_arrays.items():
         byte_strings[key] = bytes(byte_array)
 
       # Convert to dataframes
+      print('Depickling byte_strings and converting to dataframes...')
       for key, byte_string in byte_strings.items():
         dfs[key] = pd.DataFrame(pickle.loads(byte_string)).to_dict('index')
 
       # Returns a JSON version of the dataframes
+      print('Returning results.')
       json.dumps(dfs)
       `,
 
