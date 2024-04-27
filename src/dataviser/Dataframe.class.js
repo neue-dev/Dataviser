@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-27 23:23:27
+ * @ Modified time: 2024-04-27 23:43:32
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -10,12 +10,13 @@
  * IF we want to perform an operation on a dataframe, we create a new one... functional programming!
  */
 
-import PyodideApi from "./Pyodide.api";
+import DataviserPyAPI from "./Dataviser.pyapi";
 
 /**
  * The dataframe class.
  */
-function Dataframe(data) {
+function Dataframe(id, data) {
+  this.id = id;
   this.data = data;
   this.cols = [];
   this.rows = [];
@@ -60,3 +61,11 @@ Dataframe.prototype.getCols = function() {
 
   return this.cols;  
 }
+
+/**
+ * 
+ */
+Dataframe.prototype.filterRows = function(rows) {
+  DataviserPyAPI.dfsFilterRows([ this.data ], rows, d => console.log(d));
+}
+

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 23:08:28
+ * @ Modified time: 2024-04-27 23:38:27
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -18,6 +18,7 @@ import { FileAPI } from './File.api'
 import { DataviserPyAPI } from './Dataviser.pyapi'
 
 import { Dataset } from './Dataset.class'
+import { Dataframe } from './Dataframe.class'
 import { Datagraph } from './Datagraph.class'
 
 // Handles all the data vis
