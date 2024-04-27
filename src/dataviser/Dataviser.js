@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 00:24:51
+ * @ Modified time: 2024-04-28 01:15:10
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -37,17 +37,12 @@ export const Dataviser = (function() {
 
   // Dataviser menu elements
   const dataviserWindow = document.createElement('grid-component');
-
-  // Dataviser d3 canvases
   const dataviserCatalogue = document.createElement('grid-cell-component');
-  dataviserCatalogue.classList.add('dataviser-catalogue');
-
-  // Dataviser file list
   const dataviserFileList = document.createElement('div');
-  dataviserFileList.classList.add('dataviser-file-list');
-
-  // Where we put the info highlights
   const dataviserInfoBoard = document.createElement('div');
+
+  dataviserCatalogue.classList.add('dataviser-catalogue');
+  dataviserFileList.classList.add('dataviser-file-list');
   dataviserInfoBoard.classList.add('dataviser-info-board');
 
   // The input fields
@@ -68,69 +63,47 @@ export const Dataviser = (function() {
    */
   _.init = function() {
     
-    // Cells
-    const titleCell = document.createElement('grid-cell-component');
-    const importCell = document.createElement('grid-cell-component');
-    const fileListCell = document.createElement('grid-cell-component');
-    const dataInfoCell = document.createElement('grid-cell-component');
-    const inputCell = document.createElement('grid-cell-component');
-
-    // Other elements
-    const titleNode = document.createElement('div');
+    // Create the title and import button
     const importButton = document.createElement('button-component');
-
-    // Create the title
-    titleNode.classList.add('dataviser-title');
-    titleNode.innerHTML = 'Dataviser';
-    titleCell.setPlacement(1, 1);
-    titleCell.appendChild(titleNode);
-
-    // Create the import button and its prompt
     importButton.innerHTML = 'select folder';
     importButton.classList.add('dataviser-import-button');
     importButton.mouseDownCallback = e => {
       _.selectDirectory();
     }
 
-    // This cell stores the import button
-    importCell.setPlacement(1, 2);
-    importCell.innerHTML = 'Select folder to begin.<br>';
-    importCell.appendChild(importButton);
+    // The catalogue of graphs
+    dataviserWindow.appendCell(3, 1, 3, 4);
+    dataviserWindow.getCell(3, 1).classList.add('dataviser-catalogue');
 
-    // Create the canvas cell
-    dataviserCatalogue.setPlacement(3, 1);
-    dataviserCatalogue.setDimensions(3, 4);
-    dataviserCatalogue.classList.add('dataviser-catalogue');
-
-    // Create the file list cell
-    fileListCell.setPlacement(2, 2);
-    fileListCell.setDimensions(1, 1);
-    fileListCell.appendChild(dataviserFileList);
-
-    // Configure the input cell
-    inputCell.setPlacement(1, 3);
-    inputCell.setDimensions(1, 2);
-    inputCell.append('Date filter (heatmaps):');
-    inputCell.appendChild(inputRangeField);
-    inputCell.append('Name filter (series):');
-    inputCell.appendChild(inputIsolateField);
+    // The title
+    dataviserWindow.appendCell(1, 1);
+    dataviserWindow.getCell(1, 1).classList.add('dataviser-title');
+    dataviserWindow.getCell(1, 1).append('Dataviser');
+    
+    // Import button
+    dataviserWindow.appendCell(1, 2);
+    dataviserWindow.getCell(1, 2).appendChild(importButton);
+    
+    // File list
+    dataviserWindow.appendCell(2, 2);
+    dataviserWindow.getCell(2, 2).appendChild(dataviserFileList);
+    
+    // Input fields
+    dataviserWindow.appendCell(1, 3);
+    dataviserWindow.getCell(1, 3).append('date filter (heatmaps):');
+    dataviserWindow.getCell(1, 3).appendChild(inputRangeField);
+    dataviserWindow.getCell(1, 3).append('name filter (series):');
+    dataviserWindow.getCell(1, 3).appendChild(inputIsolateField);
+    
+    // Info board
+    dataviserWindow.appendCell(2, 4, 1, 2);
+    dataviserWindow.getCell(2, 4).appendChild(dataviserInfoBoard);
 
     // Populate the fields
     inputRangeField.innerHTML = '2020-01-01, 2021-01-01';
     inputIsolateField.innerHTML = 'type location name here';
 
-    // Data info cell
-    dataInfoCell.setPlacement(2, 4);
-    dataInfoCell.setDimensions(1, 2);
-    dataInfoCell.appendChild(dataviserInfoBoard);
-
-    // Construct the tree
-    dataviserWindow.appendChild(titleCell);
-    dataviserWindow.appendChild(importCell);
-    dataviserWindow.appendChild(fileListCell);
-    dataviserWindow.appendChild(inputCell);
-    dataviserWindow.appendChild(dataInfoCell);
-    dataviserWindow.appendChild(dataviserCatalogue);
+    // Append everything to the window
     root.appendChild(dataviserWindow);
   }
 

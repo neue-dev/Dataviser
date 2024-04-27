@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 16:21:09
- * @ Modified time: 2024-04-28 00:52:02
+ * @ Modified time: 2024-04-28 01:03:08
  * @ Description:
  * 
  * The grid class.
@@ -36,9 +36,13 @@ export class GridComponent extends Component {
    * @param   { number }  y   The y-location of the cell.
    */
   getCell(x, y) {
-    if(this.cells[x][y])
-      return this.cells[x][y]
-    return null;
+    if(!this.cells[x])
+      return null;
+
+    if(!this.cells[x][y])
+      return null;
+
+    return this.cells[x][y];
   }
 
   /**
@@ -52,8 +56,9 @@ export class GridComponent extends Component {
   appendCell(x=1, y=1, w=1, h=1) {
 
     // Duplicate cells not allowed
-    if(this.cells[x][y])
-      return;
+    if(this.cells[x])
+      if(this.cells[x][y])
+        return;
 
     // Create the component and configure it
     const gridCellComponent = new GridCellComponent();
@@ -65,6 +70,8 @@ export class GridComponent extends Component {
     this.appendComponent(gridCellComponent);
 
     // Save it in the dict
+    if(!this.cells[x])
+      this.cells[x] = {}
     this.cells[x][y] = gridCellComponent;
   }
 }
@@ -103,16 +110,11 @@ export class GridCellComponent extends Component {
    */
   attributeChangedCallback(name, oldValue, newValue) {
 
-    // Remove the cell from the old location
-    this.parentElement.cells[this.x][this.y] = null;
-
+    // Get the new attribute values
     if(name == 'cell-x') this.x = parseInt(newValue);
     if(name == 'cell-y') this.y = parseInt(newValue);
     if(name == 'cell-w') this.w = parseInt(newValue);
     if(name == 'cell-h') this.h = parseInt(newValue);
-
-    // Store the cell from in the new location
-    this.parentElement.cells[this.x][this.y] = this;
 
     // Update the style
     this.updateStyle();

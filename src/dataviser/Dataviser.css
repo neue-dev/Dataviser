@@ -6,7 +6,8 @@
 .dataviser-title {
   text-indent: -0.04em;  
   font-family: var(--header-font);
-  font-size: 6rem;
+  color: rgba(var(--black), 1) !important;
+  font-size: 6rem !important;
   line-height: 1;
   letter-spacing: 0;
 }
