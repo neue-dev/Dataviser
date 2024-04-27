@@ -1,4 +1,4 @@
-D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\.dummy\data-json
+D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\.dummy\data
 
 d3                          https://d3js.org/
 d3 guide                    https://d3-graph-gallery.com/graph/chord_basic.html

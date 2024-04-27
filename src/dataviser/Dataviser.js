@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 17:48:46
+ * @ Modified time: 2024-04-27 19:26:25
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -14,9 +14,9 @@ import '../ui/Input.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
 
-import { PyodideAPI } from './Pyodide'
 import { Dataset } from './Dataset.class'
 import { Datagraph } from './Datagraph.class'
+import { PyodideAPI } from './Pyodide'
 
 // Handles all the data vis
 export const dataviser = (function() {
@@ -646,6 +646,22 @@ export const dataviser = (function() {
   }
 
   /**
+   * Converts the raw binary we read from a file into a Python object.
+   * @param   { Uint8Array }  uint8array  The data we want to convert. 
+   */
+  _.unpickleBinary = function(uint8array) {
+    PyodideAPI.runProcess(`
+      import pickle
+      from js import byte_array
+
+      byte_string = bytes(byte_array)
+      print(pickle.loads(byte_string))
+      `,
+      { byte_array: uint8array }
+    );
+  }
+
+  /**
    * Selects a directory for the user.
    * This function reads all the JSON files within a directory and stores them as is within our JS object.
    */
@@ -656,9 +672,6 @@ export const dataviser = (function() {
 
       // After selecting a folder
       .then(async folderHandle => {
-
-        // Clear the dataset and the canvas
-        dataset = new Dataset(keyParser);
 
         // Queue of the different directories to parse
         let folderHandles = [ folderHandle ];
@@ -698,13 +711,19 @@ export const dataviser = (function() {
             // Add file to list
             if(entryHandle.kind == 'file') {
               entryHandle.getFile().then(async file => {
-                await dataset.readJSON(file)
                 
-                // Load data
-                if(!(--fileCount)) {
-                  _.configData();
-                  _.renderData();
+                const fileReader = new FileReader();
+                
+                fileReader.readAsArrayBuffer(file);
+                fileReader.onload = (e) => {
+                  const uint8array = new Uint8Array(e.target.result);
+                  _.unpickleBinary(uint8array);
                 }
+                // Load data
+                // if(!(--fileCount)) {
+                //   _.configData();
+                //   _.renderData();
+                // }
               });
             }
           }

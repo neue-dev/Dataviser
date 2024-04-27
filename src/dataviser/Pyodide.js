@@ -97,27 +97,6 @@ export const PyodideAPI = (function() {
     }
   }
   
-  const script = `
-  import pandas
-  from js import A_rank
-
-  data = {
-    "calories": {'a': 420, 'b': 30, 'c': 390},
-    "duration": {'a': 50, 'b': 45, 'c': 50}
-  }
-  
-  df = pandas.DataFrame(data)
-  print(df)
-  df.to_json()
-`;
-
-const context = {
-  A_rank: [0.8, 0.4, 1.2, 3.7, 2.6, 5.8],
-};
-
-  //!remove
-  _.runProcess(script, context);
-
   return {
     ..._,
   }
