@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-27 22:34:24
+ * @ Modified time: 2024-04-27 22:50:52
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -782,7 +782,7 @@ export const Dataviser = (function() {
     showDirectoryPicker({ id: 'default', mode: 'read' })
 
       // After selecting a folder
-      .then(directoryHandle => File.getDirectoryFiles(directoryHandle))
+      .then(directoryHandle => File.getDirectoryFiles(directoryHandle, d => console.log(d)))
 
       // Catch any errors
       .catch(error => {

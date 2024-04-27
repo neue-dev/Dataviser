@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 22:22:47
- * @ Modified time: 2024-04-27 22:33:08
+ * @ Modified time: 2024-04-27 22:58:24
  * @ Description:
  * 
  * Creates an API for handling files and other related tasks.
@@ -53,34 +53,50 @@ export const File = (function() {
    * Traverses the directory and returns all the files contained therein.
    * 
    * @param   { FileSystemDirectoryHandle }   directoryHandle   A handle to some folder in our system. 
-   * @param   { object }                      options           Options on what files to read.
+   * @param   { function }                    callback          Receives a list of all the files found in the directory.
    */
-  _.getDirectoryFiles = async function(directoryHandle, options={}) {
+  _.getDirectoryFiles = async function(directoryHandle, callback) {
     
     // Queue of the different directories to parse
-    let directoryHandlesQueue = [ directoryHandle ];
-    let i = 0;
+    const directoryHandlesQueue = [ directoryHandle ];
+    const fileHandlesStack = []; 
+
+    // Helps us terminate the loop and return after reading all files
+    let directoryHandleIndex = 0, fileCount = 0;
 
     // This loop goes through each of the files and reads them
-    do {
+    while(directoryHandleIndex < directoryHandlesQueue.length) {
 
       // Go to the next handle
-      directoryHandle = directoryHandlesQueue[i++];
+      directoryHandle = directoryHandlesQueue[directoryHandleIndex];
 
       // For each thing inside the folder
       for await(let entryHandle of directoryHandle.values()) {
 
         // Add directory to the queue
-        if(entryHandle.kind == 'directory')
+        if(entryHandle.kind == 'directory') {
           directoryHandlesQueue.push(entryHandle);
       
         // Add file to list
-        else if(entryHandle.kind == 'file')
-          entryHandle.getFile().then(file => console.log(file));
+        } else if(entryHandle.kind == 'file') {
+
+          // Retrieve the file and push to the stack
+          entryHandle.getFile().then(file => {
+            fileHandlesStack.push(file)
+            
+            // Also check if we're done with all files in the directory
+            if(directoryHandleIndex >= directoryHandlesQueue.length && fileHandlesStack.length >= fileCount)
+              callback(fileHandlesStack)
+          });
+          
+          // Count the file
+          fileCount++;
+        }
       }
 
-    // While we have stuff in the queue
-    } while(i < directoryHandlesQueue.length)
+      // Increment the counter
+      directoryHandleIndex++;
+    }
   }
 
   // Return the file object
