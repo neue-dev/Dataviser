@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 09:37:16
- * @ Modified time: 2024-04-23 11:27:40
+ * @ Modified time: 2024-04-28 00:50:51
  * @ Description:
  * 
  * The slider component.
@@ -10,6 +10,11 @@
 import './Slider.component.css'
 import { Component } from './Component'
 
+/**
+ * A custom slider component.
+ * 
+ * @class
+ */
 export class SliderComponent extends Component {
   static observedAttributes = [ 'width', 'cur-thumb' ];
   static defaultWidth = 256;

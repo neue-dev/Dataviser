@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-26 13:32:19
- * @ Modified time: 2024-04-26 14:55:35
+ * @ Modified time: 2024-04-28 00:50:39
  * @ Description:
  * 
  * Defines an input component.
@@ -10,6 +10,12 @@
 import './Input.component.css'
 import { Component } from './Component'
 
+/**
+ * A class for custom input fields.
+ * Note that we use contenteditable=true to make this work.
+ * 
+ * @class
+ */
 export class InputComponent extends Component {
   static observedAttributes = [ 'contenteditable' ]
   

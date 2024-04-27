@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:59:53
- * @ Modified time: 2024-04-23 17:27:58
+ * @ Modified time: 2024-04-28 00:50:12
  * @ Description:
  * 
  * Defines a custom button element.
@@ -10,6 +10,11 @@
 import './Button.component.css'
 import { Component } from './Component'
 
+/**
+ * A class for custom buttons.
+ * 
+ * @class
+ */
 export class ButtonComponent extends Component {
 
   constructor() {
