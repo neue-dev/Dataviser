@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-28 00:00:54
+ * @ Modified time: 2024-04-28 01:45:09
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -120,46 +120,31 @@ export const DataviserPyAPI = (function() {
       json.dumps(dfs)
       `,
 
-      // Inserts a new column into a dataframe
-      // The column will usually be defined by the filename
-      // ! add print statements
-      'dfs_serialize': 
-      `
-      import json
-      import pandas as pd
-      from js import json_dfs
-
-      # All our resulting dataframes
-      dfs = {}
-
-      # Convert each of the json objects into a df 
-      for key, json_df in json_dfs.items():
-        dfs[key] = pd.DataFrame(json_df)                      # Convert JSON object into a df
-        dfs[key]['serial'] = [ key ] * len(dfs[key].index)    # Create a new column (called serial)
-        dfs[key] = dfs[key].to_dict('index')                  # Convert the df into a dict
-
-      # Return the final collection of dfs
-      json.dumps(dfs)
-      `,
-
       // Concatenates two dataframes together
-      // ! add print statements
       'dfs_concat':
       `
       import pandas as pd
       from js import json_dfs
+      from js import keys
+
+      # Convert JSON data into Python compatible objects
+      print('Converting JSON to Python objects...')
+      json_dfs = json_dfs.to_py()
 
       # All our resulting dataframes
       dfs = []
 
       # Convert each of the json objects into a df 
+      print('Converting dicts to dataframes...')
       for key, json_df in json_dfs.items():
         dfs.append(pd.DataFrame(json_df))
 
       # Concatenate all the dataframes
-      result = pd.concat(dfs).to_json(orient='index')
+      print('Concatenating dataframes...')
+      result = pd.concat(dfs, keys=list(keys)).to_json(orient='index')
 
       # Return the JSON version of the result
+      print('Returning results.')
       result
       `,
     }
@@ -196,8 +181,12 @@ export const DataviserPyAPI = (function() {
   }
 
   /**
-   * Filters the dataframe content by the specified rows.
+   * Filters the dataframes by the specified rows.
    * Returns the result to the callback.
+   * 
+   * @param   { object }    jsonDataFrames  A dict of JSON dataframes.
+   * @param   { array }     rows            An array of row names to include.
+   * @param   { function }  callback        The callback to receive the resulting filtered dfs.  
    */
   _.dfsFilterRows = function(jsonDataFrames, rows, callback) {
     PyodideAPI.runProcess(
@@ -211,8 +200,12 @@ export const DataviserPyAPI = (function() {
   }
 
   /**
-   * Filters the dataframe content by the specified cols.
+   * Filters the dataframes by the specified cols.
    * Returns the result to the callback.
+   * 
+   * @param   { object }    jsonDataFrames  A dict of JSON dataframes.
+   * @param   { array }     cols            An array of column names to include.
+   * @param   { function }  callback        The callback to receive the resulting filtered dfs.  
    */
   _.dfsFilterCols = function(jsonDataFrames, cols, callback) {
     PyodideAPI.runProcess(
@@ -226,12 +219,18 @@ export const DataviserPyAPI = (function() {
   }
 
   /**
+   * Concatenates dataframes together.
    * 
+   * @param   { object }    jsonDataFrames  A dict of JSON dataframes.
+   * @param   { function }  callback        The callback to receive the resulting concatenated df.  
    */
   _.dfsConcat = function(jsonDataFrames, callback) {
     PyodideAPI.runProcess(
       _.scripts['dfs_concat'], 
-      { json_dfs: jsonDataFrames }, 
+      { 
+        json_dfs: jsonDataFrames,
+        keys: Object.keys(jsonDataFrames),
+      }, 
       data => callback(JSON.parse(data))
     );
   }

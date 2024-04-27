@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 01:15:10
+ * @ Modified time: 2024-04-28 01:45:27
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -594,21 +594,30 @@ export const Dataviser = (function() {
    * This function reads all the JSON files within a directory and stores them as is within our JS object.
    */
   _.selectDirectory = function() {
+
+    // ! remove later
+    const dfs = {};
     
     // Let the user pick a directory
     showDirectoryPicker({ id: 'default', mode: 'read' })
 
       // After selecting a folder
+      // ! make sure to use readPickles instead!
       .then(directoryHandle => 
         FileAPI.getDirectoryFiles(directoryHandle, 
           files => files.forEach(
             file => FileAPI.readBinaryFile(file, 
-              blob => DataviserPyAPI.readPickle(blob, d => console.log(d))))))
+              blob => DataviserPyAPI.readPickle(blob, d => dfs[file.name.split('.')[0]] = d)))))
 
       // Catch any errors
       .catch(error => {
         alert(`Error: \n(${error})`)
       })
+
+      setTimeout(() => {
+        console.log(DataviserPyAPI.dfsConcat(dfs, 
+          df => console.log(df)));
+      }, 10000);
   }
 
   return {
