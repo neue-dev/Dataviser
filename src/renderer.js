@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 05:57:45
- * @ Modified time: 2024-04-27 09:18:15
+ * @ Modified time: 2024-04-27 17:49:56
  * @ Description:
  * 
  * The main rendering thread.
@@ -12,4 +12,4 @@
 
 // dataviser.init();
 
-import './dataviser/main'
+import './dataviser/Dataviser'

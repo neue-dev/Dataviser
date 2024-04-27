@@ -1,69 +1,128 @@
+
+
+
 /**
- * @ Author: Mo David
- * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-04-27 12:01:11
- * @ Description:
- * 
- * The script defines the structure of the worker responsible for executing Python scripts.
- * The Python scripts are handled by Pyodide, which is a neat API built on top of Web Assembly.
- * That just means it's basically as fast as running natively.
- */
-
-if(typeof importScripts == 'function') {
+ * Our own API for interacting with the Pyodide worker.
+ * This is adapated from an implementation I found online.
+ * Note that I wrapped it around its own IIFE to enclose its data.
+*/
+export const PyodideAPI = (function() {
   
-  // We import the module from a cdn
-  importScripts('https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js')
+  // Create the worker from its URL
+  const pyodideWorkerURL = new URL('./Pyodide.worker.js', import.meta.url);
+  const pyodideWorker = new Worker(pyodideWorkerURL);
 
-  // Tells us whether or not Pyodide is done configuring
-  const configPyodidePromise = configPyodide();
-
-  /**
-   * This function configures pyodide and the packages we need.
-   */
-  async function configPyodide() {
-    
-    // Define pyodide
-    self.pyodide = await loadPyodide();
-
-    // Load the packages we need
-    await self.pyodide.loadPackage([ 
-      // Currently none since we load imports by default,
-      // but we can put smth like 'pandas' here
-    ]);
-  }
+  // The api object 
+  const _ = {
+    workerURL: pyodideWorkerURL,
+    worker: pyodideWorker,
+    processes: {},
+    processId: 0,
+  };
 
   /**
-   * This is the event handler for messages received from the main thread.
-   * It's called whenever we dispatch a Python process (script) for execution.
+   * This primarily responds to the messages sent by the worker after executing a script.
    * 
    * @param   { event }   e   The event object. 
    */
-  self.onmessage = async (e) => {
+  pyodideWorker.onmessage = e => {
     
-    // Wait for config if it's not done
-    await configPyodidePromise;
+    // Retrieve the data sent by the worker and the resolving callback
+    const { id } = e.data;
+    const { onResolve, onReject } = _.processes[id];
+    
+    // The process id done, so remove it
+    delete _.processes[id];
 
-    // Retrieve the data and the script code
-    const { id, python, ...context } = e.data;
+    // Resolve or reject the promise
+    if(e.error) return onReject(e.error);
+    if(e.data) return onResolve(e.data);
+  };
 
-    // For each piece of data we want the script to have access
-    // we copy it unto the worker
-    for (const key of Object.keys(context))
-      self[key] = context[key];
+  /**
+   * We create a method for dispatching processes to the worker.
+   * These processes run Python scripts for us. 
+   * 
+   * @param   { string }    script    The Python script to run in the process.
+   * @param   { object }    context   The variables and data we want to pass to the script.
+   * @return  { Promise }             A promise for a complete execution of the script.
+   */
+  _.dispatchProcess = (script, context) => {
 
-    // We actually try to run the script
+    // Increment the id each time
+    const id = _.processId += _.processId + 1;
+    
+    // Return a promise for the resolution of the process
+    return new Promise((resolve, reject) => {
+      
+      // The function to call when the process finishes
+      // Basically, we resolve the promise we return so the caller can now it's done
+      _.processes[id] = {
+        onResolve: resolve,
+        onReject: reject,
+      };
+      
+      // We send a message to the worker to tell it to run the script.
+      pyodideWorker.postMessage({
+        ...context,
+        python: script,
+        id,
+      });
+    });
+  }
+  
+  /**
+   * Wraps dispatch process around a try catch statement.
+   * Also allows the user to do something after the process exits.
+   * @param {*} script 
+   * @param {*} context 
+   */
+  _.runProcess = async(script, context) => {
+
+    // Try the script
     try {
+      const { results, error } = await _.dispatchProcess(script, context);
 
-      // Load packages and libraries based on the script imports
-      await self.pyodide.loadPackagesFromImports(python);
+      // We got something back
+      if (results)
+        console.log("Python script results: ", results);
 
-      // Save the results of the script and send to the main thread
-      const results = await self.pyodide.runPythonAsync(python);
-      self.postMessage({ results, id });
-
-    // Something happened
-    } catch (error) {
-      self.postMessage({ error: error.message, id });
+      // The script encountered an error
+      else if (error)
+        console.error("Python script error: ", error);
+ 
+    // Something wrong happened with the JS
+    } catch (e) {
+      console.log(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`);
     }
   }
+  
+  const script = `
+  import pandas
+  from js import A_rank
+
+  data = {
+    "calories": {'a': 420, 'b': 30, 'c': 390},
+    "duration": {'a': 50, 'b': 45, 'c': 50}
+  }
+  
+  df = pandas.DataFrame(data)
+  print(df)
+  df.to_json()
+`;
+
+const context = {
+  A_rank: [0.8, 0.4, 1.2, 3.7, 2.6, 5.8],
+};
+
+  //!remove
+  _.runProcess(script, context);
+
+  return {
+    ..._,
+  }
+})();
+
+export default {
+  PyodideAPI,
 }

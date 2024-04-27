@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-26 16:01:12
+ * @ Modified time: 2024-04-27 17:48:46
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -14,6 +14,7 @@ import '../ui/Input.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
 
+import { PyodideAPI } from './Pyodide'
 import { Dataset } from './Dataset.class'
 import { Datagraph } from './Datagraph.class'
 
