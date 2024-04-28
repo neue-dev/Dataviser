@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 00:05:13
+ * @ Modified time: 2024-04-29 00:16:33
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -93,22 +93,19 @@ export const Dataviser = (function() {
    */
   _.renderData = function() {
     
-    const df = DataframeManager.getDf('total');
+    // const df = DataframeManager.getDf('total');
     const pts = []
 
 
-    console.log(df)
-
-    for(row in df)
-      console.log(row);
-      // for(col in df[row])
-      //   pts.push({
-      //     x: row,
-      //     y: 
-      //   })
+    for(let i = 0; i < 300; i++)
+      pts.push({
+        x: new Date(`2020-${Math.floor(i / 28) + 1}-${i % 28 + 1}`),
+        y: Math.round(Math.random() * 1000),
+      })
+    
 
     // // ! remove
-    const d = DatagraphManager.create('test', DataframeManager.getDf('total'), 
+    const d = DatagraphManager.create('test', pts, 
       {
         width: window.innerWidth * 9 / 16,
         height: window.innerHeight * 1 / 1, 
@@ -123,6 +120,9 @@ export const Dataviser = (function() {
       dgraph.drawXAxis()
       dgraph.drawYAxis()
       dgraph.drawTitle()
+
+      // ! remove
+      dgraph.addTimeline()
     })
   }
 

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-28 23:38:14
+ * @ Modified time: 2024-04-29 00:16:22
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -450,8 +450,8 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
   const unhighlightOpacity = options.unhighlightOpacity ?? 0.25;
 
   // Some instance based parameters
-  const fx = (d, i) => this.xAxis(d.x);
-  const fy = (d, i) => this.yAxis(d.y);
+  const fx = (d, i) => this.axes.x(d.x);
+  const fy = (d, i) => this.axes.y(d.y);
   const fc = (d, y) => this.colorAxis(d.value);
 
   /**
@@ -499,7 +499,7 @@ Datagraph.prototype.addScatterplot = function(data, options={}) {
   // Create the datapoints
   this.canvas
     .selectAll('circle')
-    .data(data)
+    .data(this.data)
     .join('circle')
     .classed(this.id + '-data-point', true)
     .classed('data-point', true)
@@ -546,8 +546,8 @@ Datagraph.prototype.addTimeline = function(data, options={}) {
   const unhighlightOpacity = options.unhighlightOpacity ?? 0.25;
 
   // Some instance based parameters
-  const fx = (d, i) => this.xAxis(d.x);
-  const fy = (d, i) => this.yAxis(d.y);
+  const fx = (d, i) => this.axes.x(d.x);
+  const fy = (d, i) => this.axes.y(d.y);
   const fc = (d, y) => this.colorAxis(d.value);
 
   /**
@@ -599,14 +599,14 @@ Datagraph.prototype.addTimeline = function(data, options={}) {
   this.canvas
     .append('path')
     .classed(this.id + '-data-point', true)
-    .attr('d', line(data))
+    .attr('d', line(this.data))
     .attr('stroke', 'black')
     .attr('fill', 'none')
     .style('fill', 'none')
 
   this.canvas
     .selectAll('circle')
-    .data(data)
+    .data(this.data)
     .join('circle')
     .classed(this.id + '-data-point', true)
     .classed('data-point', true)
