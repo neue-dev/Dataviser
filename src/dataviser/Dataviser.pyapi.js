@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-28 11:26:13
+ * @ Modified time: 2024-04-28 11:49:55
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -74,23 +74,19 @@ export const DataviserPyAPI = (function() {
       from js import json_dfs--inputSerial--
       from js import rows--inputSerial--      
 
-      # Use the same variable name
-      json_dfs = json_dfs--inputSerial--
-      rows = rows--inputSerial--
-
       # Convert to something Python can understand
       print('Converting JSON to Python objects...')
-      json_dfs = json_dfs.to_py()
+      json_dfs = config_inputs(json_dfs--inputSerial--)
+      rows = config_inputs(rows--inputSerial--)
 
       # All our resulting dataframes
-      dfs = {}
+      dfs = dfs_from_json_dfs(json_dfs)
 
       # Convert each of the json objects into a df 
       print('Filtering rows...')
-      for key, json_df in json_dfs.items():
-        dfs[key] = pd.DataFrame.from_dict(json_df, orient='index')      # Convert the JSON objects into dataframes
-        dfs[key] = dfs[key][dfs[key].index.isin(rows)]                  # Filter the df by the specified rows
-        dfs[key] = dfs[key].to_dict('index')                            # Convert the dfs into dicts
+      for key, df in dfs.items():
+        df = df[df.index.isin(rows)]                          # Filter the df by the specified rows
+        dfs[key] = df.to_dict('index')                        # Convert the dfs into dicts
 
       # Return the final collection of dfs
       print('Returning results.')
@@ -103,23 +99,19 @@ export const DataviserPyAPI = (function() {
       from js import json_dfs--inputSerial--
       from js import cols--inputSerial--      
 
-      # Use the same variable name
-      json_dfs = json_dfs--inputSerial--
-      cols = cols--inputSerial--
-
       # Convert to something Python can understand
       print('Converting JSON to Python objects...')
-      json_dfs = json_dfs.to_py()
+      json_dfs = config_inputs(json_dfs--inputSerial--)
+      cols = config_inputs(cols--inputSerial--)
 
       # All our resulting dataframes
-      dfs = {}
+      dfs = dfs_from_json_dfs(json_dfs)
 
       # Convert each of the json objects into a df 
       print('Filtering cols...')
-      for key, json_df in json_dfs.items():
-        dfs[key] = pd.DataFrame.from_dict(json_df, orient='index')      # Convert the JSON objects into dataframes
-        dfs[key] = dfs[key].filter(items=list(cols))                    # Filter the df by the specified cols
-        dfs[key] = dfs[key].to_dict('index')                            # Convert the dfs into dicts
+      for key, df in dfs.items():
+        df = df.filter(items=list(cols))                      # Filter the df by the specified cols
+        dfs[key] = df.to_dict('index')                        # Convert the dfs into dicts
 
       # Return the final collection of dfs
       print('Returning results.')
@@ -132,25 +124,18 @@ export const DataviserPyAPI = (function() {
       from js import json_dfs--inputSerial--
       from js import keys--inputSerial--      
 
-      # Use the same variable name
-      json_dfs = json_dfs--inputSerial--
-      keys = keys--inputSerial--
-
       # Convert JSON data into Python compatible objects
       print('Converting JSON to Python objects...')
-      json_dfs = json_dfs.to_py()
+      json_dfs = config_inputs(json_dfs--inputSerial--)
+      keys = config_inputs(keys--inputSerial--)
 
       # All our resulting dataframes
-      dfs = []
-
-      # Convert each of the json objects into a df 
       print('Converting dicts to dataframes...')
-      for key, json_df in json_dfs.items():
-        dfs.append(pd.DataFrame(json_df))
+      dfs = dfs_from_json_dfs(json_dfs)
 
       # Concatenate all the dataframes
       print('Concatenating dataframes...')
-      result = pd.concat(dfs, keys=list(keys)).to_json(orient='index')
+      result = pd.concat(dfs.values(), keys=list(keys)).to_json(orient='index')
 
       # Return the JSON version of the result
       print('Returning results.')
@@ -295,9 +280,29 @@ export const DataviserPyAPI = (function() {
       import pandas as pd
       print('Loaded imports.')
 
+      # Define helper functions
       print('Defining helper functions...')
-      print('Defined helper functions.')
+      
+      def config_inputs(data):
+        '''
+        Configures data to be Python-compatible.
+        Also ensures we use a common variable name.
+        ''' 
+        return data.to_py()
+      
+      def dfs_from_json_dfs(json_dfs):
+        '''
+        This script converts each df within a collection of dfs into a dataframe.
+        This allows us to perform operations on the subsequent dataframes.
+        '''
+        
+        dfs = {}
+        for key, json_df in json_dfs.items():
+          dfs[key] = pd.DataFrame.from_dict(json_df, orient='index')
+        
+        return dfs
 
+      print('Defined helper functions.')
       print('Configured Python environment.')
     `);
   }
