@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-28 22:05:31
+ * @ Modified time: 2024-04-29 00:05:36
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -154,7 +154,7 @@ export const DataframeManager = (function() {
    * @return  { Dataframe }         The new dataframe object.
    */
   _.create = function(id, data) {
-    _[id] = new Dataframe(data);
+    _[id] = new Dataframe(id, data);
     count++;
 
     return _[id];

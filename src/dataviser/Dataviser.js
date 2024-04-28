@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 23:55:29
+ * @ Modified time: 2024-04-29 00:05:13
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -74,7 +74,7 @@ export const Dataviser = (function() {
     DataviserPyAPI.dfsConcat(
 
       // Get all the dfs and pass them here
-      DataframeManager.getDfs(), 
+      DataframeManager.getDfs(),
     
       // For the resulting concatenated df, store it
       df => {
@@ -93,6 +93,20 @@ export const Dataviser = (function() {
    */
   _.renderData = function() {
     
+    const df = DataframeManager.getDf('total');
+    const pts = []
+
+
+    console.log(df)
+
+    for(row in df)
+      console.log(row);
+      // for(col in df[row])
+      //   pts.push({
+      //     x: row,
+      //     y: 
+      //   })
+
     // // ! remove
     const d = DatagraphManager.create('test', DataframeManager.getDf('total'), 
       {
@@ -104,7 +118,7 @@ export const Dataviser = (function() {
 
     setTimeout(() => {
       dgraph.init();
-      dgraph.addXAxis({ domain: [0, 1000] })
+      dgraph.addXAxis({ type: 'time', domain: [new Date('2020-01-01'), new Date('2021-01-01')] })
       dgraph.addYAxis({ domain: [0, 1000] })
       dgraph.drawXAxis()
       dgraph.drawYAxis()
