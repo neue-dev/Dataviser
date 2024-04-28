@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 01:54:30
+ * @ Modified time: 2024-04-29 02:04:31
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -69,6 +69,9 @@ export const Dataviser = (function() {
    * Generates a sum of all the dataframes we have and does some other data cleaning.
    */
   _.configData = function() {
+
+    // So the user knows what's going on
+    DOMApi.get(_.catalogue).textContent = 'Loading visualizations...';
     
     // Compute the total df for all of them
     DataviserPyAPI.dfsConcat(
@@ -93,6 +96,9 @@ export const Dataviser = (function() {
    */
   _.renderData = function() {
     
+    // Remove the text content
+    DOMApi.get(_.catalogue).textContent = ''
+
     const df = DataframeManager.getDf('total');
     const pts = []
 

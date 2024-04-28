@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 01:37:56
+ * @ Modified time: 2024-04-29 02:02:46
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -199,6 +199,7 @@ export const DataframeManager = (function() {
   
   // The manager
   let _ = {};
+  let methods = {};
   let cache = {};
   const METHODS = new Set([
     'create',
@@ -246,7 +247,7 @@ export const DataframeManager = (function() {
    */
   _.setStore = function(dfs, serials) {
     cache = _;
-    _ = {};
+    _ = Object.assign(_, methods);
 
     // Create the new store
     for(let key in dfs)
@@ -379,6 +380,9 @@ export const DataframeManager = (function() {
   _.getCount = function() {
     return count;
   }
+
+  // So we have a reference next time
+  methods = Object.assign(methods, _);
 
   return {
     ..._,
