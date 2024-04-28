@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 21:12:58
+ * @ Modified time: 2024-04-28 21:40:51
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -32,6 +32,7 @@ export const Dataviser = (function() {
   
   const _ = {
     dfs: {},
+    dfCount: 0,
   };
 
   // ! put this guy elsewhere
@@ -116,7 +117,13 @@ export const Dataviser = (function() {
    * Configures the dataset object.
    */
   _.configData = function() {
-
+    
+    // Compute the total df for all of them
+    DataviserPyAPI.dfsConcat(_.dfs, df => {
+      _.dfTotal = df;
+    
+      _.renderData();
+    });
   }
 
   /**
@@ -127,36 +134,61 @@ export const Dataviser = (function() {
   }
 
   /**
+   * Reads a collection of binary files and serializes them.
+   * Converts the file contents into dataframes.
+   * NOTE this function assumes that all the files are pickle files.
+   * 
+   * @param   { array }   files   An array of file handles to read.
+   */
+  _.readData = function(files) {
+    
+    // Set df count to 0
+    _.dfCount = 0;
+    
+    // For each of the files
+    files.forEach(file => {
+      
+      // Read the file contents
+      FileAPI.readBinaryFile(file, blob => {
+
+        // Convert the blob into a df
+        DataviserPyAPI.readPickle(blob, df => {
+          
+          // Save the dataframe
+          const key = file.name.split('.')[0];
+          _.dfs[key] = df;
+          _.dfCount++;
+          
+          // Output progress
+          console.info(`Read pickle file ${_.dfCount} of ${files.length}...`);
+
+          // If it's the last dataframe, do this
+          if(_.dfCount >= files.length) {
+            _.configData();
+          } 
+        })
+      })
+    })
+  }
+
+  /**
    * Selects a directory for the user.
    * This function reads all the JSON files within a directory and stores them as is within our JS object.
    */
   _.selectDirectory = function() {
-
-    // ! remove later
-    const dfs = {};
     
     // Let the user pick a directory
     showDirectoryPicker({ id: 'default', mode: 'read' })
 
       // After selecting a folder
-      // ! make sure to use readPickles instead!
       .then(directoryHandle => 
         FileAPI.getDirectoryFiles(directoryHandle, 
-          files => files.forEach(
-            file => FileAPI.readBinaryFile(file, 
-              blob => DataviserPyAPI.readPickle(blob, df => {
-                dfs[file.name.split('.')[0]] = df;})))))
+          files => _.readData(files)))
 
       // Catch any errors
       .catch(error => {
         alert(`Error: \n(${error})`)
       })
-
-      setTimeout(() => {
-        console.log(Object.keys(dfs).length, dfs)
-        console.log(DataviserPyAPI.dfsConcat(dfs, 
-          df => console.log(df)));
-      }, 10000);
   }
 
   return {

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-28 11:20:29
+ * @ Modified time: 2024-04-28 21:41:16
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -129,17 +129,6 @@ Dataframe.prototype.filterCols = function(cols, callback=d=>d) {
   // Filter by columns
   DataviserPyAPI.dfsFilterCols(dfs, cols, df_new => callback(df_new));
 }
-
-const test = new Dataframe('1', {
-  '1': { '1': '10', '2': '20' },
-  '2': { '1': '30', '2': '40' }
-})
-
-
-setTimeout(() => {
-  test.filterRows(['1'], d => console.log('rows', d))
-  test.filterCols(['1'], d => console.log('cols', d))
-}, 5000)
 
 /**
  * Manages all our dataframes.
