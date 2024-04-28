@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 00:46:04
+ * @ Modified time: 2024-04-29 01:11:54
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -98,6 +98,13 @@ export const Dataviser = (function() {
 
     // console.log(Object.keys(df));
 
+    console.log(DataframeManager.filterDfs(serial => {
+
+      if(!serial.getTime)
+        return false;
+      return serial.getTime() < new Date('2020-01-01').getTime()
+    }))
+
     DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(), [ '2', '78' ], dfs => {
       console.log(dfs)
     })
@@ -176,9 +183,10 @@ export const Dataviser = (function() {
           
           // Id of the dataframe
           const id = file.name.split('.')[0];
+          const serial = new Date(id);
           
           // Save the dataframe
-          DataframeManager.create(id, df);
+          DataframeManager.create(id, df, serial);
 
           // Get the current count 
           const count = DataframeManager.getCount();

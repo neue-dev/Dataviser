@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 00:51:23
+ * @ Modified time: 2024-04-29 01:11:14
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -16,18 +16,20 @@ import { DataviserPyAPI } from "./Dataviser.pyapi";
  * The dataframe class.
  * This is basically an extension of the dictionary object.
  */
-export function Dataframe(id, data) {
+export function Dataframe(id, data, serial) {
 
   // Some metadata
   this.ID = id;
   this.COLUMNS = [];
   this.ROWS = [];
   this.INDEX = '';
+  this.SERIAL = serial ?? 0;
   this.METADATA = new Set([ 
     'ID', 
     'COLUMNS',
     'ROWS', 
     'INDEX', 
+    'SERIAL',
     'METADATA', 
   ])
 
@@ -153,24 +155,29 @@ export const DataframeManager = (function() {
   
   // The manager
   const _ = {};
-  let count = 0;
   const METHODS = new Set([
     'create',
     'get',
     'getDf',
     'getDfs',
-    'getCount'
+    'filterDfs',
+    'getSumDfs',
+    'getCount',
   ]);
+  
+  // Private vars
+  let count = 0;
 
   /**
    * Creates a new dataframe.
    * 
-   * @param   { string }      id    The id of the dataframe. 
-   * @param   { object }      data  The object we want to convert.
-   * @return  { Dataframe }         The new dataframe object.
+   * @param   { string }      id      The id of the dataframe. 
+   * @param   { object }      data    The object we want to convert.
+   * @param   { any }         serial  Something to serialize the df.
+   * @return  { Dataframe }           The new dataframe object.
    */
-  _.create = function(id, data) {
-    _[id] = new Dataframe(id, data);
+  _.create = function(id, data, serial) {
+    _[id] = new Dataframe(id, data, serial);
     count++;
 
     return _[id];
@@ -200,6 +207,58 @@ export const DataframeManager = (function() {
         dfs[key] = _[key].get()
 
     return dfs;
+  }
+
+  /**
+   * Filters the dataframes using their serial under the given callback.
+   * The callback returns a boolean and is passed the serial of each dataframe.
+   * 
+   * @param   { function }  callback  The callback to use for filtering. 
+   */
+  _.filterDfs = function(callback) {
+    const dfs = {};
+
+    for(let key in _) {
+      if(!METHODS.has(key)) {
+        if(callback(_[key].SERIAL))
+          dfs[key] = _[key].get()
+      }
+    }
+
+    return dfs;
+  }
+
+  _.getSumDfs = function(callback=d=>true) {
+
+    // Hmm
+    const dfs = _.filterDfs(callback);
+    const dfSum = {};
+    
+    // For each df
+    for(let key in dfs) {
+
+      // For each row
+      for(let row in dfs[key]) {
+
+        // If entry is undefined
+        if(!dfSum[row])
+          dfSum[row] = {};
+
+        // For each column
+        for(let col in dfs[key][row]) {
+          
+          // If col is undefined
+          if(!dfSum[col])
+            dfSum[col] = 0
+          
+          // Add the value of the df
+          dfSum[col] += dfs[key][row][col]
+        }
+      }
+    }
+
+    // Return cumulative df
+    return dfSum;
   }
 
   /**
