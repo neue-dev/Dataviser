@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-28 17:33:26
- * @ Modified time: 2024-04-28 18:38:20
+ * @ Modified time: 2024-04-28 18:41:14
  * @ Description:
  * 
  * This class defines an HTMLElement with an editable field.
