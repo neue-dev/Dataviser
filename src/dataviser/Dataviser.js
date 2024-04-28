@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 22:49:47
+ * @ Modified time: 2024-04-28 23:04:16
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -19,27 +19,12 @@ import { DatagraphManager } from './Datagraph.class'
 // Handles all the data vis
 export const Dataviser = (function() {
   
-  const root = document.getElementsByClassName('root')[0];
-
-  const dataviserWindow = document.createElement('grid-component');
-  const dataviserFileList = document.createElement('div');
-  const dataviserInfoBoard = document.createElement('div');
-  
+  // The dataviser object and the root element
   const _ = {};
-
-  // ! put this guy elsewhere
-  const keyParser = key => {
-    return {
-      date: new Date(key).getTime(),
-    }
-  }
-
-  // The input fields
-  const inputRangeField = document.createElement('input-component');
-  const inputIsolateField = document.createElement('input-component');
-  
+  const root = document.getElementsByClassName('root')[0];
+    
   /**
-   * Update this so it doesnt become messy over time
+   * The init function sets up dataviser.
    */
   _.init = function() {
     
@@ -47,19 +32,28 @@ export const Dataviser = (function() {
     _.configDOM();
   }
 
+  /**
+   * This function configures the initial state of the DOM.
+   */
   _.configDOM = function() {
 
     // Create the DOM
     DOMApi.setRoot(root);
     DOMApi.create('dataviser-title', 'div', 'root', 'Thailand Immigration Data');
-    DOMApi.create('dataviser-import-button', 'button-component', 'root', 'import files');
-    DOMApi.create('dataviser-filter-date', 'input-component', 'root', 'date filter');
-    DOMApi.create('dataviser-filter-locs', 'input-component', 'root', 'locs filter');
+    DOMApi.create('dataviser-body-text', 'div', 'root', '<br>');
+    DOMApi.create('dataviser-body-text', 'div', 'root', 'Select the folder containing all the .pkl files.');    
+    
+    // Some interactive UI
+    const buttonImport = DOMApi.create('dataviser-import-button', 'button-component', 'root', 'import files');
+    const filterDate = DOMApi.create('dataviser-filter-date', 'input-component', 'root', 'date filter');
+    const filterLocs = DOMApi.create('dataviser-filter-locs', 'input-component', 'root', 'locs filter');
+
+    // Other DOM parts
     DOMApi.create('dataviser-filelist', 'div');
     DOMApi.create('dataviser-infoboard', 'div');
 
     // Add event listeners
-    DOMApi.get('dataviser-import-button').mouseDownCallback = e => {
+    DOMApi.get(buttonImport).mouseDownCallback = e => {
       _.selectDirectory();
     }
   }
@@ -92,18 +86,18 @@ export const Dataviser = (function() {
    */
   _.renderData = function() {
     
-    // ! remove
-    const d = DatagraphManager.create('test', DataframeManager.getDf('total'), { parent: dataviserWindow.getCell(3, 1) });
-    const dgraph = DatagraphManager.get(d);
+    // // ! remove
+    // const d = DatagraphManager.create('test', DataframeManager.getDf('total'), { parent: dataviserWindow.getCell(3, 1) });
+    // const dgraph = DatagraphManager.get(d);
 
-    setTimeout(() => {
-      dgraph.init();
-      dgraph.addXAxis({ domain: [0, 1000] })
-      dgraph.addYAxis({ domain: [0, 1000] })
-      dgraph.drawXAxis()
-      dgraph.drawYAxis()
-      dgraph.drawTitle()
-    })
+    // setTimeout(() => {
+    //   dgraph.init();
+    //   dgraph.addXAxis({ domain: [0, 1000] })
+    //   dgraph.addYAxis({ domain: [0, 1000] })
+    //   dgraph.drawXAxis()
+    //   dgraph.drawYAxis()
+    //   dgraph.drawTitle()
+    // })
   }
 
   /**

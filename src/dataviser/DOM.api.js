@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-28 22:21:14
- * @ Modified time: 2024-04-28 22:38:08
+ * @ Modified time: 2024-04-28 22:58:18
  * @ Description:
  * 
  * A utility for helping us manipulate the DOM.
@@ -32,25 +32,24 @@ export const DOMApi = (function() {
   /**
    * Creates a new HTML element.
    * 
-   * @param   { string }        id        A string representing the id of the element. 
-   * @param   { string }        tag       A string representing the type of element.
-   * @param   { string }        content   The content of the element.
-   * @return  { HTMLElement }             The created element.
+   * @param   { string }        className   A string representing the primary classname of the element. 
+   * @param   { string }        tag         A string representing the type of element.
+   * @param   { string }        content     The content of the element.
+   * @return  { HTMLElement }               The created element.
    */
-  _.create = function(id, tag, parentId='root', content='', options={}) {
+  _.create = function(className, tag, parentId='root', content='', options={}) {
+
+    // Generate a new element id
+    const id = '_' + crypto.randomUUID();
     
     // Don't proceed if element doesn't exist
     if(!_[parentId]) 
       return;
 
-    // If element exists
-    if(_[id])
-      return;
-
     // Create the element and append it
     _[id] = document.createElement(tag);
     _[id].innerHTML = content;
-    _[id].classList.add(id)
+    _[id].classList.add(className)
     _[parentId].appendChild(_[id]);
 
     // If other classes are specified
@@ -59,8 +58,8 @@ export const DOMApi = (function() {
         _[id].classList.add(className))
     }
 
-    // Return the created element
-    return _[id];
+    // Return the id of the created element
+    return id;
   }
   
   /**
