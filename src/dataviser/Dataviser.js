@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 18:33:59
+ * @ Modified time: 2024-04-28 18:46:09
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -90,14 +90,6 @@ export const Dataviser = (function() {
     // Info board
     dataviserWindow.appendCell(2, 4, 1, 2);
     dataviserWindow.getCell(2, 4).appendChild(dataviserInfoBoard);
-
-    // Some code samples
-    // !remove
-    const test = document.createElement('editor-component');
-    document.body.append(test)
-
-    dataviserWindow.appendCell(3, 4, 1, 1);
-    dataviserWindow.getCell(3, 4).appendChild(test);
 
     // Populate the fields
     inputRangeField.innerHTML = '2020-01-01, 2021-01-01';
