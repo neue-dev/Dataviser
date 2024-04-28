@@ -96,3 +96,6 @@ out/
 
 # For now
 build/
+
+# Ignore my debug py files
+.debug/

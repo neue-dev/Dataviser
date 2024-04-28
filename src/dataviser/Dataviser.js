@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 01:45:27
+ * @ Modified time: 2024-04-28 10:13:08
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -23,10 +23,16 @@ import { Datagraph } from './Datagraph.class'
 
 // Handles all the data vis
 export const Dataviser = (function() {
+  
+  const root = document.getElementsByClassName('root')[0];
+  const dataviserWindow = document.createElement('grid-component');
+  const dataviserCatalogue = document.createElement('grid-cell-component');
+  const dataviserFileList = document.createElement('div');
+  const dataviserInfoBoard = document.createElement('div');
+  
   const _ = {
     dfs: {},
   };
-  const root = document.getElementsByClassName('root')[0];
 
   // ! put this guy elsewhere
   const keyParser = key => {
@@ -36,11 +42,6 @@ export const Dataviser = (function() {
   }
 
   // Dataviser menu elements
-  const dataviserWindow = document.createElement('grid-component');
-  const dataviserCatalogue = document.createElement('grid-cell-component');
-  const dataviserFileList = document.createElement('div');
-  const dataviserInfoBoard = document.createElement('div');
-
   dataviserCatalogue.classList.add('dataviser-catalogue');
   dataviserFileList.classList.add('dataviser-file-list');
   dataviserInfoBoard.classList.add('dataviser-info-board');
@@ -607,17 +608,17 @@ export const Dataviser = (function() {
         FileAPI.getDirectoryFiles(directoryHandle, 
           files => files.forEach(
             file => FileAPI.readBinaryFile(file, 
-              blob => DataviserPyAPI.readPickle(blob, d => dfs[file.name.split('.')[0]] = d)))))
+              blob => DataviserPyAPI.readPickle(blob, d => {dfs[file.name.split('.')[0]] = d; console.log(file.name, d)})))))
 
       // Catch any errors
       .catch(error => {
         alert(`Error: \n(${error})`)
       })
 
-      setTimeout(() => {
-        console.log(DataviserPyAPI.dfsConcat(dfs, 
-          df => console.log(df)));
-      }, 10000);
+      // setTimeout(() => {
+      //   console.log(DataviserPyAPI.dfsConcat(dfs, 
+      //     df => console.log(df)));
+      // }, 10000);
   }
 
   return {

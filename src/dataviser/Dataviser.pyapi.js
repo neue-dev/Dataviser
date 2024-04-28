@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-28 01:45:09
+ * @ Modified time: 2024-04-28 10:22:54
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -10,6 +10,7 @@
 import { PyodideAPI } from "./Pyodide.api";
 
 export const DataviserPyAPI = (function() {
+  let inputSerial = 0;
 
   const _ = {
     scripts: {
@@ -21,7 +22,10 @@ export const DataviserPyAPI = (function() {
       `
       import pickle
       import pandas as pd
-      from js import byte_array
+      from js import byte_array--inputSerial--
+
+      # Use the same variable name
+      byte_array = byte_array--inputSerial--
 
       # Convert to a byte string 
       byte_string = bytes(byte_array)
@@ -40,7 +44,10 @@ export const DataviserPyAPI = (function() {
       import json
       import pickle
       import pandas as pd
-      from js import byte_arrays
+      from js import byte_arrays--inputSerial--
+
+      # Use the same variable name
+      byte_arrays = byte_arrays--inputSerial--
 
       # Convert to Python-readable structures
       print('Comverting JS byte_arrays to Py objects...')
@@ -71,8 +78,12 @@ export const DataviserPyAPI = (function() {
       `
       import json
       import pandas as pd
-      from js import json_dfs
-      from js import rows
+      from js import json_dfs--inputSerial--
+      from js import rows--inputSerial--      
+
+      # Use the same variable name
+      json_dfs = json_dfs--inputSerial--
+      rows = rows--inputSerial--
 
       # Convert to something Python can understand
       print('Converting JSON to Python objects...')
@@ -98,8 +109,12 @@ export const DataviserPyAPI = (function() {
       `
       import json
       import pandas as pd
-      from js import json_dfs
-      from js import cols
+      from js import json_dfs--inputSerial--
+      from js import cols--inputSerial--      
+
+      # Use the same variable name
+      json_dfs = json_dfs--inputSerial--
+      rows = cols--inputSerial--
 
       # Convert to something Python can understand
       print('Converting JSON to Python objects...')
@@ -124,8 +139,12 @@ export const DataviserPyAPI = (function() {
       'dfs_concat':
       `
       import pandas as pd
-      from js import json_dfs
-      from js import keys
+      from js import json_dfs--inputSerial--
+      from js import keys--inputSerial--      
+
+      # Use the same variable name
+      json_dfs = json_dfs--inputSerial--
+      keys = keys--inputSerial--
 
       # Convert JSON data into Python compatible objects
       print('Converting JSON to Python objects...')
@@ -151,6 +170,31 @@ export const DataviserPyAPI = (function() {
   };
 
   /**
+   * Renames variables based on input serial.
+   * 
+   * @param   { object }  context   The stuff we want to pass to the script. 
+   * @return  { object }            A serialized version of the context.
+   */
+  _.createContext = function(context) {
+    let ctx = {};
+
+    for(let key in context)
+      ctx[key + inputSerial.toString()] = context[key]
+
+    return ctx;
+  }
+
+  /**
+   * Serializes the imports within a script.
+   * 
+   * @param   { string }  script  The original script. 
+   * @return  { string }          The script with serialized inputs.
+   */
+  _.createScript = function(script) {
+    return script.replaceAll('--inputSerial--', inputSerial);
+  }
+
+  /**
    * Reads a raw byte array and spits out a JSON object.
    * The JSON object is the depickled version of the file.
    * 
@@ -159,10 +203,12 @@ export const DataviserPyAPI = (function() {
    */
   _.readPickle = function(byteArray, callback) {
     PyodideAPI.runProcess(
-      _.scripts['read_pickle'], 
-      { byte_array: byteArray }, 
+      _.createScript(_.scripts['read_pickle']), 
+      _.createContext({ byte_array: byteArray }), 
       data => callback(JSON.parse(data))
     );
+
+    inputSerial++;
   }
 
   /**
@@ -174,10 +220,12 @@ export const DataviserPyAPI = (function() {
    */
   _.readPickles = function(byteArrays, callback) {
     PyodideAPI.runProcess(
-      _.scripts['read_pickles'], 
-      { byte_arrays: byteArrays }, 
+      _.createScript(_.scripts['read_pickles']), 
+      _.createContext({ byte_arrays: byteArrays }), 
       data => callback(JSON.parse(data))
     );
+
+    inputSerial++;
   }
 
   /**
@@ -190,13 +238,15 @@ export const DataviserPyAPI = (function() {
    */
   _.dfsFilterRows = function(jsonDataFrames, rows, callback) {
     PyodideAPI.runProcess(
-      _.scripts['dfs_filter_rows'],
-      { 
+      _.createScript(_.scripts['dfs_filter_rows']),
+      _.createContext({ 
         json_dfs: jsonDataFrames, 
         rows: rows 
-      },
+      }),
       data => callback(JSON.parse(data))
     )
+
+    inputSerial++;
   }
 
   /**
@@ -209,13 +259,15 @@ export const DataviserPyAPI = (function() {
    */
   _.dfsFilterCols = function(jsonDataFrames, cols, callback) {
     PyodideAPI.runProcess(
-      _.scripts['dfs_filter_cols'],
-      { 
+      _.createScript(_.scripts['dfs_filter_cols']),
+      _.createContext({ 
         json_dfs: jsonDataFrames, 
         cols: cols
-      },
+      }),
       data => callback(JSON.parse(data))
     )
+
+    inputSerial++;
   }
 
   /**
@@ -226,13 +278,15 @@ export const DataviserPyAPI = (function() {
    */
   _.dfsConcat = function(jsonDataFrames, callback) {
     PyodideAPI.runProcess(
-      _.scripts['dfs_concat'], 
-      { 
+      _.createScript(_.scripts['dfs_concat']), 
+      _.createContext({ 
         json_dfs: jsonDataFrames,
         keys: Object.keys(jsonDataFrames),
-      }, 
+      }), 
       data => callback(JSON.parse(data))
     );
+
+    inputSerial++;
   }
 
   return {
