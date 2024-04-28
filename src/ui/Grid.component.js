@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 16:21:09
- * @ Modified time: 2024-04-28 01:03:08
+ * @ Modified time: 2024-04-28 18:30:15
  * @ Description:
  * 
  * The grid class.
@@ -148,13 +148,16 @@ export class GridCellComponent extends Component {
   updateStyle() {
 
     // Remove old classes
-    let classeToRemove = [];
+    let classesToRemove = [];
+    
     for(let i = 0; i < this.classList.length; i++)
       if(this.classList[i].includes('grid-cell'))
-        classeToRemove.push(this.classList[i]);
+        classesToRemove.push(this.classList[i]);
 
+    if(classesToRemove.length)
+      this.classList.remove(...classesToRemove);
+    
     // Define the classes
-    this.classList.remove(...classeToRemove);
     this.classList.add('grid-cell');
     this.classList.add('grid-cell-x' + this.x);
     this.classList.add('grid-cell-y' + this.y);
