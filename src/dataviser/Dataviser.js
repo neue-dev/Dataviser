@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 00:16:33
+ * @ Modified time: 2024-04-29 00:46:04
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -93,9 +93,14 @@ export const Dataviser = (function() {
    */
   _.renderData = function() {
     
-    // const df = DataframeManager.getDf('total');
+    const df = DataframeManager.getDf('total');
     const pts = []
 
+    // console.log(Object.keys(df));
+
+    DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(), [ '2', '78' ], dfs => {
+      console.log(dfs)
+    })
 
     for(let i = 0; i < 300; i++)
       pts.push({

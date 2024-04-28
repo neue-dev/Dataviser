@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 00:05:36
+ * @ Modified time: 2024-04-29 00:51:23
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -128,6 +128,22 @@ Dataframe.prototype.filterCols = function(cols, callback=d=>d) {
 
   // Filter by columns
   DataviserPyAPI.dfsFilterCols(dfs, cols, df_new => callback(df_new));
+}
+
+/**
+ * Filters the rows and cols of the dataframe by the specified names.
+ * 
+ * @param   { array }     rowcols   An array of the rows and cols we want.
+ * @param   { function }  callback  The function to receive the filtered dataframe.
+ */
+Dataframe.prototype.filterRowcols = function(rowcols, callback=d=>d) {
+  
+  // Get the df
+  const dfs = {};
+  dfs[this.ID] = this.get();
+
+  // Filter by columns
+  DataviserPyAPI.dfsFilterRowcols(dfs, rowcols, df_new => callback(df_new));
 }
 
 /**

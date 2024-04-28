@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-28 11:49:55
+ * @ Modified time: 2024-04-29 00:48:06
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -82,7 +82,7 @@ export const DataviserPyAPI = (function() {
       # All our resulting dataframes
       dfs = dfs_from_json_dfs(json_dfs)
 
-      # Convert each of the json objects into a df 
+      # Filter by rows
       print('Filtering rows...')
       for key, df in dfs.items():
         df = df[df.index.isin(rows)]                          # Filter the df by the specified rows
@@ -107,11 +107,37 @@ export const DataviserPyAPI = (function() {
       # All our resulting dataframes
       dfs = dfs_from_json_dfs(json_dfs)
 
-      # Convert each of the json objects into a df 
+      # Filter by cols
       print('Filtering cols...')
       for key, df in dfs.items():
         df = df.filter(items=list(cols))                      # Filter the df by the specified cols
         dfs[key] = df.to_dict('index')                        # Convert the dfs into dicts
+
+      # Return the final collection of dfs
+      print('Returning results.')
+      json.dumps(dfs)
+      `,
+
+      // Filters the dataframes by the specified rows and cols
+      'dfs_filter_rowcols': 
+      `
+      from js import json_dfs--inputSerial--
+      from js import rowcols--inputSerial--      
+
+      # Convert to something Python can understand
+      print('Converting JSON to Python objects...')
+      json_dfs = config_inputs(json_dfs--inputSerial--)
+      rowcols = config_inputs(rowcols--inputSerial--)
+
+      # All our resulting dataframes
+      dfs = dfs_from_json_dfs(json_dfs)
+
+      # Filter by rows then cols
+      print('Filtering rows and cols...')
+      for key, df in dfs.items():
+        df = df[df.index.isin(rowcols)]                          # Filter the df by the specified rows
+        df = df.filter(items=list(rowcols))                      # Filter the df by the specified cols
+        dfs[key] = df.to_dict('index')                           # Convert the dfs into dicts
 
       # Return the final collection of dfs
       print('Returning results.')
@@ -135,11 +161,11 @@ export const DataviserPyAPI = (function() {
 
       # Concatenate all the dataframes
       print('Concatenating dataframes...')
-      result = pd.concat(dfs.values(), keys=list(keys)).to_json(orient='index')
+      result = pd.concat(dfs.values(), keys=list(keys))
 
       # Return the JSON version of the result
       print('Returning results.')
-      result
+      result.to_json(orient='index')
       `,
     }
   };
@@ -238,6 +264,27 @@ export const DataviserPyAPI = (function() {
       _.createContext({ 
         json_dfs: jsonDataFrames, 
         cols: cols
+      }),
+      data => callback(JSON.parse(data))
+    )
+
+    inputSerial++;
+  }
+
+  /**
+   * Filters the dataframes by the specified rows and cols.
+   * Returns the result to the callback.
+   * 
+   * @param   { object }    jsonDataFrames  A dict of JSON dataframes.
+   * @param   { array }     rowcols         An array of row-column names to include.
+   * @param   { function }  callback        The callback to receive the resulting filtered dfs.  
+   */
+  _.dfsFilterRowcols = function(jsonDataFrames, rowcols, callback=d=>d) {
+    PyodideAPI.runProcess(
+      _.createScript(_.scripts['dfs_filter_rowcols']),
+      _.createContext({ 
+        json_dfs: jsonDataFrames, 
+        rowcols: rowcols
       }),
       data => callback(JSON.parse(data))
     )
