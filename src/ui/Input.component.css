@@ -1,7 +1,7 @@
 input-component {
   margin: 0.5em 0 2em 0;
   padding: 0.8em 1em;
-  border-left: 4px solid rgba(var(--black), 0.4);
+  border-left: var(--default-left-pad);
 
   font-family: SFProItalic;
   color: rgba(var(--black), 0.4);

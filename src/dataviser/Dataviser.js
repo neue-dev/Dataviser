@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 23:04:16
+ * @ Modified time: 2024-04-28 23:55:29
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -39,18 +39,25 @@ export const Dataviser = (function() {
 
     // Create the DOM
     DOMApi.setRoot(root);
-    DOMApi.create('dataviser-title', 'div', 'root', 'Thailand Immigration Data');
-    DOMApi.create('dataviser-body-text', 'div', 'root', '<br>');
-    DOMApi.create('dataviser-body-text', 'div', 'root', 'Select the folder containing all the .pkl files.');    
+    const title = DOMApi.create('dataviser-title', 'div', 'root', 'Thailand Immigration Data');
+    const panel = DOMApi.create('dataviser-panel', 'div', 'root');
     
     // Some interactive UI
+    DOMApi.create('dataviser-body-text', 'div', 'root', '<br>Select the folder containing all the .pkl files.');    
     const buttonImport = DOMApi.create('dataviser-import-button', 'button-component', 'root', 'import files');
-    const filterDate = DOMApi.create('dataviser-filter-date', 'input-component', 'root', 'date filter');
-    const filterLocs = DOMApi.create('dataviser-filter-locs', 'input-component', 'root', 'locs filter');
+    
+    DOMApi.create('dataviser-body-text', 'div', panel, '<br>Specify a date range here.');
+    const filterDate = DOMApi.create('dataviser-filter-date', 'input-component', panel, 'date filter');
+    
+    DOMApi.create('dataviser-body-text', 'div', panel, '<br>Specify locations here.');
+    const filterLocs = DOMApi.create('dataviser-filter-locs', 'input-component', panel, 'locs filter');
 
     // Other DOM parts
-    DOMApi.create('dataviser-filelist', 'div');
-    DOMApi.create('dataviser-infoboard', 'div');
+    DOMApi.create('dataviser-body-text', 'div', 'root', '<br>');    
+    _.filelist = DOMApi.create('dataviser-filelist', 'ol');
+
+    DOMApi.create('dataviser-body-text', 'div', 'root', '<br>');
+    _.catalogue = DOMApi.create('dataviser-catalogue', 'div');
 
     // Add event listeners
     DOMApi.get(buttonImport).mouseDownCallback = e => {
@@ -87,17 +94,40 @@ export const Dataviser = (function() {
   _.renderData = function() {
     
     // // ! remove
-    // const d = DatagraphManager.create('test', DataframeManager.getDf('total'), { parent: dataviserWindow.getCell(3, 1) });
-    // const dgraph = DatagraphManager.get(d);
+    const d = DatagraphManager.create('test', DataframeManager.getDf('total'), 
+      {
+        width: window.innerWidth * 9 / 16,
+        height: window.innerHeight * 1 / 1, 
+        parent: DOMApi.get(_.catalogue) 
+      });
+    const dgraph = DatagraphManager.get(d);
 
-    // setTimeout(() => {
-    //   dgraph.init();
-    //   dgraph.addXAxis({ domain: [0, 1000] })
-    //   dgraph.addYAxis({ domain: [0, 1000] })
-    //   dgraph.drawXAxis()
-    //   dgraph.drawYAxis()
-    //   dgraph.drawTitle()
-    // })
+    setTimeout(() => {
+      dgraph.init();
+      dgraph.addXAxis({ domain: [0, 1000] })
+      dgraph.addYAxis({ domain: [0, 1000] })
+      dgraph.drawXAxis()
+      dgraph.drawYAxis()
+      dgraph.drawTitle()
+    })
+  }
+
+  /**
+   * Renders the current files we have stored. 
+   */
+  _.renderFiles = function() {
+    
+    // Reset content first
+    DOMApi.get(_.filelist).innerHTML = '';
+    
+    // Display filenames
+    _.files.forEach(file => {
+      DOMApi.get(_.filelist).innerHTML += `
+        <li class='dataviser-filelist-name'>
+          ${file}
+        </li>
+      `
+    })
   }
 
   /**
@@ -108,10 +138,17 @@ export const Dataviser = (function() {
    * @param   { array }   files   An array of file handles to read.
    */
   _.readData = function(files) {
+
+    // Store all the filenames and set DOM to loading
+    _.files = [];
+    DOMApi.get(_.filelist).innerHTML = 'Loading files...';
     
     // For each of the files
     files.forEach(file => {
       
+      // Save the filename
+      _.files.push(file.name)
+
       // Read the file contents
       FileAPI.readBinaryFile(file, blob => {
 
@@ -131,8 +168,10 @@ export const Dataviser = (function() {
           console.info(`Read pickle file ${count} of ${files.length}...`);
 
           // If it's the last dataframe, do this
-          if(count >= files.length)
+          if(count >= files.length) {
+            _.renderFiles();
             _.configData();
+          }
         })
       })
     })

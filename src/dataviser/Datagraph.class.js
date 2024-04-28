@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-28 17:30:52
+ * @ Modified time: 2024-04-28 23:38:14
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -29,6 +29,10 @@ export function Datagraph(title, data, options={}) {
   this.title = title;
   this.data = data;
 
+  // Dimensions
+  if(options.width) this.width = options.width;
+  if(options.height) this.height = options.height;
+
   // For axes and scales
   this.axes = {};
   this.scales = {};
@@ -45,8 +49,8 @@ export function Datagraph(title, data, options={}) {
 Datagraph.prototype.initSize = function() {
 
   // Some constants
-  this.width = this.parent.getBoundingClientRect().width * 0.84;
-  this.height = this.parent.getBoundingClientRect().height * 0.84;
+  if(!this.width) this.width = this.parent.getBoundingClientRect().width * 0.84;
+  if(!this.height) this.height = this.parent.getBoundingClientRect().height * 0.84;
   this.margins = {
     top: 96, bottom: 160,
     left: 72, right: 0,
