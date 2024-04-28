@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 16:21:09
- * @ Modified time: 2024-04-28 18:30:15
+ * @ Modified time: 2024-04-28 22:17:21
  * @ Description:
  * 
  * The grid class.
@@ -73,6 +73,17 @@ export class GridComponent extends Component {
     if(!this.cells[x])
       this.cells[x] = {}
     this.cells[x][y] = gridCellComponent;
+  }
+
+  /**
+   * Gives the cell a classname.
+   * 
+   * @param   { number }  x           The x-placement of the cell. 
+   * @param   { number }  y           The y-placement of the cell.
+   * @param   { string }  className   The class name we want to add.
+   */
+  classCell(x, y, className) {
+    this.getCell(x, y).classList.add(className);
   }
 }
 
