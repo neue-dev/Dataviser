@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-28 10:22:54
+ * @ Modified time: 2024-04-28 10:39:44
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -20,8 +20,6 @@ export const DataviserPyAPI = (function() {
       // ! add print statements, convert to py obj first
       'read_pickle': 
       `
-      import pickle
-      import pandas as pd
       from js import byte_array--inputSerial--
 
       # Use the same variable name
@@ -41,9 +39,6 @@ export const DataviserPyAPI = (function() {
       // The dfs are returned in JSON
       'read_pickles': 
       `
-      import json
-      import pickle
-      import pandas as pd
       from js import byte_arrays--inputSerial--
 
       # Use the same variable name
@@ -76,8 +71,6 @@ export const DataviserPyAPI = (function() {
       // Filters the dataframes by the specified rows
       'dfs_filter_rows': 
       `
-      import json
-      import pandas as pd
       from js import json_dfs--inputSerial--
       from js import rows--inputSerial--      
 
@@ -107,8 +100,6 @@ export const DataviserPyAPI = (function() {
       // Filters the dataframes by the specified cols
       'dfs_filter_cols': 
       `
-      import json
-      import pandas as pd
       from js import json_dfs--inputSerial--
       from js import cols--inputSerial--      
 
@@ -138,7 +129,6 @@ export const DataviserPyAPI = (function() {
       // Concatenates two dataframes together
       'dfs_concat':
       `
-      import pandas as pd
       from js import json_dfs--inputSerial--
       from js import keys--inputSerial--      
 
@@ -288,6 +278,32 @@ export const DataviserPyAPI = (function() {
 
     inputSerial++;
   }
+
+  /**
+   * This configures the Python process with the imports we need.
+   * It also defines helper functions within the Python environment we can use later on.
+   */
+  _.configProcess = function() {
+
+    // Run the config script
+    PyodideAPI.runProcess(`
+      print('Configuring Python environment...')
+      
+      print('Loading imports...')
+      import json
+      import pickle
+      import pandas as pd
+      print('Loaded imports.')
+
+      print('Defining helper functions...')
+      print('Defined helper functions.')
+
+      print('Configured Python environment.')
+    `);
+  }
+
+  // Configure the process
+  _.configProcess();
 
   return {
     ..._,
