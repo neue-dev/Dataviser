@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 01:27:38
+ * @ Modified time: 2024-04-29 01:37:56
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -198,9 +198,12 @@ Dataframe.prototype.toList = function() {
 export const DataframeManager = (function() {
   
   // The manager
-  const _ = {};
+  let _ = {};
+  let cache = {};
   const METHODS = new Set([
     'create',
+    'setStore',
+    'revertStore',
     'get',
     'getDf',
     'getDfs',
@@ -232,6 +235,31 @@ export const DataframeManager = (function() {
     }
 
     return dfs;
+  }
+
+  /**
+   * Stores the current dfs in the cache.
+   * Replaces the current df dict with the one provided.
+   * 
+   * @param   { dict }  dfs       A dict of dfs. 
+   * @param   { dict }  serials   The serials for the dfs.
+   */
+  _.setStore = function(dfs, serials) {
+    cache = _;
+    _ = {};
+
+    // Create the new store
+    for(let key in dfs)
+      _[key] = new Dataframe(key, dfs[key], serials[key])
+  }
+  
+  /**
+   * Reverts the store to the previous value.
+   * 
+   * @param   { dict }  dfs   A dict of dfs. 
+   */
+  _.revertStore = function() {
+    _ = cache;
   }
 
   /**
