@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-26 14:49:10
+ * @ Modified time: 2024-04-28 12:29:11
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -15,11 +15,19 @@ import d3 from '../libs/d3.v7.min.js'
  * A constructor function for the datagraph class.
  * 
  * @param   { object }      options   Options for initializing the data graph. 
+ * @param   { string }      title     The title of the graph.
+ * @param   { data }        data      The data bound to the graph.
  * @return  { Datagraph }             The created instance.
  */
-export function Datagraph(options={}) {
+export function Datagraph(title, data, options={}) {
+
+  // Metadata
   this.id = '_' + crypto.randomUUID();
   this.parent = options.parent ?? document.body;
+
+  // The important stuff
+  this.title = title;
+  this.data = data;
 
   return this;
 }
@@ -41,6 +49,10 @@ Datagraph.prototype.init = function(options={}) {
     left: 72, right: 0,
   };
 
+  // Set the width and height
+  this.width -= this.margins.right;
+  this.height -= this.margins.bottom;
+
   // Refers to the access point where we add stuff
   this.canvas = d3.select(this.parent)
 
@@ -48,17 +60,17 @@ Datagraph.prototype.init = function(options={}) {
     .append('svg')
     .classed(this.id, true)
     .classed('datagraph', true)
-    .attr('width', this.width + this.margins.left)
-    .attr('height', this.height + this.margins.top)
+    .attr('width', this.width + this.margins.left + this.margins.right)
+    .attr('height', this.height + this.margins.top + this.margins.bottom)
 
     // The frame within the svg where we add stuff
     .append('g')
-    .attr('width', this.width - this.margins.right)
-    .attr('height', this.height - this.margins.bottom)
+    .attr('width', this.width)
+    .attr('height', this.height)
     .style('transform', `translate(${this.margins.left}px, ${this.margins.top}px)`)
 
-  this.width -= this.margins.right;
-  this.height -= this.margins.bottom;
+  // Add the title and subtitle
+  this.addTitle(title);
 
   return this;
 }
@@ -566,6 +578,8 @@ Datagraph.prototype.clear = function() {
  * @return  { Datagraph }   The datagraph instance we modified. 
  */
 Datagraph.prototype.remove = function() {
+
+  // Get the existing graphs
   const graphs = document.getElementsByClassName(this.id);
   
   // Remove the stuff inside the svgs
@@ -583,6 +597,61 @@ Datagraph.prototype.remove = function() {
  */
 export const DatagraphManager = (function() {
   const _ = {};
+
+  /**
+   * Creates a new datagraph.
+   * 
+   * @param   { string }  title     The title of the graph.
+   * @param   { object }  data      The data to bind to the graph.
+   * @param   { object }  options   The options we have for rendering.
+   */
+  _.create = function(title, data, options={}) {
+    
+    // Create the datagraph
+    const datagraph = new Datagraph(title, data, options);
+    
+    // Save in the store
+    _[datagraph.id] = datagraph;
+
+    // Return the instance id
+    return datagraph.id;
+  }
+
+  /**
+   * Returns the requested instance.
+   * 
+   * @param     { string }      id  The id of the instance. 
+   * @return    { datagraph }       The instance we requested for.
+   */
+  _.get = function(id) {
+    if(_[id]) 
+      return _[id];
+    return null;
+  }
+
+  /**
+   * Clears the contents of the requested instance.
+   * 
+   * @param     { string }      id  The id of the instance. 
+   * @return    { datagraph }       The instance we wanted to clear.
+   */
+  _.clear = function(id) {
+    if(_[id])
+      return _[id].clear();
+  }
+
+  /**
+   * Removes the requested instance from the DOM.
+   * Doesn't return anything because the element is meant to be deleted.
+   * 
+   * @param     { string }      id  The id of the instance. 
+   */
+  _.remove = function(id) {
+    if(_[id]) {
+      _[id].remove();
+      delete _[id];
+    }
+  }
 
   return {
     ..._,
