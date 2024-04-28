@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-26 13:32:19
- * @ Modified time: 2024-04-28 00:50:39
+ * @ Modified time: 2024-04-28 17:40:25
  * @ Description:
  * 
  * Defines an input component.
@@ -63,7 +63,7 @@ export class InputComponent extends Component {
     super.init();
 
     // Add the classes
-    this.classList.add('input-component');
+    this.classList.add('input');
     this.setAttribute('contenteditable', true);
     this.setAttribute('spellcheck', false);
 

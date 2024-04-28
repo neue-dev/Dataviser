@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 09:37:16
- * @ Modified time: 2024-04-28 00:50:51
+ * @ Modified time: 2024-04-28 17:40:37
  * @ Description:
  * 
  * The slider component.
@@ -84,7 +84,7 @@ export class SliderComponent extends Component {
     super.init();
 
     // Define the classes
-    this.classList.add('slider-component');
+    this.classList.add('slider');
 
     // Construct the slider
     this.trackElement = document.createElement('div');

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:59:53
- * @ Modified time: 2024-04-28 00:50:12
+ * @ Modified time: 2024-04-28 17:39:57
  * @ Description:
  * 
  * Defines a custom button element.
@@ -28,7 +28,7 @@ export class ButtonComponent extends Component {
     super.init();
 
     // Define the classnames
-    this.classList.add('button-component');
+    this.classList.add('button');
 
     // Register event listeners
     this.addEventListener('mousedown', this.mouseDown);
