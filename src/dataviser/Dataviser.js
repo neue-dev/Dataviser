@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 11:55:42
+ * @ Modified time: 2024-04-28 17:23:48
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -18,7 +18,7 @@ import { FileAPI } from './File.api'
 import { DataviserPyAPI } from './Dataviser.pyapi'
 
 import { Dataframe } from './Dataframe.class'
-import { Datagraph } from './Datagraph.class'
+import { DatagraphManager } from './Datagraph.class'
 
 // Handles all the data vis
 export const Dataviser = (function() {
@@ -48,14 +48,6 @@ export const Dataviser = (function() {
   // The input fields
   const inputRangeField = document.createElement('input-component');
   const inputIsolateField = document.createElement('input-component');
-  
-  // The dataset and datagraphs we need
-  let datagraphs = {
-    heatmapSingle:        new Datagraph({ parent: dataviserCatalogue }),
-    heatmapCumulative:    new Datagraph({ parent: dataviserCatalogue }),
-    seriesSingleColumn:   new Datagraph({ parent: dataviserCatalogue }),
-    seriesSingleRow:      new Datagraph({ parent: dataviserCatalogue }),
-  }
   
   /**
    * Update this so it doesnt become messy over time
@@ -104,6 +96,19 @@ export const Dataviser = (function() {
 
     // Append everything to the window
     root.appendChild(dataviserWindow);
+
+    // ! remove
+    const d = DatagraphManager.create('test', { '1': { '1': '10', '2': '20' }, '2': { '1': '30', '2': '50' }}, { parent: dataviserWindow.getCell(3, 1) });
+    const dgraph = DatagraphManager.get(d);
+
+    setTimeout(() => {
+      dgraph.init();
+      dgraph.addXAxis({ domain: [0, 1000] })
+      dgraph.addYAxis({ domain: [0, 1000] })
+      dgraph.drawXAxis()
+      dgraph.drawYAxis()
+      dgraph.drawTitle()
+    })
   }
 
   /**

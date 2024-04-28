@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-28 12:29:11
+ * @ Modified time: 2024-04-28 17:30:52
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -29,17 +29,20 @@ export function Datagraph(title, data, options={}) {
   this.title = title;
   this.data = data;
 
+  // For axes and scales
+  this.axes = {};
+  this.scales = {};
+
   return this;
 }
 
 /**
- * Initializes the data graph.
- * Initializes the svg we use to create representations.
+ * Computes the size of the element and its margins.
+ * Note that the element sizes according to the size of the parent.
  * 
- * @param   { object }      options   The options for initialization.
- * @return  { Datagraph }             The modified instance.
+ * @return  { Datagraph }   The modified instance.
  */
-Datagraph.prototype.init = function(options={}) {
+Datagraph.prototype.initSize = function() {
 
   // Some constants
   this.width = this.parent.getBoundingClientRect().width * 0.84;
@@ -52,6 +55,19 @@ Datagraph.prototype.init = function(options={}) {
   // Set the width and height
   this.width -= this.margins.right;
   this.height -= this.margins.bottom;
+
+  // The instance
+  return this;
+}
+
+/**
+ * Initializes the access point of the datagraph.
+ * The canvas is where we append all other elements.
+ * In this case, it's a g tag inside the svg.
+ * 
+ * @return  { Datagraph }   The instance we modified.
+ */
+Datagraph.prototype.initCanvas = function() {
 
   // Refers to the access point where we add stuff
   this.canvas = d3.select(this.parent)
@@ -69,40 +85,118 @@ Datagraph.prototype.init = function(options={}) {
     .attr('height', this.height)
     .style('transform', `translate(${this.margins.left}px, ${this.margins.top}px)`)
 
-  // Add the title and subtitle
-  this.addTitle(title);
+  return this;
+}
+
+/**
+ * Initializes the data graph.
+ * Initializes the svg we use to create representations.
+ * 
+ * @param   { object }      options   The options for initialization.
+ * @return  { Datagraph }             The modified instance.
+ */
+Datagraph.prototype.init = function(options={}) {
+
+  // Init the size
+  this.initSize();
+
+  // Refers to the access point where we add stuff
+  this.initCanvas();
+
+  // Add the title 
+  this.addTitle(this.title);
+
+  // Add subtitle
+  if(options.subtitle)
+    this.addSubtitle(this.subtitle);
 
   return this;
 }
 
 /**
- * Configures the svg.
+ * Adds a title.
+ * Overwrites existing title.
  * 
- * @param   { string }      title     The title of the graph.
- * @param   { object }      options   Options for rendering the title.
- * @return  { Datagraph }             The modified instance. 
+ * @param   { string }      title   The title.
+ * @return  { Datagraph }           The modified instance.
  */
-Datagraph.prototype.addTitle = function(title, options={}) {
-  this.canvas 
-    .append('text')
-    .classed('datagraph-title', true)
-    .text(title)
+Datagraph.prototype.addTitle = function(title) {
+  this.title = title;
 
   return this;
 }
 
 /**
- * Configures the svg.
+ * Adds a subtitle.
+ * Overwrites existing subtitle.
  * 
- * @param   { string }      subtitle  The title of the graph.
- * @param   { object }      options   Options for rendering the subtitle.
+ * @param   { string }      subtitle  The subtitle.
+ * @return  { Datagraph }             The modified instance.
+ */
+Datagraph.prototype.addSubtitle = function(title) {
+  this.subtitle = subtitle;
+
+  return this;
+}
+
+/**
+ * Creates a new scale for the datagraph.
+ * 
+ * @param   { object }      options   Options for the scale we want to make.
  * @return  { Datagraph }             The modified instance. 
  */
-Datagraph.prototype.addSubtitle = function(subtitle, options={}) {
-  this.canvas 
-    .append('text')
-    .classed('datagraph-subtitle', true)
-    .text(subtitle)
+Datagraph.prototype.addScale = function(name, options={}) {
+
+  // The scale we're creating
+  let scale;
+
+  // Create a new scale based on the specified type
+  switch(options.type ?? 'linear') {
+    case 'log': 
+      scale = d3.scaleLog(); break;
+    
+    case 'time': 
+      scale = d3.scaleTime(); break;
+    
+    case 'categorical': 
+      scale = d3.scaleBand(); break;
+    
+    case 'color':
+    case 'linear': 
+    default: 
+      scale = d3.scaleLinear(); break;
+  }
+
+  this.scales[name] = scale;
+
+  return this;
+}
+
+/**
+ * Creates a new axis with the given name.
+ * Also creates a scale for the axis.
+ * 
+ * @param   { string }      name      The name of the axis. 
+ * @param   { object }      options   The options for the axis.
+ * @return  { Datagraph }             The modified instance. 
+ */
+Datagraph.prototype.addAxis = function(name, options={}) {
+
+  // Default domain is 0 -> 1, default range is 0 -> this.width
+  this.domain = options.domain ?? [ options.domainStart ?? 0, options.domainEnd ?? 1 ]
+  this.range = options.range ?? [ options.rangeStart ?? 0, options.rangeEnd ?? 1 ]
+
+  // We can also have preset ranges based on options object
+  if(options.yaxis) this.range = [ this.height, 0 ]
+  if(options.xaxis) this.range = [ 0, this.width ]
+
+  // Create the scale we need to use first
+  this.addScale(name, options);
+
+  // Create the axis
+  this.axes[name] = this.scales[name]
+    .domain(this.domain)
+    .range(this.range)
 
   return this;
 }
@@ -114,34 +208,7 @@ Datagraph.prototype.addSubtitle = function(subtitle, options={}) {
  * @return  { Datagraph }             The modified instance.
  */
 Datagraph.prototype.addXAxis = function(options={}) {
-  let scale;
-
-  switch(options.type ?? 'linear') {
-    case 'log': scale = d3.scaleLog(); break;
-    case 'time': scale = d3.scaleTime(); break;
-    case 'categorical': scale = d3.scaleBand(); break;
-    case 'linear': scale = d3.scaleLinear(); break;
-    default: scale = d3.scaleLinear(); break;
-  }
-
-  this.xAxis = scale
-    .domain(options.domain ?? [ options.start ?? 0, options.end ?? 1 ])
-    .range([ 0, this.width ])
-
-  // Store the number of categorical data we have
-  this.xAxisCount = options.domain ? options.domain.length : 0;
-
-  // Place the axis on the bottom
-  this.xAxisElement = this.canvas
-    .append('g')
-    .classed('datagraph-x-axis', true)
-    .call(d3
-      .axisBottom(this.xAxis)
-      .ticks(options.ticks ?? 10))
-    .style('transform', `translate(0, ${this.height}px)`)
-    .selectAll('text')
-      .style('text-anchor', 'end')
-      .attr('transform', `rotate(${options.angle ?? -45})`)
+  this.addAxis('x', { xaxis: true, ...options })
 
   return this;
 }
@@ -153,45 +220,152 @@ Datagraph.prototype.addXAxis = function(options={}) {
  * @return  { Datagraph }             The modified instance.
  */
 Datagraph.prototype.addYAxis = function(options={}) {
-  let scale;
-
-  switch(options.type ?? 'linear') {
-    case 'log': scale = d3.scaleLog(); break;
-    case 'time': scale = d3.scaleTime(); break;
-    case 'categorical': scale = d3.scaleBand(); break;
-    case 'linear': scale = d3.scaleLinear(); break;
-    default: scale = d3.scaleLinear(); break;
-  }
-
-  this.yAxis = scale
-    .domain(options.domain ?? [ options.start ?? 0, options.end ?? 1 ])
-    .range([ this.height, 0 ])
-
-  // Store the number of categorical data we have
-  this.yAxisCount = options.domain ? options.domain.length : 0;
-    
-  // Place the axis on the left
-  this.yAxisElement = this.canvas
-    .append('g')
-    .classed('datagraph-y-axis', true)
-    .call(d3
-      .axisLeft(this.yAxis)
-      .ticks(options.ticks ?? 10))
+  this.addAxis('y', { yaxis: true, ...options })
 
   return this;
 }
 
 /**
- * Creates a color axis for the graph.
- * Used when we want to plot data with varying shades.
+ * Adds the title to the svg.
  * 
- * @param   { object }      options   The options for creating the color-axis.
+ * @return  { Datagraph }             The modified instance. 
+ */
+Datagraph.prototype.drawTitle = function() {
+  this.canvas 
+    .append('text')
+    .classed('datagraph-title', true)
+    .text(this.title)
+
+  return this;
+}
+
+/**
+ * Adds the subtitle to the svg.
+ * 
+ * @return  { Datagraph }             The modified instance. 
+ */
+Datagraph.prototype.drawSubtitle = function() {
+  this.canvas 
+    .append('text')
+    .classed('datagraph-subtitle', true)
+    .text(this.subtitle)
+
+  return this;
+}
+
+/**
+ * Draws the selected axis and adds it to the svg.
+ * 
+ * @param   { string }      name      The name of the axis we want to render.
+ * @param   { object }      options   The options for drawing the axis.
  * @return  { Datagraph }             The modified instance.
  */
-Datagraph.prototype.addColorAxis = function(options={}) {
-  this.colorAxis = d3.scaleLinear()
-    .domain(options.domain ?? [ options.start ?? 0, options.end ?? 1 ])
-    .range(options.colors ?? [ options.startColor, options.endColor ])
+Datagraph.prototype.drawAxis = function(name, options={}) {
+
+  // The axis we're creating
+  let axisConstructor;
+
+  // Create an axis based on orientation
+  switch(options.orientation ?? 'bottom') {
+    case 'top':
+      axisConstructor = d3.axisTop(this.axes[name])
+      break;
+
+    case 'bottom':
+      axisConstructor = d3.axisBottom(this.axes[name])
+      break;
+
+    case 'left':
+      axisConstructor = d3.axisLeft(this.axes[name])
+      break;
+
+    case 'right':
+      axisConstructor = d3.axisRight(this.axes[name])
+      break;
+  }
+
+  // Creates the axis on the svg
+  let axis = this.canvas
+    .append('g')
+    .classed(`datagraph-${name}-axis`, true)
+    .call(axisConstructor.ticks(options.ticks ?? 10))
+    
+  // We select the text so we can style it
+  let text = this.canvas
+    .selectAll('text')
+    .style('text-anchor', 'end')
+
+  // Default styles
+  if(options._style) {
+    for(let style in options._style) {
+      axis.attr(style, options._style[style])
+      axis.style(style, options._style[style])
+    }
+  }
+
+  // Default text styles
+  if(options._textStyle) {
+    for(let style in options._textStyle) {
+      text.attr(style, options._textStyle[style])
+      text.style(style, options._textStyle[style])
+    }
+  }
+
+  // If styles were specified
+  if(options.style) {
+    for(let style in options.style) {
+      axis.attr(style, options.style[style])
+      axis.style(style, options.style[style])
+    }
+  }
+
+  // If styles were specified
+  if(options.textStyle) {
+    for(let style in options.textStyle) {
+      text.attr(style, options.textStyle[style])
+      text.style(style, options.textStyle[style])
+    }
+  }
+
+  return this;
+}
+
+/**
+ * Draws the x axis.
+ * 
+ * @param   { object }      options   The options for drawing the x-axis.
+ * @return  { Datagraph }             The modified instance.
+ */
+Datagraph.prototype.drawXAxis = function(options={}) {
+  this.drawAxis('x', 
+    { 
+      orientation: 'bottom',  
+      _style: {
+        transform: `translate(0, ${this.height})`
+      },
+      _textStyle: {
+        transform: 'rotate(-45)'
+      }, 
+      ...options 
+    })
+
+  return this;
+}
+
+/**
+ * Draws the y axis.
+ * 
+ * @param   { object }      options   The options for drawing the y-axis.
+ * @return  { Datagraph }             The modified instance.
+ */
+Datagraph.prototype.drawYAxis = function(options={}) {
+  this.drawAxis('y', 
+    { 
+      orientation: 'left',
+      _style: {},
+      _textStyle: {},
+      ...options 
+    })
 
   return this;
 }
