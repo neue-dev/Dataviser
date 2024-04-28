@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 01:35:33
+ * @ Modified time: 2024-04-29 01:54:30
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -98,7 +98,7 @@ export const Dataviser = (function() {
 
     // console.log(Object.keys(df));
 
-    const dfs = DataframeManager.filterDfs(serial => {
+    const dfs = DataframeManager.getDfs(serial => {
 
       if(!serial.getTime)
         return false;
@@ -110,11 +110,12 @@ export const Dataviser = (function() {
       console.log(dfs)
     })
 
-    for(let i = 0; i < 300; i++)
-      pts.push({
-        x: new Date(`2020-${Math.floor(i / 28) + 1}-${i % 28 + 1}`),
-        y: Math.round(Math.random() * 1000),
-      })
+    for(let i = 0; i < 24; i++) {
+
+      for(let j = 0; j < 24; j++)
+        pts.push({
+          x: i, y: j, value: Math.round(Math.random() * 100)})
+    }
     
 
     // // ! remove
@@ -126,16 +127,25 @@ export const Dataviser = (function() {
       });
     const dgraph = DatagraphManager.get(d);
 
+    const cols = [];
+    const rows = [];
+
+    for(let i = 0;i < 24; i++) {
+      cols.push(i);
+      rows.push(i);
+    }
+
     setTimeout(() => {
       dgraph.init();
-      dgraph.addXAxis({ type: 'time', domain: [new Date('2020-01-01'), new Date('2021-01-01')] })
-      dgraph.addYAxis({ domain: [0, 1000] })
+      dgraph.addXAxis({ type: 'categorical', domain: cols })
+      dgraph.addYAxis({ type: 'categorical', domain: rows })
+      dgraph.addAxis('color', { type: 'color', domain: [0, 100], range: [ '#323232', '#5555ff' ]})
       dgraph.drawXAxis()
       dgraph.drawYAxis()
       dgraph.drawTitle()
 
       // ! remove
-      dgraph.addTimeline()
+      dgraph.addHeatmap()
     })
   }
 

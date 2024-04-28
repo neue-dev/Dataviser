@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-29 00:16:22
+ * @ Modified time: 2024-04-29 01:51:29
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -36,6 +36,8 @@ export function Datagraph(title, data, options={}) {
   // For axes and scales
   this.axes = {};
   this.scales = {};
+  this.domains = {};
+  this.ranges = {};
 
   return this;
 }
@@ -187,20 +189,20 @@ Datagraph.prototype.addScale = function(name, options={}) {
 Datagraph.prototype.addAxis = function(name, options={}) {
 
   // Default domain is 0 -> 1, default range is 0 -> this.width
-  this.domain = options.domain ?? [ options.domainStart ?? 0, options.domainEnd ?? 1 ]
-  this.range = options.range ?? [ options.rangeStart ?? 0, options.rangeEnd ?? 1 ]
+  this.domains[name] = options.domain ?? [ options.domainStart ?? 0, options.domainEnd ?? 1 ]
+  this.ranges[name] = options.range ?? [ options.rangeStart ?? 0, options.rangeEnd ?? 1 ]
 
   // We can also have preset ranges based on options object
-  if(options.yaxis) this.range = [ this.height, 0 ]
-  if(options.xaxis) this.range = [ 0, this.width ]
+  if(options.yaxis) this.ranges[name] = [ this.height, 0 ]
+  if(options.xaxis) this.ranges[name] = [ 0, this.width ]
 
   // Create the scale we need to use first
   this.addScale(name, options);
 
   // Create the axis
   this.axes[name] = this.scales[name]
-    .domain(this.domain)
-    .range(this.range)
+    .domain(this.domains[name])
+    .range(this.ranges[name])
 
   return this;
 }
@@ -654,9 +656,9 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
   const unhighlightFilter = options.unhighlightFilter ?? 'saturate(0%)';
 
   // Some instance based parameters
-  const fx = (d, i) => this.xAxis(d.x);
-  const fy = (d, i) => this.yAxis(d.y);
-  const fc = (d, y) => this.colorAxis(d.value);
+  const fx = (d, i) => this.axes.x(d.x);
+  const fy = (d, i) => this.axes.y(d.y);
+  const fc = (d, y) => this.axes.color(d.value);
 
   /**
    * Highlights the heatmap element when hovering.
@@ -707,14 +709,14 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
   // Create the datapoints
   this.canvas
     .selectAll('rect')
-    .data(data)
+    .data(this.data)
     .join('rect')
     .classed(this.id + '-data-point', true)
     .classed('data-point', true)
     .attr('x', d => fx(d) - 0.5)
     .attr('y', d => fy(d) - 0.5)
-    .attr('width', this.width / this.xAxisCount + 1)
-    .attr('height', this.height / this.yAxisCount + 1)
+    .attr('width', this.width / this.domains.x.length + 1)
+    .attr('height', this.height / this.domains.y.length + 1)
     .style('fill', fc)
     .on('mouseover', mouseover)
     .on('mouseleave', mouseleave)
