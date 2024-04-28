@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 07:30:19
+ * @ Modified time: 2024-04-29 07:39:37
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -13,7 +13,7 @@ import { DOMApi } from './DOM.api'
 import { FileAPI } from './File.api'
 import { DataviserPyAPI } from './Dataviser.pyapi'
 
-import { DataframeManager } from './Dataframe.class'
+import { Dataframe, DataframeManager } from './Dataframe.class'
 import { DatagraphManager } from './Datagraph.class'
 
 // Handles all the data vis
@@ -54,16 +54,48 @@ export const Dataviser = (function() {
   }
 
   /**
+   * A helper function that takes in the file name and spits out the id for the df.
+   * This is use-case specific, but we only have to swap out this function when the spec changes.
+   * 
+   * @param   { string }  filename  The filename.
+   * @return  { Date }              The date associated with the filename.
+   */
+  const getId = function(filename) {
+    return filename.split('.')[0];
+  }
+
+  /**
+   * A helper function that takes in the id associated with a df and spits out the df serial.
+   * This is use-case specific, but we only have to swap out this function when the spec changes.
+   * 
+   * @param   { string }  id        The df id.
+   * @return  { Date }              The date associated with the df.
+   */
+  const getSerial = function(id) {
+    return new Date(id);
+  }
+
+  /**
    * This is another helper function.
    * It updates the DOM based on the dfs passed.
    */
+  const renderDfs = function(dfs) {
+    
+    // Define serials
+    const serials = [];
+
+    // Define the serials
+    for(let key in dfs)
+      serials.push(getSerial(key))
+
+    // We set it to the store so we can perform calculations
+    DataframeManager.setStore(dfs, serials);
+  }
     
   /**
    * The init function sets up dataviser.
    */
   _.init = function() {
-    
-    // ! remove this here ig
     _.configDOM();
   }
 
@@ -228,8 +260,8 @@ export const Dataviser = (function() {
         DataviserPyAPI.readPickle(blob, df => {
           
           // Id of the dataframe
-          const id = file.name.split('.')[0];
-          const serial = new Date(id);
+          const id = getId(file.name);
+          const serial = getSerial(id);
           
           // Save the dataframe
           DataframeManager.create(id, df, serial);
