@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 02:04:31
+ * @ Modified time: 2024-04-29 07:30:19
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -22,6 +22,41 @@ export const Dataviser = (function() {
   // The dataviser object and the root element
   const _ = {};
   const root = document.getElementsByClassName('root')[0];
+
+  /**
+   * This is a helper function.
+   * It returns a new function that filters dates.
+   * 
+   * @param   { object }  options   The options for the filter
+   */
+  const createFilter = function(options={}) {
+    
+    /**
+     * A function that filters date inputs.
+     * 
+     * @param   { Date }      d   The date to filter.
+     * @return  { boolean }       Whether or not d is in range.
+     */
+    return function(d) {
+      
+      const start = options.start ?? new Date('1970-01-01')
+      const end = options.end ?? new Date('2038-01-01')
+
+      if(!d.getTime)
+        return false;
+      
+      // The range is inclusive
+      return (
+        d.getTime() >= start.getTime() && 
+        d.getTime() <= end.getTime()
+      )
+    }
+  }
+
+  /**
+   * This is another helper function.
+   * It updates the DOM based on the dfs passed.
+   */
     
   /**
    * The init function sets up dataviser.
@@ -104,13 +139,7 @@ export const Dataviser = (function() {
 
     // console.log(Object.keys(df));
 
-    const dfs = DataframeManager.getDfs(serial => {
-
-      if(!serial.getTime)
-        return false;
-      return serial.getTime() < new Date('2020-01-01').getTime() &&
-        serial.getTime() > new Date('2019-01-01').getTime()
-    })
+    const dfs = DataframeManager.getDfs(createFilter({ start: new Date('2020-01-01'), end: new Date('2021-01-01') }))
 
     DataviserPyAPI.dfsFilterRowcols(dfs, [ '2', '78' ], dfs => {
       console.log(dfs)
