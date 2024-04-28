@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 17:23:48
+ * @ Modified time: 2024-04-28 18:33:59
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -13,6 +13,7 @@ import '../ui/Grid.component'
 import '../ui/Input.component'
 import '../ui/Button.component'
 import '../ui/Slider.component'
+import '../ui/Editor.component'
 
 import { FileAPI } from './File.api'
 import { DataviserPyAPI } from './Dataviser.pyapi'
@@ -89,6 +90,14 @@ export const Dataviser = (function() {
     // Info board
     dataviserWindow.appendCell(2, 4, 1, 2);
     dataviserWindow.getCell(2, 4).appendChild(dataviserInfoBoard);
+
+    // Some code samples
+    // !remove
+    const test = document.createElement('editor-component');
+    document.body.append(test)
+
+    dataviserWindow.appendCell(3, 4, 1, 1);
+    dataviserWindow.getCell(3, 4).appendChild(test);
 
     // Populate the fields
     inputRangeField.innerHTML = '2020-01-01, 2021-01-01';
