@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 10:13:08
+ * @ Modified time: 2024-04-28 10:28:16
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -608,17 +608,18 @@ export const Dataviser = (function() {
         FileAPI.getDirectoryFiles(directoryHandle, 
           files => files.forEach(
             file => FileAPI.readBinaryFile(file, 
-              blob => DataviserPyAPI.readPickle(blob, d => {dfs[file.name.split('.')[0]] = d; console.log(file.name, d)})))))
+              blob => DataviserPyAPI.readPickle(blob, d => {dfs[file.name.split('.')[0]] = d;})))))
 
       // Catch any errors
       .catch(error => {
         alert(`Error: \n(${error})`)
       })
 
-      // setTimeout(() => {
-      //   console.log(DataviserPyAPI.dfsConcat(dfs, 
-      //     df => console.log(df)));
-      // }, 10000);
+      setTimeout(() => {
+        console.log(Object.keys(dfs).length, dfs)
+        // console.log(DataviserPyAPI.dfsConcat(dfs, 
+        //   df => console.log(df)));
+      }, 10000);
   }
 
   return {

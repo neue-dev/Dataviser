@@ -92,7 +92,7 @@ export const PyodideAPI = (function() {
 
       // The script encountered an error
       else if (error)
-        console.error("Python script error: ", error);
+        console.error("Python script error: ", error, script);
  
     // Something wrong happened with the JS
     } catch (e) {
