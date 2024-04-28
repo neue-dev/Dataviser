@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 21:40:51
+ * @ Modified time: 2024-04-28 21:44:39
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -114,10 +114,17 @@ export const Dataviser = (function() {
   }
 
   /**
-   * Configures the dataset object.
+   * Generates a sum of all the dataframes we have and does some other data cleaning.
    */
   _.configData = function() {
     
+    // Create a new empty dict
+    const dfs = {};
+
+    // Get the dataframes as JSON
+    for(let key in _.dfs)
+      dfs[key] = _.dfs[key].get()
+
     // Compute the total df for all of them
     DataviserPyAPI.dfsConcat(_.dfs, df => {
       _.dfTotal = df;
@@ -156,7 +163,7 @@ export const Dataviser = (function() {
           
           // Save the dataframe
           const key = file.name.split('.')[0];
-          _.dfs[key] = df;
+          _.dfs[key] = new Dataframe(df);
           _.dfCount++;
           
           // Output progress
