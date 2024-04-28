@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-28 10:39:44
+ * @ Modified time: 2024-04-28 11:26:13
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -88,9 +88,9 @@ export const DataviserPyAPI = (function() {
       # Convert each of the json objects into a df 
       print('Filtering rows...')
       for key, json_df in json_dfs.items():
-        dfs[key] = pd.DataFrame(json_df)                      # Convert the JSON objects into dataframes
-        dfs[key] = dfs[key][dfs[key].index.isin(rows)]        # Filter the df by the specified rows
-        dfs[key] = dfs[key].to_dict('index')                  # Convert the dfs into dicts
+        dfs[key] = pd.DataFrame.from_dict(json_df, orient='index')      # Convert the JSON objects into dataframes
+        dfs[key] = dfs[key][dfs[key].index.isin(rows)]                  # Filter the df by the specified rows
+        dfs[key] = dfs[key].to_dict('index')                            # Convert the dfs into dicts
 
       # Return the final collection of dfs
       print('Returning results.')
@@ -105,7 +105,7 @@ export const DataviserPyAPI = (function() {
 
       # Use the same variable name
       json_dfs = json_dfs--inputSerial--
-      rows = cols--inputSerial--
+      cols = cols--inputSerial--
 
       # Convert to something Python can understand
       print('Converting JSON to Python objects...')
@@ -117,9 +117,9 @@ export const DataviserPyAPI = (function() {
       # Convert each of the json objects into a df 
       print('Filtering cols...')
       for key, json_df in json_dfs.items():
-        dfs[key] = pd.DataFrame(json_df)                      # Convert the JSON objects into dataframes
-        dfs[key] = dfs[key].filter(items=list(cols))          # Filter the df by the specified cols
-        dfs[key] = dfs[key].to_dict('index')                  # Convert the dfs into dicts
+        dfs[key] = pd.DataFrame.from_dict(json_df, orient='index')      # Convert the JSON objects into dataframes
+        dfs[key] = dfs[key].filter(items=list(cols))                    # Filter the df by the specified cols
+        dfs[key] = dfs[key].to_dict('index')                            # Convert the dfs into dicts
 
       # Return the final collection of dfs
       print('Returning results.')
@@ -191,7 +191,7 @@ export const DataviserPyAPI = (function() {
    * @param   { Uint8Array }  byteArray   An array of bytes to be depickled.
    * @param   { function }    callback    A callback to be given the resulting JSON. 
    */
-  _.readPickle = function(byteArray, callback) {
+  _.readPickle = function(byteArray, callback=d=>d) {
     PyodideAPI.runProcess(
       _.createScript(_.scripts['read_pickle']), 
       _.createContext({ byte_array: byteArray }), 
@@ -208,7 +208,7 @@ export const DataviserPyAPI = (function() {
    * @param   { object }      byteArrays    A dictionary of array of bytes to be depickled.
    * @param   { function }    callback      A callback to be given the resulting JSON. 
    */
-  _.readPickles = function(byteArrays, callback) {
+  _.readPickles = function(byteArrays, callback=d=>d) {
     PyodideAPI.runProcess(
       _.createScript(_.scripts['read_pickles']), 
       _.createContext({ byte_arrays: byteArrays }), 
@@ -226,7 +226,7 @@ export const DataviserPyAPI = (function() {
    * @param   { array }     rows            An array of row names to include.
    * @param   { function }  callback        The callback to receive the resulting filtered dfs.  
    */
-  _.dfsFilterRows = function(jsonDataFrames, rows, callback) {
+  _.dfsFilterRows = function(jsonDataFrames, rows, callback=d=>d) {
     PyodideAPI.runProcess(
       _.createScript(_.scripts['dfs_filter_rows']),
       _.createContext({ 
@@ -247,7 +247,7 @@ export const DataviserPyAPI = (function() {
    * @param   { array }     cols            An array of column names to include.
    * @param   { function }  callback        The callback to receive the resulting filtered dfs.  
    */
-  _.dfsFilterCols = function(jsonDataFrames, cols, callback) {
+  _.dfsFilterCols = function(jsonDataFrames, cols, callback=d=>d) {
     PyodideAPI.runProcess(
       _.createScript(_.scripts['dfs_filter_cols']),
       _.createContext({ 
@@ -266,7 +266,7 @@ export const DataviserPyAPI = (function() {
    * @param   { object }    jsonDataFrames  A dict of JSON dataframes.
    * @param   { function }  callback        The callback to receive the resulting concatenated df.  
    */
-  _.dfsConcat = function(jsonDataFrames, callback) {
+  _.dfsConcat = function(jsonDataFrames, callback=d=>d) {
     PyodideAPI.runProcess(
       _.createScript(_.scripts['dfs_concat']), 
       _.createContext({ 

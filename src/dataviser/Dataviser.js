@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 10:28:16
+ * @ Modified time: 2024-04-28 10:46:00
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -617,8 +617,8 @@ export const Dataviser = (function() {
 
       setTimeout(() => {
         console.log(Object.keys(dfs).length, dfs)
-        // console.log(DataviserPyAPI.dfsConcat(dfs, 
-        //   df => console.log(df)));
+        console.log(DataviserPyAPI.dfsConcat(dfs, 
+          df => console.log(df)));
       }, 10000);
   }
 
