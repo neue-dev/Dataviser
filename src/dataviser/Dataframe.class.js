@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-28 21:41:16
+ * @ Modified time: 2024-04-28 22:05:31
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -16,7 +16,7 @@ import { DataviserPyAPI } from "./Dataviser.pyapi";
  * The dataframe class.
  * This is basically an extension of the dictionary object.
  */
-function Dataframe(id, data) {
+export function Dataframe(id, data) {
 
   // Some metadata
   this.ID = id;
@@ -137,6 +137,63 @@ export const DataframeManager = (function() {
   
   // The manager
   const _ = {};
+  let count = 0;
+  const METHODS = new Set([
+    'create',
+    'get',
+    'getDf',
+    'getDfs',
+    'getCount'
+  ]);
+
+  /**
+   * Creates a new dataframe.
+   * 
+   * @param   { string }      id    The id of the dataframe. 
+   * @param   { object }      data  The object we want to convert.
+   * @return  { Dataframe }         The new dataframe object.
+   */
+  _.create = function(id, data) {
+    _[id] = new Dataframe(data);
+    count++;
+
+    return _[id];
+  }
+
+  /**
+   * Retrieves a selected dataframe.
+   * 
+   * @param   { string }    id  The id of the dataframe. 
+   * @return  { Dataframe }     The dataframe we want to retrieve.  
+   */
+  _.getDf = function(id) {
+    return _[id].get();
+  }
+
+  /**
+   * Retrieves all the existing dataframes.
+   * 
+   * @param   { string }    id  The id of the dataframe. 
+   * @return  { object }        The dataframes we want to retrieve in a dict.  
+   */
+  _.getDfs = function() {
+    const dfs = {};
+
+    for(let key in _)
+      if(!METHODS.has(key))
+        dfs[key] = _[key].get()
+
+    return dfs;
+  }
+
+  /**
+   * Returns how many dataframes we currently have.
+   * 
+   * @return  { number }  How many dataframes we have.
+   */
+  _.getCount = function() {
+    return count;
+  }
 
   return {
     ..._,
@@ -144,5 +201,6 @@ export const DataframeManager = (function() {
 })();
 
 export default {
+  Dataframe,
   DataframeManager,
 }

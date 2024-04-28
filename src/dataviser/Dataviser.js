@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-28 21:44:39
+ * @ Modified time: 2024-04-28 21:58:22
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -18,7 +18,7 @@ import '../ui/Editor.component'
 import { FileAPI } from './File.api'
 import { DataviserPyAPI } from './Dataviser.pyapi'
 
-import { Dataframe } from './Dataframe.class'
+import { DataframeManager } from './Dataframe.class'
 import { DatagraphManager } from './Datagraph.class'
 
 // Handles all the data vis
@@ -118,19 +118,22 @@ export const Dataviser = (function() {
    */
   _.configData = function() {
     
-    // Create a new empty dict
-    const dfs = {};
-
-    // Get the dataframes as JSON
-    for(let key in _.dfs)
-      dfs[key] = _.dfs[key].get()
-
     // Compute the total df for all of them
-    DataviserPyAPI.dfsConcat(_.dfs, df => {
-      _.dfTotal = df;
+    DataviserPyAPI.dfsConcat(
+
+      // Get all the dfs and pass them here
+      DataframeManager.getDfs(), 
     
-      _.renderData();
-    });
+      // For the resulting concatenated df, store it
+      df => {
+
+        // Create the dataframe
+        DataframeManager.create('total', df);
+      
+        // Render data
+        _.renderData();
+      }
+    );
   }
 
   /**
@@ -149,9 +152,6 @@ export const Dataviser = (function() {
    */
   _.readData = function(files) {
     
-    // Set df count to 0
-    _.dfCount = 0;
-    
     // For each of the files
     files.forEach(file => {
       
@@ -161,18 +161,21 @@ export const Dataviser = (function() {
         // Convert the blob into a df
         DataviserPyAPI.readPickle(blob, df => {
           
+          // Id of the dataframe
+          const id = file.name.split('.')[0];
+          
           // Save the dataframe
-          const key = file.name.split('.')[0];
-          _.dfs[key] = new Dataframe(df);
-          _.dfCount++;
+          DataframeManager.create(id, df);
+
+          // Get the current count 
+          const count = DataframeManager.getCount();
           
           // Output progress
-          console.info(`Read pickle file ${_.dfCount} of ${files.length}...`);
+          console.info(`Read pickle file ${count} of ${files.length}...`);
 
           // If it's the last dataframe, do this
-          if(_.dfCount >= files.length) {
+          if(count >= files.length)
             _.configData();
-          } 
         })
       })
     })
