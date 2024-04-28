@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 01:11:14
+ * @ Modified time: 2024-04-29 01:27:38
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -149,6 +149,50 @@ Dataframe.prototype.filterRowcols = function(rowcols, callback=d=>d) {
 }
 
 /**
+ * Returns a matrix version of the dataframe.
+ * 
+ * @return  { matrix }  The matrix form of the data.
+ */
+Dataframe.prototype.toMatrix = function() {
+  const matrix = [];
+  const data = this.get();
+
+  // Turns the data into a matrix
+  for(let row in data) {
+    matrix.push([]);
+  
+    for(let col in data[row]) {
+      matrix[row].push(data[row][col])
+    }
+  }
+
+  return matrix;
+}
+
+/**
+ * Returns a list version of the dataframe.
+ * By that, we mean a list of points.
+ * 
+ * @return  { array }   A list of the points we wanted.
+ */
+Dataframe.prototype.toList = function() {
+  const list = [];
+  const data = this.get();
+
+  // Turns the data into a list of points
+  for(let row in data) {
+    for(let col in data[row]) {
+      list.push({
+        x: col, y: row,
+        value: data[row][col]
+      })
+    }
+  }
+
+  return list;
+}
+
+/**
  * Manages all our dataframes.
  */
 export const DataframeManager = (function() {
@@ -160,13 +204,35 @@ export const DataframeManager = (function() {
     'get',
     'getDf',
     'getDfs',
-    'filterDfs',
+    'getDfsAsMatrix',
+    'getDfsAsList',
     'getSumDfs',
     'getCount',
   ]);
   
   // Private vars
   let count = 0;
+
+  /**
+   * A utility function.
+   * Filters the dataframes using their serial under the given callback.
+   * The callback returns a boolean and is passed the serial of each dataframe.
+   * 
+   * @param   { function }  filter  The callback to use for filtering. 
+   */
+  const filterDfs = function(filter) {
+    const dfs = {};
+
+    // Filter the dfs
+    for(let key in _) {
+      if(!METHODS.has(key)) {
+        if(filter(_[key].SERIAL))
+          dfs[key] = _[key].get()
+      }
+    }
+
+    return dfs;
+  }
 
   /**
    * Creates a new dataframe.
@@ -196,42 +262,58 @@ export const DataframeManager = (function() {
   /**
    * Retrieves all the existing dataframes.
    * 
-   * @param   { string }    id  The id of the dataframe. 
-   * @return  { object }        The dataframes we want to retrieve in a dict.  
+   * @param   { string }    id      The id of the dataframe. 
+   * @param   { function }  filter  An optional function to filter the dfs.
+   * @return  { object }            The dataframes we want to retrieve in a dict.  
    */
-  _.getDfs = function() {
-    const dfs = {};
+  _.getDfs = function(filter=serial=>true) {
+    return filterDfs(filter);
+  }
 
-    for(let key in _)
-      if(!METHODS.has(key))
-        dfs[key] = _[key].get()
+  /**
+   * Retrieves all the existing dataframes as matrices.
+   * 
+   * @param   { string }    id      The id of the dataframe. 
+   * @param   { function }  filter  An optional function to filter the dfs.
+   * @return  { object }            The dataframes we want to retrieve in a dict.  
+   */
+  _.getDfsAsMatrix = function(filter=serial=>true) {
+    const dfs = filterDfs(filter);
+
+    // Convert to matrices
+    for(let key in dfs)
+      dfs[key] = dfs[key].toMatrix();
 
     return dfs;
   }
 
   /**
-   * Filters the dataframes using their serial under the given callback.
-   * The callback returns a boolean and is passed the serial of each dataframe.
+   * Retrieves all the existing dataframes as lists of points.
    * 
-   * @param   { function }  callback  The callback to use for filtering. 
+   * @param   { string }    id      The id of the dataframe. 
+   * @param   { function }  filter  An optional function to filter the dfs.
+   * @return  { object }            The dataframes we want to retrieve in a dict.  
    */
-  _.filterDfs = function(callback) {
-    const dfs = {};
+  _.getDfsAsList = function(filter=serial=>true) {
+    const dfs = filterDfs(filter);
 
-    for(let key in _) {
-      if(!METHODS.has(key)) {
-        if(callback(_[key].SERIAL))
-          dfs[key] = _[key].get()
-      }
-    }
+    // Convert to matrices
+    for(let key in dfs)
+      dfs[key] = dfs[key].toList();
 
     return dfs;
   }
 
-  _.getSumDfs = function(callback=d=>true) {
+  /**
+   * Computes the sum of the dataframes that satisfy the filter.
+   * 
+   * @param   { function }  filter  The filter function.
+   * @return  { object }            The sum of the filtered dfs.
+   */
+  _.getSumDfs = function(filter=serial=>true) {
 
     // Hmm
-    const dfs = _.filterDfs(callback);
+    const dfs = filterDfs(filter);
     const dfSum = {};
     
     // For each df

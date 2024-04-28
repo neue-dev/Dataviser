@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 01:11:54
+ * @ Modified time: 2024-04-29 01:14:57
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -98,14 +98,15 @@ export const Dataviser = (function() {
 
     // console.log(Object.keys(df));
 
-    console.log(DataframeManager.filterDfs(serial => {
+    const dfs = DataframeManager.filterDfs(serial => {
 
       if(!serial.getTime)
         return false;
-      return serial.getTime() < new Date('2020-01-01').getTime()
-    }))
+      return serial.getTime() < new Date('2020-01-01').getTime() &&
+        serial.getTime() > new Date('2019-01-01').getTime()
+    })
 
-    DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(), [ '2', '78' ], dfs => {
+    DataviserPyAPI.dfsFilterRowcols(dfs, [ '2', '78' ], dfs => {
       console.log(dfs)
     })
 
