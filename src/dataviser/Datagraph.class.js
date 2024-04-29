@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-29 09:36:06
+ * @ Modified time: 2024-04-29 10:39:11
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -430,11 +430,10 @@ Datagraph.prototype.setCSSVariables = function(vars={}) {
 /**
  * Creates a scatterplot based on the provided data.
  * 
- * @param   { array }       data      An array of objects. 
  * @param   { object }      options   The options for rendering.
  * @return  { Datagraph }             The modified instance.
  */
-Datagraph.prototype.addScatterplot = function(data, options={}) {
+Datagraph.prototype.addScatterplot = function(options={}) {
   
   // The datagraph instance
   const datagraph = this;
@@ -632,10 +631,10 @@ Datagraph.prototype.addTimeline = function(data, options={}) {
 
 /**
  * 
- * @param {*} data 
+ * //! todo
  * @param {*} options 
  */
-Datagraph.prototype.addHeatmap = function(data, options={}) {
+Datagraph.prototype.addHeatmap = function(options={}) {
   
   // The datagraph instance
   const datagraph = this;
@@ -652,7 +651,7 @@ Datagraph.prototype.addHeatmap = function(data, options={}) {
   const highlightOpacity = options.highlightOpacity ?? 1;
   const highlightFilter = options.highlightFilter ?? 'saturate(100%)';
   const unhighlightColor = options.unhighlightColor ?? 'black';
-  const unhighlightOpacity = options.unhighlightOpacity ?? 0.5;
+  const unhighlightOpacity = options.unhighlightOpacity ?? 1;
   const unhighlightFilter = options.unhighlightFilter ?? 'saturate(0%)';
 
   // Some instance based parameters

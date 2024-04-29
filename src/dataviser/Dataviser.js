@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 10:18:53
+ * @ Modified time: 2024-04-29 10:43:51
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -115,20 +115,23 @@ export const Dataviser = (function() {
     
     // We create three graphs
     const heatmap = DatagraphManager.create(heatmapTitle, heatmapDfList, { ...defaultDgraphConfig, subtitle: heatmapSubtitle });
-    // const series = DatagraphManager.create(seriesTitle, seriesDfList, { ...defaultDgraphConfig, subtitle: seriesSubtitle });
+    // const seriesRows = DatagraphManager.create(seriesRowsTitle, seriesRowsDfList, { ...defaultDgraphConfig, subtitle: seriesRowsSubtitle });
+    // const seriesCols = DatagraphManager.create(seriesColsTitle, seriesColsDfList, { ...defaultDgraphConfig, subtitle: seriesColsSubtitle });
 
     _.heatmapGraph = DatagraphManager.get(heatmap);
+    // _.seriesRowsGraph = DataframeManager.get(seriesRows);
+    // _.seriesColsGraph = DataframeManager.get(seriesCols);
 
     setTimeout(() => {
       _.heatmapGraph.init();
       _.heatmapGraph.addXAxis({ type: 'categorical', domain: heatmapDf.getCols() })
       _.heatmapGraph.addYAxis({ type: 'categorical', domain: heatmapDf.getRows() })
-      _.heatmapGraph.addAxis('color', { type: 'color', domain: [heatmapDf.getMin(), heatmapDf.getMax()], range: [ '#323232', '#5555ff' ]})
+      _.heatmapGraph.addAxis('color', { type: 'color', domain: [heatmapDf.getMin(), heatmapDf.getMax()], range: [ '#212142', '#6666ff' ]})
       _.heatmapGraph.drawXAxis()
       _.heatmapGraph.drawYAxis()
       _.heatmapGraph.drawTitle()
       _.heatmapGraph.drawSubtitle()
-      _.heatmapGraph.addHeatmap();
+      _.heatmapGraph.addHeatmap({ mouseover: showTooltip, mouseleave: hideTooltip });
     })
   }
 
@@ -179,10 +182,32 @@ export const Dataviser = (function() {
     DOMApi.create('dataviser-body-text', 'div', 'root', '<br>');
     _.catalogue = DOMApi.create('dataviser-catalogue', 'div');
 
+    // Tooltip
+    _.tooltip = DOMApi.create('dataviser-tooltip', 'div', 'root', 'hello world');
+
     // Add event listeners
+    document.onmousemove = e => {
+      DOMApi.get(_.tooltip).style.top = e.clientY - 45 + 'px';
+      DOMApi.get(_.tooltip).style.left = e.clientX + 50 + 'px';
+    }
+
     DOMApi.get(buttonImport).mouseDownCallback = e => {
       _.selectDirectory();
     }
+  }
+
+  const showTooltip = function(e, d) {
+    DOMApi.get(_.tooltip).innerHTML = `
+      <span style='font-size: 0.5em; opacity: 0.5;'>
+        from: ${d.y}, to: ${d.x} <br>
+      </span>
+      ${d.value} <br>
+    `;
+    DOMApi.get(_.tooltip).style.opacity = '1';
+  }
+
+  const hideTooltip = function(e, d) {
+    DOMApi.get(_.tooltip).style.opacity = '0';
   }
 
   const onFilterSubmit = function(e) {
