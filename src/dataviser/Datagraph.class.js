@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-29 10:39:11
+ * @ Modified time: 2024-04-29 10:55:44
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -652,7 +652,7 @@ Datagraph.prototype.addHeatmap = function(options={}) {
   const highlightFilter = options.highlightFilter ?? 'saturate(100%)';
   const unhighlightColor = options.unhighlightColor ?? 'black';
   const unhighlightOpacity = options.unhighlightOpacity ?? 1;
-  const unhighlightFilter = options.unhighlightFilter ?? 'saturate(0%)';
+  const unhighlightFilter = options.unhighlightFilter ?? 'saturate(50%)';
 
   // Some instance based parameters
   const fx = (d, i) => this.axes.x(d.x);

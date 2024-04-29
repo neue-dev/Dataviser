@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 10:43:51
+ * @ Modified time: 2024-04-29 10:55:28
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -126,7 +126,7 @@ export const Dataviser = (function() {
       _.heatmapGraph.init();
       _.heatmapGraph.addXAxis({ type: 'categorical', domain: heatmapDf.getCols() })
       _.heatmapGraph.addYAxis({ type: 'categorical', domain: heatmapDf.getRows() })
-      _.heatmapGraph.addAxis('color', { type: 'color', domain: [heatmapDf.getMin(), heatmapDf.getMax()], range: [ '#212142', '#6666ff' ]})
+      _.heatmapGraph.addAxis('color', { type: 'color', domain: [heatmapDf.getMin(), heatmapDf.getMax()], range: [ '#ffffff', '#082188' ]})
       _.heatmapGraph.drawXAxis()
       _.heatmapGraph.drawYAxis()
       _.heatmapGraph.drawTitle()
@@ -198,7 +198,7 @@ export const Dataviser = (function() {
 
   const showTooltip = function(e, d) {
     DOMApi.get(_.tooltip).innerHTML = `
-      <span style='font-size: 0.5em; opacity: 0.5;'>
+      <span style='font-size: 0.8em; font-family: SFProItalic; opacity: 0.5;'>
         from: ${d.y}, to: ${d.x} <br>
       </span>
       ${d.value} <br>
