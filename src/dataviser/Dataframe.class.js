@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 09:03:57
+ * @ Modified time: 2024-04-29 11:17:31
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -275,6 +275,8 @@ Dataframe.prototype.toList = function() {
     for(let col in data[row]) {
       list.push({
         x: col, y: row,
+        row: row, col: col,
+        serial: this.SERIAL,
         value: data[row][col]
       })
     }

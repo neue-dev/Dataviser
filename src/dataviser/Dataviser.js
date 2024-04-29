@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 10:55:28
+ * @ Modified time: 2024-04-29 11:32:45
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -101,26 +101,48 @@ export const Dataviser = (function() {
     
     // We define our data
     const heatmapData = DataframeManager.getSumDfs();
+    const seriesRowsData = Object.keys(dfs).map(key => new Dataframe('', dfs[key]).getRowSums())
+    const seriesColsData = Object.keys(dfs).map(key => new Dataframe('', dfs[key]).getColSums())
     
-    // The df and its properties
+    // The dfs and their properties
     const heatmapDf = DataframeManager.create('_heatmap', heatmapData);
+    const seriesRowsList = {}
+    const seriesColsList = []
     const heatmapDfList = heatmapDf.toList();
     
+    for(let i = 0; i < 5; i++) {
+      seriesRowsList[i] = [];
+      for(let j = 0; j < 300; j++) {
+        seriesRowsList[i].push({
+          x: j,
+          y: Math.random() * 100,
+        })
+      }
+
+    }
+
+    console.log(seriesRowsList)
+    console.log(seriesColsList)
+
     // The title
     const heatmapTitle = `Heatmap of Immigration Across Thailand`;
     const heatmapSubtitle = `
       ${params.startDate.toDateString()} - ${params.endDate.toDateString()} 
       for ${heatmapDf.getCols().length} provinces
     `;
+
+    const seriesRowsTitle = `Series for inward migration.`;
+    const seriesRowsSubtitle = `yes`;
+
     
     // We create three graphs
     const heatmap = DatagraphManager.create(heatmapTitle, heatmapDfList, { ...defaultDgraphConfig, subtitle: heatmapSubtitle });
-    // const seriesRows = DatagraphManager.create(seriesRowsTitle, seriesRowsDfList, { ...defaultDgraphConfig, subtitle: seriesRowsSubtitle });
+    const seriesRows = DatagraphManager.create(seriesRowsTitle, seriesRowsList, { ...defaultDgraphConfig, subtitle: seriesRowsSubtitle });
     // const seriesCols = DatagraphManager.create(seriesColsTitle, seriesColsDfList, { ...defaultDgraphConfig, subtitle: seriesColsSubtitle });
 
     _.heatmapGraph = DatagraphManager.get(heatmap);
-    // _.seriesRowsGraph = DataframeManager.get(seriesRows);
-    // _.seriesColsGraph = DataframeManager.get(seriesCols);
+    _.seriesRowsGraph = DatagraphManager.get(seriesRows);
+    // _.seriesColsGraph = DatagraphManager.get(seriesCols);
 
     setTimeout(() => {
       _.heatmapGraph.init();
@@ -132,6 +154,15 @@ export const Dataviser = (function() {
       _.heatmapGraph.drawTitle()
       _.heatmapGraph.drawSubtitle()
       _.heatmapGraph.addHeatmap({ mouseover: showTooltip, mouseleave: hideTooltip });
+
+      _.seriesRowsGraph.init();
+      _.seriesRowsGraph.addXAxis({ type: 'linear', domain: [0, 365] })
+      _.seriesRowsGraph.addYAxis({ type: 'linear', domain: [0, 100] })
+      _.seriesRowsGraph.drawXAxis()
+      _.seriesRowsGraph.drawYAxis()
+      _.seriesRowsGraph.drawTitle()
+      _.seriesRowsGraph.drawSubtitle()
+      _.seriesRowsGraph.addTimeline({ mouseover: showTooltip, mouseleave: hideTooltip });
     })
   }
 

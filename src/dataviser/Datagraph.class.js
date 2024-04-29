@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-29 10:55:44
+ * @ Modified time: 2024-04-29 11:36:42
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -529,7 +529,7 @@ Datagraph.prototype.addScatterplot = function(options={}) {
  * @param   { object }      options   The options for rendering.
  * @return  { Datagraph }             The modified instance.
  */
-Datagraph.prototype.addTimeline = function(data, options={}) {
+Datagraph.prototype.addTimeline = function(options={}) {
   
   // The datagraph instance
   const datagraph = this;
@@ -596,26 +596,22 @@ Datagraph.prototype.addTimeline = function(data, options={}) {
   // Defines the thing we use to draw a line with our data
   const line = d3.line(fx, fy);
 
-  // Create the datapoints
-  this.canvas
-    .append('path')
-    .classed(this.id + '-data-point', true)
-    .attr('d', line(this.data))
-    .attr('stroke', 'black')
-    .attr('fill', 'none')
-    .style('fill', 'none')
+  for(let key in this.data) {
+    this.canvas
+      .append('path')
+      .classed(this.id + '-data-point', true)
+      .attr('d', line(this.data[key]))
+      .attr('stroke', 'black')
+      .attr('fill', 'none')
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .style('fill', 'none')
 
-  this.canvas
-    .selectAll('circle')
-    .data(this.data)
-    .join('circle')
-    .classed(this.id + '-data-point', true)
-    .classed('data-point', true)
-    .attr('cx', fx)
-    .attr('cy', fy)
-    .attr('r', 5)
-    .on('mouseover', mouseover)
-    .on('mouseleave', mouseleave)
+    this.canvas
+      .append('text')
+      .attr('transform', `translate(${this.axes.x(this.data[key].slice(-1)[0].x)}, ${this.axes.y(this.data[key].slice(-1)[0].y)})`)
+      .text(key)
+  }
 
   // Create the style tag if it doesn't exist
   // These styles represent the default styles of the elements
