@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 08:44:58
+ * @ Modified time: 2024-04-29 08:57:07
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -118,12 +118,14 @@ export const Dataviser = (function() {
 
     console.log(heatmapDfList);
     console.log(heatmapGraph);
+    console.log(heatmapDf.getMax());
+    console.log(heatmapDf.getMin())
 
     setTimeout(() => {
       heatmapGraph.init();
-      heatmapGraph.addXAxis({ type: 'categorical', domain: heatmapDfCols })
-      heatmapGraph.addYAxis({ type: 'categorical', domain: heatmapDfRows })
-      heatmapGraph.addAxis('color', { type: 'color', domain: [0, 1000000], range: [ '#323232', '#5555ff' ]})
+      heatmapGraph.addXAxis({ type: 'categorical', domain: heatmapDf.getCols() })
+      heatmapGraph.addYAxis({ type: 'categorical', domain: heatmapDf.getRows() })
+      heatmapGraph.addAxis('color', { type: 'color', domain: [heatmapDf.getMin(), heatmapDf.getMax()], range: [ '#323232', '#5555ff' ]})
       heatmapGraph.drawXAxis()
       heatmapGraph.drawYAxis()
       heatmapGraph.drawTitle()

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 08:26:21
+ * @ Modified time: 2024-04-29 08:56:30
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -98,6 +98,58 @@ Dataframe.prototype.getCols = function() {
         this.COLS.push(col);
 
   return this.COLS;  
+}
+
+/**
+ * Retrieves the maximum value within the dataframe, across the specified cols.
+ * 
+ * @param   { array }   cols  The columns where we wanna look.
+ * @return  { array }         The maximum value found across the columns.
+ */
+Dataframe.prototype.getMax = function(cols) {
+
+  // Create the df
+  const df = this.get();
+  let max = Number.NEGATIVE_INFINITY;
+
+  // Use all cols by default
+  if(!cols || !cols.length)
+    cols = this.getCols();
+
+  // We compute the cols
+  for(let row in df)
+    for(let col in df[row])
+      if(cols.indexOf(col) >= 0)
+        if(df[row][col] > max)
+          max = df[row][col]
+
+  return max;  
+}
+
+/**
+ * Retrieves the minimum value within the dataframe, across the specified cols.
+ * 
+ * @param   { array }   cols  The columns where we wanna look.
+ * @return  { array }         The minimum value found across the columns.
+ */
+Dataframe.prototype.getMin = function(cols) {
+
+  // Create the df
+  const df = this.get();
+  let min = Number.POSITIVE_INFINITY;
+
+  // Use all cols by default
+  if(!cols || !cols.length)
+    cols = this.getCols();
+
+  // We compute the cols
+  for(let row in df)
+    for(let col in df[row])
+      if(cols.indexOf(col) >= 0)
+        if(df[row][col] < min)
+          min = df[row][col]
+
+  return min;  
 }
 
 /**
