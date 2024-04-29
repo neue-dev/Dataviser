@@ -26,9 +26,15 @@ export const PyodideAPI = (function() {
    * @param   { event }   e   The event object. 
    */
   pyodideWorker.onmessage = e => {
-    
+  
     // Retrieve the data sent by the worker and the resolving callback
     const { id } = e.data;
+    
+    // The process already ended
+    if(!_.processes[id])
+      return;
+
+    // Get the callbacks
     const { onResolve, onReject } = _.processes[id];
     
     // The process id done, so remove it
@@ -75,12 +81,13 @@ export const PyodideAPI = (function() {
    * Wraps dispatch process around a try catch statement.
    * Also allows the user to do something after the process exits.
    * 
-   * @param   { string }    script    The string literal representing the script. 
-   * @param   { object }    context   The data we want to pass to the script.
-   * @param   { function }  callback  The function we want to execute upon the end of the script.
-   *                                  Note that we pass the result of the script to the callback.
+   * @param   { string }    script          The string literal representing the script. 
+   * @param   { object }    context         The data we want to pass to the script.
+   * @param   { function }  callback        The function we want to execute upon the end of the script.
+   *                                        Note that we pass the result of the script to the callback.
+   * @param   { function }  errorCallback   An optional parameter for handling errors.
    */
-  _.runProcess = async(script, context, callback) => {
+  _.runProcess = async(script, context, callback, errorCallback) => {
 
     // Try the script
     try {
