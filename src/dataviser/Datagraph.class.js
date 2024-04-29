@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-29 11:36:42
+ * @ Modified time: 2024-04-29 12:31:19
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -558,11 +558,6 @@ Datagraph.prototype.addTimeline = function(options={}) {
    * @param   { datum }   d   The data associated with the instance.
    */
   const mouseover = function(e, d) {
-    d3.select(this)
-      .attr('r', highlightRadius)
-      .style('fill', highlightColor)
-      .style('opacity', highlightOpacity)
-      
     datagraph.setCSSVariables({ 
       fill: unhighlightColor,
       opacity: unhighlightOpacity,
@@ -579,11 +574,6 @@ Datagraph.prototype.addTimeline = function(options={}) {
    * @param {*} d 
    */
   const mouseleave = function(e, d) {
-    d3.select(this)
-      .attr('r', defaultRadius)
-      .style('fill', '')
-      .style('opacity', '')
-
     datagraph.setCSSVariables({ 
       fill: defaultColor, 
       opacity: defaultOpacity,
@@ -597,20 +587,23 @@ Datagraph.prototype.addTimeline = function(options={}) {
   const line = d3.line(fx, fy);
 
   for(let key in this.data) {
-    this.canvas
+    let lineElement = this.canvas
       .append('path')
       .classed(this.id + '-data-point', true)
+      .classed(this.id + '-' + key.replaceAll(' ', ''), true)
       .attr('d', line(this.data[key]))
-      .attr('stroke', 'black')
+      .attr('stroke', 'rgba(var(--black), 0.75)')
       .attr('fill', 'none')
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .style('fill', 'none')
-
+      
     this.canvas
       .append('text')
       .attr('transform', `translate(${this.axes.x(this.data[key].slice(-1)[0].x)}, ${this.axes.y(this.data[key].slice(-1)[0].y)})`)
       .text(key)
+      .on('mouseover', (e, d) => { mouseover(e, d); lineElement.style('opacity', '1').style('stroke', '#2121cc') })
+      .on('mouseleave', (e, d) => { mouseleave(e, d); lineElement.style('opacity', '').style('stroke', ''); })
   }
 
   // Create the style tag if it doesn't exist

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 12:09:16
+ * @ Modified time: 2024-04-29 12:37:21
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -144,8 +144,8 @@ export const Dataviser = (function() {
 
     // The title
     const heatmapTitle = `Heatmap of Immigration Across Thailand`;
-    const seriesRowsTitle = `Series for inward migration.`;
-    const seriesColsTitle = `Series for outward migration migration.`;
+    const seriesRowsTitle = `Series for outward migration.`;
+    const seriesColsTitle = `Series for inward migration migration.`;
     const subtitle = `
       ${params.startDate.toDateString()} - ${params.endDate.toDateString()} 
       for ${heatmapDf.getCols().length} provinces
@@ -256,12 +256,19 @@ export const Dataviser = (function() {
   }
 
   const showTooltip = function(e, d) {
-    DOMApi.get(_.tooltip).innerHTML = `
-      <span style='font-size: 0.8em; font-family: SFProItalic; opacity: 0.5;'>
-        from: ${d.y}, to: ${d.x} <br>
-      </span>
-      ${d.value} <br>
-    `;
+
+    if(d) {
+      DOMApi.get(_.tooltip).innerHTML = `
+        <span style='font-size: 0.8em; font-family: SFProItalic; opacity: 0.5;'>
+          from: ${d.y}, to: ${d.x} <br>
+        </span>
+        ${d.value} <br>
+      `;
+      
+    } else {
+      DOMApi.get(_.tooltip).innerHTML = e.target.textContent;
+    }
+  
     DOMApi.get(_.tooltip).style.opacity = '1';
   }
 
