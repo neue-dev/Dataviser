@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 09:36:50
+ * @ Modified time: 2024-04-29 09:51:34
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -98,27 +98,29 @@ export const Dataviser = (function() {
 
     // We set it to the store so we can perform calculations
     DataframeManager.setStore(dfs, serials);
-
-    // The title
-    const title = `Heatmap of Immigration Across Provinces`;
-    const subtitle = `${params.startDate.toDateString()} - ${params.endDate.toDateString()}`;
-
-
+    
     // We define our data
     const heatmapData = DataframeManager.getSumDfs(createFilter({
       start: params.startDate,
       end: params.endDate,  
     }));
-
+    
     // The df and its properties
     const heatmapDf = DataframeManager.create('_heatmap', heatmapData);
     const heatmapDfList = heatmapDf.toList();
-
+    
+    // The title
+    const heatmapTitle = `Heatmap of Immigration Across Thailand`;
+    const heatmapSubtitle = `
+      ${params.startDate.toDateString()} - ${params.endDate.toDateString()} 
+      for ${heatmapDf.getCols().length} provinces
+    `;
+    
     // We create three graphs
-    const heatmap = DatagraphManager.create(title, heatmapDfList, { ...defaultDgraphConfig, subtitle });
-    const heatmapGraph = DatagraphManager.get(heatmap);
+    const heatmap = DatagraphManager.create(heatmapTitle, heatmapDfList, { ...defaultDgraphConfig, subtitle: heatmapSubtitle });
+    // const series = DatagraphManager.create(seriesTitle, seriesDfList, { ...defaultDgraphConfig, subtitle: seriesSubtitle });
 
-    console.log(heatmap.subtitle)
+    const heatmapGraph = DatagraphManager.get(heatmap);
 
     setTimeout(() => {
       heatmapGraph.init();
@@ -159,10 +161,10 @@ export const Dataviser = (function() {
     const buttonImport = DOMApi.create('dataviser-import-button', 'button-component', 'root', 'import files');
     
     DOMApi.create('dataviser-body-text', 'div', panel, '<br>Specify a date range here.');
-    const filterDate = DOMApi.create('dataviser-filter-date', 'input-component', panel, 'date filter');
+    _.filterDate = DOMApi.create('dataviser-filter-date', 'input-component', panel, 'date filter');
     
     DOMApi.create('dataviser-body-text', 'div', panel, '<br>Specify locations here.');
-    const filterLocs = DOMApi.create('dataviser-filter-locs', 'input-component', panel, 'locs filter');
+    _.filterLocs = DOMApi.create('dataviser-filter-locs', 'input-component', panel, 'locs filter');
 
     // Other DOM parts
     DOMApi.create('dataviser-body-text', 'div', 'root', '<br>');    
@@ -194,9 +196,9 @@ export const Dataviser = (function() {
     const sumDf = new Dataframe('', DataframeManager.getSumDfs());
     const sumDfsumRows = sumDf.getRowSums();
     const sumDfsumCols = sumDf.getColSums();
-    const rowcols = sumDf.getCols();
     const maxCount = 16;
-
+    let rowcols = sumDf.getCols();
+    
     // Sort the rows and cols by non-ascending order
     rowcols.sort((a, b) => {
       return (
@@ -205,8 +207,18 @@ export const Dataviser = (function() {
       )
     })
 
+    // Get the top n data points
+    rowcols = rowcols.slice(0, maxCount)
+
+    // Update the fields
+    DOMApi.get(_.filterLocs).innerHTML = `${rowcols.join(', ')}`;
+    DOMApi.get(_.filterDate).innerHTML = `
+      ${params.startDate.getFullYear()}-${params.startDate.getMonth()}-${params.startDate.getDate()}, 
+      ${params.endDate.getFullYear()}-${params.endDate.getMonth()}-${params.endDate.getDate()}
+    `;
+
     // Render all the dataframes
-    DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(), rowcols.slice(0, maxCount), dfs => {
+    DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(), rowcols, dfs => {
       
       // Convert into datagraphs
       renderDfs(dfs);
