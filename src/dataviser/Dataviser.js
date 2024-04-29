@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 12:41:49
+ * @ Modified time: 2024-04-29 13:11:46
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -209,8 +209,8 @@ export const Dataviser = (function() {
   _.init = function() {
     _.configDOM();
 
-    defaultDgraphConfig.width = window.innerWidth * 9 / 16;
-    defaultDgraphConfig.height = window.innerHeight * 1 / 1;
+    defaultDgraphConfig.width = window.outerWidth * 9 / 16;
+    defaultDgraphConfig.height = window.outerHeight * 1 / 1;
     defaultDgraphConfig.parent = DOMApi.get(_.catalogue);
   }
 
@@ -293,8 +293,9 @@ export const Dataviser = (function() {
     DOMApi.get(_.catalogue).textContent = 'Loading visualizations...';
 
     // We infer the date range from the filenames too
-    params.startDate = new Date(filterDate.textContent.split(',')[0].trim())
-    params.endDate = new Date(filterDate.textContent.split(',')[1].trim())
+    const dateRange = filterDate.textContent.split(',');
+    params.startDate = new Date(dateRange[0].trim())
+    params.endDate = new Date(dateRange[dateRange.length - 1].trim())
 
     // We derive the top most pronounced data points
     let rowcols = filterLocs.textContent.split(',').map(t => t.trim());
