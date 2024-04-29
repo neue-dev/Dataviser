@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 08:56:30
+ * @ Modified time: 2024-04-29 09:03:57
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -150,6 +150,45 @@ Dataframe.prototype.getMin = function(cols) {
           min = df[row][col]
 
   return min;  
+}
+
+/**
+ * Gets the sum of all values across each row.
+ * 
+ * @return  { object }  A dictionary of the sums.
+ */
+Dataframe.prototype.getRowSums = function() {
+  const df = this.get()
+  const sums = {}
+
+  for(let row in df) {
+    sums[row] = 0;
+    
+    for(let col in df[row])
+      sums[row] += df[row][col]
+  }
+
+  return sums;
+}
+
+/**
+ * Gets the sum of all values across each col.
+ * 
+ * @return  { object }  A dictionary of the sums.
+ */
+Dataframe.prototype.getColSums = function() {
+  const df = this.get()
+  const sums = {}
+
+  for(let row in df) {
+    for(let col in df[row]) {
+      if(!sums[col])
+        sums[col] = 0;
+      sums[col] += df[row][col]
+    }
+  }
+
+  return sums;
 }
 
 /**
