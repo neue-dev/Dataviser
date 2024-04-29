@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 09:51:34
+ * @ Modified time: 2024-04-29 10:18:53
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -100,10 +100,7 @@ export const Dataviser = (function() {
     DataframeManager.setStore(dfs, serials);
     
     // We define our data
-    const heatmapData = DataframeManager.getSumDfs(createFilter({
-      start: params.startDate,
-      end: params.endDate,  
-    }));
+    const heatmapData = DataframeManager.getSumDfs();
     
     // The df and its properties
     const heatmapDf = DataframeManager.create('_heatmap', heatmapData);
@@ -120,19 +117,28 @@ export const Dataviser = (function() {
     const heatmap = DatagraphManager.create(heatmapTitle, heatmapDfList, { ...defaultDgraphConfig, subtitle: heatmapSubtitle });
     // const series = DatagraphManager.create(seriesTitle, seriesDfList, { ...defaultDgraphConfig, subtitle: seriesSubtitle });
 
-    const heatmapGraph = DatagraphManager.get(heatmap);
+    _.heatmapGraph = DatagraphManager.get(heatmap);
 
     setTimeout(() => {
-      heatmapGraph.init();
-      heatmapGraph.addXAxis({ type: 'categorical', domain: heatmapDf.getCols() })
-      heatmapGraph.addYAxis({ type: 'categorical', domain: heatmapDf.getRows() })
-      heatmapGraph.addAxis('color', { type: 'color', domain: [heatmapDf.getMin(), heatmapDf.getMax()], range: [ '#323232', '#5555ff' ]})
-      heatmapGraph.drawXAxis()
-      heatmapGraph.drawYAxis()
-      heatmapGraph.drawTitle()
-      heatmapGraph.drawSubtitle()
-      heatmapGraph.addHeatmap();
+      _.heatmapGraph.init();
+      _.heatmapGraph.addXAxis({ type: 'categorical', domain: heatmapDf.getCols() })
+      _.heatmapGraph.addYAxis({ type: 'categorical', domain: heatmapDf.getRows() })
+      _.heatmapGraph.addAxis('color', { type: 'color', domain: [heatmapDf.getMin(), heatmapDf.getMax()], range: [ '#323232', '#5555ff' ]})
+      _.heatmapGraph.drawXAxis()
+      _.heatmapGraph.drawYAxis()
+      _.heatmapGraph.drawTitle()
+      _.heatmapGraph.drawSubtitle()
+      _.heatmapGraph.addHeatmap();
     })
+  }
+
+  /**
+   * Clear the graphs we have.
+   * Clear the df store.
+   */
+  const clearDfs = function() {
+    DataframeManager.revertStore();
+    _.heatmapGraph.clear();
   }
     
   /**
@@ -179,6 +185,56 @@ export const Dataviser = (function() {
     }
   }
 
+  const onFilterSubmit = function(e) {
+    
+    // Clear old dfs 
+    clearDfs();
+
+    // Filter fields
+    const filterDate = DOMApi.get(_.filterDate);
+    const filterLocs = DOMApi.get(_.filterLocs);
+    
+    // Remove old event listeners
+    filterDate.submitCallback = null;
+    filterLocs.submitCallback = null;
+
+    // So the user knows what's going on
+    DOMApi.get(_.catalogue).textContent = 'Loading visualizations...';
+
+    // We infer the date range from the filenames too
+    params.startDate = new Date(filterDate.textContent.split(',')[0].trim())
+    params.endDate = new Date(filterDate.textContent.split(',')[1].trim())
+
+    // We derive the top most pronounced data points
+    let rowcols = filterLocs.textContent.split(',').map(t => t.trim());
+
+    // Update the fields
+    DOMApi.get(_.filterLocs).innerHTML = `${rowcols.join(', ')}`;
+    DOMApi.get(_.filterDate).innerHTML = `
+      ${params.startDate.getFullYear()}-${params.startDate.getMonth() + 1}-${params.startDate.getDate()}, 
+      ${params.endDate.getFullYear()}-${params.endDate.getMonth() + 1}-${params.endDate.getDate()}
+    `;
+    
+    console.log(rowcols);
+    
+    // Render all the dataframes
+    DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(createFilter({
+      start: params.startDate,
+      end: params.endDate,
+    })), rowcols, dfs => {
+      
+      // Convert into datagraphs
+      renderDfs(dfs);
+
+      // Remove loader
+      _.renderData();
+
+      // Append event listeners
+      DOMApi.get(_.filterDate).submitCallback = onFilterSubmit
+      DOMApi.get(_.filterLocs).submitCallback = onFilterSubmit
+    })
+  }
+
   /**
    * Generates a sum of all the dataframes we have and does some other data cleaning.
    */
@@ -213,8 +269,8 @@ export const Dataviser = (function() {
     // Update the fields
     DOMApi.get(_.filterLocs).innerHTML = `${rowcols.join(', ')}`;
     DOMApi.get(_.filterDate).innerHTML = `
-      ${params.startDate.getFullYear()}-${params.startDate.getMonth()}-${params.startDate.getDate()}, 
-      ${params.endDate.getFullYear()}-${params.endDate.getMonth()}-${params.endDate.getDate()}
+      ${params.startDate.getFullYear()}-${params.startDate.getMonth() + 1}-${params.startDate.getDate()}, 
+      ${params.endDate.getFullYear()}-${params.endDate.getMonth() + 1}-${params.endDate.getDate()}
     `;
 
     // Render all the dataframes
@@ -225,6 +281,10 @@ export const Dataviser = (function() {
 
       // Remove loader
       _.renderData();
+
+      // Append event listeners
+      DOMApi.get(_.filterDate).submitCallback = onFilterSubmit
+      DOMApi.get(_.filterLocs).submitCallback = onFilterSubmit
     })
   }
 
