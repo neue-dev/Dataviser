@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 11:59:01
+ * @ Modified time: 2024-04-29 12:09:16
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -105,10 +105,10 @@ export const Dataviser = (function() {
     const seriesColsData = {}; Object.keys(dfs).forEach(key => seriesColsData[key] = new Dataframe('', dfs[key]).getColSums())
     
     // The dfs and their properties
-    const heatmapDf = DataframeManager.create('_heatmap', heatmapData);
-    const heatmapDfList = heatmapDf.toList();
-    const seriesRowsList = {}
-    const seriesColsList = {}
+    let heatmapDf = DataframeManager.create('_heatmap', heatmapData);
+    let heatmapDfList = heatmapDf.toList();
+    let seriesRowsList = {}, seriesRowsMin = Number.POSITIVE_INFINITY, seriesRowsMax = Number.NEGATIVE_INFINITY;
+    let seriesColsList = {}, seriesColsMin = Number.POSITIVE_INFINITY, seriesColsMax = Number.NEGATIVE_INFINITY;
     
     // Create the row based data
     for(let df in seriesRowsData) {
@@ -120,6 +120,9 @@ export const Dataviser = (function() {
           x: new Date(df),
           y: seriesRowsData[df][row],
         })
+
+        if(seriesRowsData[df][row] < seriesRowsMin) seriesRowsMin = seriesRowsData[df][row];
+        if(seriesRowsData[df][row] > seriesRowsMax) seriesRowsMax = seriesRowsData[df][row];
       }
     }
 
@@ -133,23 +136,25 @@ export const Dataviser = (function() {
           x: new Date(df),
           y: seriesColsData[df][col],
         })
+
+        if(seriesColsData[df][col] < seriesColsMin) seriesColsMin = seriesColsData[df][col];
+        if(seriesColsData[df][col] > seriesColsMax) seriesColsMax = seriesColsData[df][col];
       }
     }
 
     // The title
     const heatmapTitle = `Heatmap of Immigration Across Thailand`;
+    const seriesRowsTitle = `Series for inward migration.`;
+    const seriesColsTitle = `Series for outward migration migration.`;
     const subtitle = `
       ${params.startDate.toDateString()} - ${params.endDate.toDateString()} 
       for ${heatmapDf.getCols().length} provinces
     `;
 
-    const seriesRowsTitle = `Series for inward migration.`;
-    const seriesColsTitle = `Series for outward migration migration.`;
-
     // We create three graphs
     const heatmap = DatagraphManager.create(heatmapTitle, heatmapDfList, { ...defaultDgraphConfig, subtitle });
     const seriesRows = DatagraphManager.create(seriesRowsTitle, seriesRowsList, { ...defaultDgraphConfig, subtitle });
-    const seriesCols = DatagraphManager.create(seriesColsTitle, seriesColsDfList, { ...defaultDgraphConfig, subtitle });
+    const seriesCols = DatagraphManager.create(seriesColsTitle, seriesColsList, { ...defaultDgraphConfig, subtitle });
 
     _.heatmapGraph = DatagraphManager.get(heatmap);
     _.seriesRowsGraph = DatagraphManager.get(seriesRows);
@@ -171,12 +176,21 @@ export const Dataviser = (function() {
 
       _.seriesRowsGraph.init();
       _.seriesRowsGraph.addXAxis({ type: 'time', domain: [ startDate, endDate ] })
-      _.seriesRowsGraph.addYAxis({ type: 'linear', domain: [0, 100000] })
+      _.seriesRowsGraph.addYAxis({ type: 'linear', domain: [ seriesRowsMin, seriesRowsMax ] })
       _.seriesRowsGraph.drawXAxis()
       _.seriesRowsGraph.drawYAxis()
       _.seriesRowsGraph.drawTitle()
       _.seriesRowsGraph.drawSubtitle()
       _.seriesRowsGraph.addTimeline({ mouseover: showTooltip, mouseleave: hideTooltip });
+
+      _.seriesColsGraph.init();
+      _.seriesColsGraph.addXAxis({ type: 'time', domain: [ startDate, endDate ] })
+      _.seriesColsGraph.addYAxis({ type: 'linear', domain: [ seriesColsMin, seriesColsMax ] })
+      _.seriesColsGraph.drawXAxis()
+      _.seriesColsGraph.drawYAxis()
+      _.seriesColsGraph.drawTitle()
+      _.seriesColsGraph.drawSubtitle()
+      _.seriesColsGraph.addTimeline({ mouseover: showTooltip, mouseleave: hideTooltip });
     })
   }
 
