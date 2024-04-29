@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-25 13:22:47
- * @ Modified time: 2024-04-29 02:06:48
+ * @ Modified time: 2024-04-29 09:36:06
  * @ Description:
  * 
  * A class that interacts with d3.
@@ -38,7 +38,11 @@ export function Datagraph(title, data, options={}) {
   this.scales = {};
   this.domains = {};
   this.ranges = {};
-
+  
+  // Add subtitle
+  if(options.subtitle)
+    this.subtitle = options.subtitle;
+  
   return this;
 }
 
@@ -84,7 +88,7 @@ Datagraph.prototype.initCanvas = function() {
     .classed('datagraph', true)
     .attr('width', this.width + this.margins.left + this.margins.right)
     .attr('height', this.height + this.margins.top + this.margins.bottom)
-
+    
     // The frame within the svg where we add stuff
     .append('g')
     .attr('width', this.width)
@@ -112,10 +116,6 @@ Datagraph.prototype.init = function(options={}) {
   // Add the title 
   this.addTitle(this.title);
 
-  // Add subtitle
-  if(options.subtitle)
-    this.addSubtitle(this.subtitle);
-
   return this;
 }
 
@@ -139,7 +139,7 @@ Datagraph.prototype.addTitle = function(title) {
  * @param   { string }      subtitle  The subtitle.
  * @return  { Datagraph }             The modified instance.
  */
-Datagraph.prototype.addSubtitle = function(title) {
+Datagraph.prototype.addSubtitle = function(subtitle) {
   this.subtitle = subtitle;
 
   return this;

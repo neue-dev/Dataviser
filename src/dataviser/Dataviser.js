@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 09:20:26
+ * @ Modified time: 2024-04-29 09:36:50
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -28,7 +28,6 @@ export const Dataviser = (function() {
     startDate: null,
     endDate: null,
     locations: [],
-    maxHeatmap: 16,
   }
 
 
@@ -100,28 +99,26 @@ export const Dataviser = (function() {
     // We set it to the store so we can perform calculations
     DataframeManager.setStore(dfs, serials);
 
+    // The title
+    const title = `Heatmap of Immigration Across Provinces`;
+    const subtitle = `${params.startDate.toDateString()} - ${params.endDate.toDateString()}`;
+
+
     // We define our data
     const heatmapData = DataframeManager.getSumDfs(createFilter({
       start: params.startDate,
       end: params.endDate,  
     }));
-    const heatmapDf = DataframeManager.create('_heatmap', heatmapData, defaultDgraphConfig);
+
+    // The df and its properties
+    const heatmapDf = DataframeManager.create('_heatmap', heatmapData);
     const heatmapDfList = heatmapDf.toList();
-    const heatmapDfCols = heatmapDf.getCols();
-    const heatmapDfRows = heatmapDf.getRows();
-
-    console.log(heatmapDfCols);
-    console.log(heatmapDfRows)
-
 
     // We create three graphs
-    const heatmap = DatagraphManager.create('Heatmap over period', heatmapDfList, defaultDgraphConfig);
+    const heatmap = DatagraphManager.create(title, heatmapDfList, { ...defaultDgraphConfig, subtitle });
     const heatmapGraph = DatagraphManager.get(heatmap);
 
-    console.log(heatmapDfList);
-    console.log(heatmapGraph);
-    console.log(heatmapDf.getRowSums());
-    console.log(heatmapDf.getColSums())
+    console.log(heatmap.subtitle)
 
     setTimeout(() => {
       heatmapGraph.init();
@@ -131,6 +128,7 @@ export const Dataviser = (function() {
       heatmapGraph.drawXAxis()
       heatmapGraph.drawYAxis()
       heatmapGraph.drawTitle()
+      heatmapGraph.drawSubtitle()
       heatmapGraph.addHeatmap();
     })
   }
@@ -187,19 +185,28 @@ export const Dataviser = (function() {
     // So the user knows what's going on
     DOMApi.get(_.catalogue).textContent = 'Loading visualizations...';
 
+    // We infer the date range from the filenames too
+    const dates = Object.keys(DataframeManager.getDfs());
+    params.startDate = new Date(dates.sort((a, b) => a.localeCompare(b))[0]);
+    params.endDate = new Date(dates.sort((a, b) => b.localeCompare(a))[0]);
+
     // We derive the top most pronounced data points
     const sumDf = new Dataframe('', DataframeManager.getSumDfs());
     const sumDfsumRows = sumDf.getRowSums();
     const sumDfsumCols = sumDf.getColSums();
     const rowcols = sumDf.getCols();
+    const maxCount = 16;
 
     // Sort the rows and cols by non-ascending order
     rowcols.sort((a, b) => {
-      return sumDfsumCols[b] + sumDfsumRows[b] - sumDfsumCols[a] - sumDfsumRows[a];
+      return (
+        sumDfsumCols[b] + sumDfsumRows[b] - 
+        sumDfsumCols[a] - sumDfsumRows[a]
+      )
     })
 
     // Render all the dataframes
-    DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(), rowcols.slice(0, params.maxHeatmap), dfs => {
+    DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(), rowcols.slice(0, maxCount), dfs => {
       
       // Convert into datagraphs
       renderDfs(dfs);
