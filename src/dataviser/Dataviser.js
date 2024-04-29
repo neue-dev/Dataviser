@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 12:37:21
+ * @ Modified time: 2024-04-29 12:41:49
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -306,8 +306,6 @@ export const Dataviser = (function() {
       ${params.endDate.getFullYear()}-${params.endDate.getMonth() + 1}-${params.endDate.getDate()}
     `;
     
-    console.log(rowcols);
-    
     // Render all the dataframes
     DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(createFilter({
       start: params.startDate,
@@ -460,6 +458,9 @@ export const Dataviser = (function() {
    * This function reads all the JSON files within a directory and stores them as is within our JS object.
    */
   _.selectDirectory = function() {
+
+    // Overwrite the store
+    DataframeManager.setStore({}, []);
     
     // Let the user pick a directory
     showDirectoryPicker({ id: 'default', mode: 'read' })
