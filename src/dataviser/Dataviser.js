@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 11:32:45
+ * @ Modified time: 2024-04-29 11:59:01
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -101,48 +101,62 @@ export const Dataviser = (function() {
     
     // We define our data
     const heatmapData = DataframeManager.getSumDfs();
-    const seriesRowsData = Object.keys(dfs).map(key => new Dataframe('', dfs[key]).getRowSums())
-    const seriesColsData = Object.keys(dfs).map(key => new Dataframe('', dfs[key]).getColSums())
+    const seriesRowsData = {}; Object.keys(dfs).forEach(key => seriesRowsData[key] = new Dataframe('', dfs[key]).getRowSums())
+    const seriesColsData = {}; Object.keys(dfs).forEach(key => seriesColsData[key] = new Dataframe('', dfs[key]).getColSums())
     
     // The dfs and their properties
     const heatmapDf = DataframeManager.create('_heatmap', heatmapData);
-    const seriesRowsList = {}
-    const seriesColsList = []
     const heatmapDfList = heatmapDf.toList();
+    const seriesRowsList = {}
+    const seriesColsList = {}
     
-    for(let i = 0; i < 5; i++) {
-      seriesRowsList[i] = [];
-      for(let j = 0; j < 300; j++) {
-        seriesRowsList[i].push({
-          x: j,
-          y: Math.random() * 100,
+    // Create the row based data
+    for(let df in seriesRowsData) {
+      for(let row in seriesRowsData[df]) {
+        if(!seriesRowsList[row])
+          seriesRowsList[row] = [];
+        
+        seriesRowsList[row].push({
+          x: new Date(df),
+          y: seriesRowsData[df][row],
         })
       }
-
     }
 
-    console.log(seriesRowsList)
-    console.log(seriesColsList)
+    // Create the col based data
+    for(let df in seriesColsData) {
+      for(let col in seriesColsData[df]) {
+        if(!seriesColsList[col])
+          seriesColsList[col] = [];
+        
+        seriesColsList[col].push({
+          x: new Date(df),
+          y: seriesColsData[df][col],
+        })
+      }
+    }
 
     // The title
     const heatmapTitle = `Heatmap of Immigration Across Thailand`;
-    const heatmapSubtitle = `
+    const subtitle = `
       ${params.startDate.toDateString()} - ${params.endDate.toDateString()} 
       for ${heatmapDf.getCols().length} provinces
     `;
 
     const seriesRowsTitle = `Series for inward migration.`;
-    const seriesRowsSubtitle = `yes`;
+    const seriesColsTitle = `Series for outward migration migration.`;
 
-    
     // We create three graphs
-    const heatmap = DatagraphManager.create(heatmapTitle, heatmapDfList, { ...defaultDgraphConfig, subtitle: heatmapSubtitle });
-    const seriesRows = DatagraphManager.create(seriesRowsTitle, seriesRowsList, { ...defaultDgraphConfig, subtitle: seriesRowsSubtitle });
-    // const seriesCols = DatagraphManager.create(seriesColsTitle, seriesColsDfList, { ...defaultDgraphConfig, subtitle: seriesColsSubtitle });
+    const heatmap = DatagraphManager.create(heatmapTitle, heatmapDfList, { ...defaultDgraphConfig, subtitle });
+    const seriesRows = DatagraphManager.create(seriesRowsTitle, seriesRowsList, { ...defaultDgraphConfig, subtitle });
+    const seriesCols = DatagraphManager.create(seriesColsTitle, seriesColsDfList, { ...defaultDgraphConfig, subtitle });
 
     _.heatmapGraph = DatagraphManager.get(heatmap);
     _.seriesRowsGraph = DatagraphManager.get(seriesRows);
-    // _.seriesColsGraph = DatagraphManager.get(seriesCols);
+    _.seriesColsGraph = DatagraphManager.get(seriesCols);
+
+    const startDate = params.startDate ?? new Date('2015-01-01')
+    const endDate = params.endDate ?? new Date('2025-01-01')
 
     setTimeout(() => {
       _.heatmapGraph.init();
@@ -156,8 +170,8 @@ export const Dataviser = (function() {
       _.heatmapGraph.addHeatmap({ mouseover: showTooltip, mouseleave: hideTooltip });
 
       _.seriesRowsGraph.init();
-      _.seriesRowsGraph.addXAxis({ type: 'linear', domain: [0, 365] })
-      _.seriesRowsGraph.addYAxis({ type: 'linear', domain: [0, 100] })
+      _.seriesRowsGraph.addXAxis({ type: 'time', domain: [ startDate, endDate ] })
+      _.seriesRowsGraph.addYAxis({ type: 'linear', domain: [0, 100000] })
       _.seriesRowsGraph.drawXAxis()
       _.seriesRowsGraph.drawYAxis()
       _.seriesRowsGraph.drawTitle()
