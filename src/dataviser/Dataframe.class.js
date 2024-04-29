@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 23:13:32
- * @ Modified time: 2024-04-29 02:02:46
+ * @ Modified time: 2024-04-29 08:26:21
  * @ Description:
  * 
  * A wrapper on JSON-serialized dataframe objects, so we can work with them in d3.js
@@ -20,13 +20,13 @@ export function Dataframe(id, data, serial) {
 
   // Some metadata
   this.ID = id;
-  this.COLUMNS = [];
+  this.COLS = [];
   this.ROWS = [];
   this.INDEX = '';
   this.SERIAL = serial ?? 0;
   this.METADATA = new Set([ 
     'ID', 
-    'COLUMNS',
+    'COLS',
     'ROWS', 
     'INDEX', 
     'SERIAL',
@@ -216,6 +216,7 @@ export const DataframeManager = (function() {
   
   // Private vars
   let count = 0;
+  let cacheCount = 0;
 
   /**
    * A utility function.
@@ -230,7 +231,7 @@ export const DataframeManager = (function() {
     // Filter the dfs
     for(let key in _) {
       if(!METHODS.has(key)) {
-        if(filter(_[key].SERIAL))
+        if(filter(_[key].SERIAL) && !key.startsWith('_'))
           dfs[key] = _[key].get()
       }
     }
@@ -247,7 +248,11 @@ export const DataframeManager = (function() {
    */
   _.setStore = function(dfs, serials) {
     cache = _;
+    cacheCount = count;
+
+    _ = {};
     _ = Object.assign(_, methods);
+    count = serials.length;
 
     // Create the new store
     for(let key in dfs)
@@ -256,11 +261,10 @@ export const DataframeManager = (function() {
   
   /**
    * Reverts the store to the previous value.
-   * 
-   * @param   { dict }  dfs   A dict of dfs. 
    */
   _.revertStore = function() {
     _ = cache;
+    count = cacheCount;
   }
 
   /**
@@ -359,11 +363,11 @@ export const DataframeManager = (function() {
         for(let col in dfs[key][row]) {
           
           // If col is undefined
-          if(!dfSum[col])
-            dfSum[col] = 0
+          if(!dfSum[row][col])
+            dfSum[row][col] = 0
           
           // Add the value of the df
-          dfSum[col] += dfs[key][row][col]
+          dfSum[row][col] += dfs[key][row][col]
         }
       }
     }

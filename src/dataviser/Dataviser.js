@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-04-29 07:39:37
+ * @ Modified time: 2024-04-29 08:44:58
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -22,6 +22,14 @@ export const Dataviser = (function() {
   // The dataviser object and the root element
   const _ = {};
   const root = document.getElementsByClassName('root')[0];
+  
+  const defaultDgraphConfig = {}
+  const params = {
+    startDate: null,
+    endDate: null,
+    locations: [],
+  }
+
 
   /**
    * This is a helper function.
@@ -82,14 +90,45 @@ export const Dataviser = (function() {
   const renderDfs = function(dfs) {
     
     // Define serials
-    const serials = [];
+    const serials = {};
 
     // Define the serials
     for(let key in dfs)
-      serials.push(getSerial(key))
+      serials[key] = getSerial(key)
 
     // We set it to the store so we can perform calculations
     DataframeManager.setStore(dfs, serials);
+
+    // We define our data
+    const heatmapData = DataframeManager.getSumDfs(createFilter({
+      
+    }));
+    const heatmapDf = DataframeManager.create('_heatmap', heatmapData, defaultDgraphConfig);
+    const heatmapDfList = heatmapDf.toList();
+    const heatmapDfCols = heatmapDf.getCols();
+    const heatmapDfRows = heatmapDf.getRows();
+
+    console.log(heatmapDfCols);
+    console.log(heatmapDfRows)
+
+
+    // We create three graphs
+    const heatmap = DatagraphManager.create('Heatmap over period', heatmapDfList, defaultDgraphConfig);
+    const heatmapGraph = DatagraphManager.get(heatmap);
+
+    console.log(heatmapDfList);
+    console.log(heatmapGraph);
+
+    setTimeout(() => {
+      heatmapGraph.init();
+      heatmapGraph.addXAxis({ type: 'categorical', domain: heatmapDfCols })
+      heatmapGraph.addYAxis({ type: 'categorical', domain: heatmapDfRows })
+      heatmapGraph.addAxis('color', { type: 'color', domain: [0, 1000000], range: [ '#323232', '#5555ff' ]})
+      heatmapGraph.drawXAxis()
+      heatmapGraph.drawYAxis()
+      heatmapGraph.drawTitle()
+      heatmapGraph.addHeatmap();
+    })
   }
     
   /**
@@ -97,6 +136,10 @@ export const Dataviser = (function() {
    */
   _.init = function() {
     _.configDOM();
+
+    defaultDgraphConfig.width = window.innerWidth * 9 / 16;
+    defaultDgraphConfig.height = window.innerHeight * 1 / 1;
+    defaultDgraphConfig.parent = DOMApi.get(_.catalogue);
   }
 
   /**
@@ -139,23 +182,14 @@ export const Dataviser = (function() {
 
     // So the user knows what's going on
     DOMApi.get(_.catalogue).textContent = 'Loading visualizations...';
-    
-    // Compute the total df for all of them
-    DataviserPyAPI.dfsConcat(
 
-      // Get all the dfs and pass them here
-      DataframeManager.getDfs(),
-    
-      // For the resulting concatenated df, store it
-      df => {
+    // Render all the dataframes
+    DataviserPyAPI.dfsFilterRowcols(DataframeManager.getDfs(), [ '78', '2', '8', '5', '13' ], dfs => {
+      renderDfs(dfs);
 
-        // Create the dataframe
-        DataframeManager.create('total', df);
-      
-        // Render data
-        _.renderData();
-      }
-    );
+      // Remove loader
+      _.renderData();
+    })
   }
 
   /**
@@ -166,54 +200,6 @@ export const Dataviser = (function() {
     // Remove the text content
     DOMApi.get(_.catalogue).textContent = ''
 
-    const df = DataframeManager.getDf('total');
-    const pts = []
-
-    // console.log(Object.keys(df));
-
-    const dfs = DataframeManager.getDfs(createFilter({ start: new Date('2020-01-01'), end: new Date('2021-01-01') }))
-
-    DataviserPyAPI.dfsFilterRowcols(dfs, [ '2', '78' ], dfs => {
-      console.log(dfs)
-    })
-
-    for(let i = 0; i < 24; i++) {
-
-      for(let j = 0; j < 24; j++)
-        pts.push({
-          x: i, y: j, value: Math.round(Math.random() * 100)})
-    }
-    
-
-    // // ! remove
-    const d = DatagraphManager.create('test', pts, 
-      {
-        width: window.innerWidth * 9 / 16,
-        height: window.innerHeight * 1 / 1, 
-        parent: DOMApi.get(_.catalogue) 
-      });
-    const dgraph = DatagraphManager.get(d);
-
-    const cols = [];
-    const rows = [];
-
-    for(let i = 0;i < 24; i++) {
-      cols.push(i);
-      rows.push(i);
-    }
-
-    setTimeout(() => {
-      dgraph.init();
-      dgraph.addXAxis({ type: 'categorical', domain: cols })
-      dgraph.addYAxis({ type: 'categorical', domain: rows })
-      dgraph.addAxis('color', { type: 'color', domain: [0, 100], range: [ '#323232', '#5555ff' ]})
-      dgraph.drawXAxis()
-      dgraph.drawYAxis()
-      dgraph.drawTitle()
-
-      // ! remove
-      dgraph.addHeatmap()
-    })
   }
 
   /**
