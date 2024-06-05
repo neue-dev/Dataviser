@@ -1,9 +1,15 @@
 import * as React from "react";
 
+// Chakra
+import { SimpleGrid } from '@chakra-ui/react'
+
+// Custom
+import { Startup } from "./Startup.jsx";
+
 export function Dataviser() {
   return (
-    <div className='dataviser'>
-      dataviser
-    </div>
+    <SimpleGrid className="dataviser" columns="3" spacing="1rem" height="100%" p="2rem">
+      <Startup />
+    </SimpleGrid>
   )
 }

@@ -21,8 +21,8 @@
 
 /* Variables */
 :root {
-  --root-rows: 4;
-  --root-columns: 5;
+  --root-rows: 3;
+  --root-columns: 3;
   --root-margin: 11vh;
   --root-lines-per-cell: 6;
   --root-base-font-size: calc((100vh - 2 * var(--root-margin)) / (var(--root-rows) * var(--root-lines-per-cell) + var(--root-rows)));
@@ -53,10 +53,26 @@
 
 /* General stylings */
 * {
-  color: rgba(var(--black), 0.7);
+  color: rgba(var(--black), 0.83);
   font-size: var(--root-font-size);
-  font-family: var(--body-font);
   line-height: calc(var(--root-line-height) * 1em);
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.chakra-heading {
+  font-family: var(--header-font) !important;
+  /* font-size: 4em !important; */
+  letter-spacing: -0.02em;
+}
+
+.chakra-text {
+  font-family: var(--body-font) !important;
+  letter-spacing: 0.02em;
 }
 
 *::-webkit-scrollbar {
