@@ -1,5 +1,17 @@
+import { Dataviser } from './components/Dataviser.jsx'
+import { ChakraProvider } from '@chakra-ui/react';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 
-const root = createRoot(document.body);
-root.render(<h2>ayo from React!</h2>);
+// A wrapper component for our app
+function App() {
+  return (
+    <ChakraProvider>
+      <Dataviser />
+    </ChakraProvider>
+  );
+}
+
+// Render the component into the DOM
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
