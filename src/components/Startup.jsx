@@ -9,7 +9,7 @@ import { Box } from '@chakra-ui/react'
 // Custom
 import { DCardHeader } from "./base/DCardHeader.jsx";
 import { DCardBody } from "./base/DCardBody.jsx";
-import { DButton } from "./base/DButton.jsx";
+import { FilePicker } from "./utils/FilePicker.jsx";
 
 /**
  * The startup component contains the prompt we give to the user.
@@ -29,8 +29,7 @@ export function Startup() {
         </Box>
 
         <Box>
-          <DButton text="select folder" mt="0.25em"/> <br />
-          <DButton text="select file" />
+          <FilePicker type="folder" />
         </Box>
       </DCardBody>
     </Card>

@@ -12,7 +12,10 @@ import { Stack, StackDivider } from '@chakra-ui/react'
 export function DCardBody(props={}) {
   return (
     <CardBody mt="-1.5em">
-      <Stack divider={<StackDivider />} spacing={props.spacing ?? "1.5em"}>
+      <Stack 
+        divider={<StackDivider />} 
+        spacing={props.spacing ?? "1.5em"}>
+        
         {props.children}
       </Stack>
     </CardBody>

@@ -1,6 +1,9 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
+
+// A reference to the main window
+let mainWindow;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -10,9 +13,11 @@ if (require('electron-squirrel-startup')) {
 const createWindow = () => {
   
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     frame: false,
     webPreferences: {
+      contextIsolation: true,
+      nodeIntegration: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
@@ -45,3 +50,26 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+
+/**
+ * Listens for when the user decides to open a folder.
+ */
+ipcMain.handle('fs:select-directory', async(e, ...args) => {
+  
+  // Prompt to select a directory
+  const result = await dialog.showOpenDialog(
+    mainWindow, 
+    {
+      properties: [ 'openDirectory' ]
+    }
+  );
+
+  // Get the array of selected filepaths
+  const filePaths = result.filePaths;
+
+});
+
+/**
+ * Fallback for erroneous invocations.
+ */
+ipcMain.handle('-', (e, ...args) => {})
