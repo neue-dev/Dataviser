@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-06 16:55:11
+ * @ Modified time: 2024-06-06 17:05:48
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -37,7 +37,7 @@ export const IPC = (function() {
    * The folder picking is done within the main process.
    * The result of this process is saved in memory.
    */
-  ipcMain.handle('fs:select-directory', async(e, ...args) => {
+  ipcMain.handle('fs:load-directory', async(e, ...args) => {
     
     // Wait for IPC to be initted before handling anything
     if(!_.isInitted)
@@ -55,27 +55,7 @@ export const IPC = (function() {
 
     // ! move this into another message sent by the client, don't couple FS and IPC together
     // Load the file contents into memory
-    // filepaths.forEach(filepath => FS.load(filepath));
-  });
-
-  /**
-   * Listens for when the user decides to open a file.
-   * The file picking is done within the main process.
-   * The result of this process is saved in memory.
-   */
-  ipcMain.handle('fs:select-file', async(e, ...args) => {
-    
-    // Wait for IPC to be initted before handling anything
-    if(!_.isInitted)
-      return;
-
-    // Prompt to select a directory
-    const result = await dialog.showOpenDialog(
-      _.mainWindow, { properties: [ 'openFile' ] }
-    );
-
-    // Get the array of selected filepaths
-    const filePaths = result.filePaths;
+    filepaths.forEach(filepath => FS.loadDirectory(filepath));
   });
 
   /**

@@ -15,7 +15,7 @@ export function FilePicker(props={}) {
    */
   function chooseFolder() {
     window.postMessage({
-      message: 'fs:select-directory'
+      message: 'fs:load-directory'
     });
   }
 
@@ -24,7 +24,7 @@ export function FilePicker(props={}) {
    */
   function chooseFile() {
     window.postMessage({ 
-      message: 'fs:select-file' 
+      message: 'fs:load-file' 
     });
   }
 

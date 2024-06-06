@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-06 16:52:20
+ * @ Modified time: 2024-06-06 17:18:21
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -21,35 +21,50 @@ export const FS = (function() {
   const _cache = {};
 
   /**
-   * Loads a file and saves its contents into memory.
-   * Generates a unique id for the file.
+   * Loads all the files in a folder and saves its contents into memory.
+   * Generates a unique id for each file.
    * 
-   * @param   { string }  filepath  The path to the file.
+   * @param   { string }  dirpath   The path to the folder.
    * @param   { object }  options   Options for reading the file.  
    */
-  _.load = function(filepath, options={}) {
-    const id = crypto.randomUUID();
+  _.loadDirectory = function(dirpath, options={}) {
+
+    // The options
     const encoding = options.encoding ?? 'utf-8';
 
+    // The output
+    const output = [];
+    
     // Save the file contents
-    fs.readFile(filepath, encoding, (err, data) => {
+    fs.readdir(dirpath, (err, filepaths) => {
       
       // An error occured
-      if(err)
-        return console.error(err);
+      if(err) return console.error(err);
+      
+      // Read each of the files
+      filepaths.forEach(filepath => {
 
-      // Save the data onto the cache
-      _cache[id] = data;
+        // Generate a random ID and the complete path
+        const id = crypto.randomUUID();
+        const path = `${dirpath}\\\\${filepath}`;
 
-      // ! remove
-      // Also log the data
-      console.log('file data', data);
+        // Read the file
+        fs.readFile(path, encoding, (err, data) => {
+
+          // An error occured
+          if(err) return console.error(err);
+          
+          // Save the data
+          _cache[id] = { data, path };
+
+          // Append to the output
+          output.push({ id, path });
+        });
+      })
     })
 
-    // Return the file information
-    return {
-      id, filepath
-    }
+    // Return the list of all files and their ids
+    return output;
   }
 
   /**
