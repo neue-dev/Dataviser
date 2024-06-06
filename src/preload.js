@@ -11,8 +11,9 @@ process.once('loaded', () => {
     const message = e.data.message ?? '-';
     const args = e.data.args ?? [];
 
-    console.log(message)
-    console.log(e.data.message);
+    // Invalid event
+    if(message == '-')
+      return;
 
     // Send a message to invoke the main process
     ipcRenderer.invoke(message, ...args);
