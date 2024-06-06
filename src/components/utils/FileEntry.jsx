@@ -5,13 +5,13 @@ import { DButton } from '../base/DButton.jsx'
 import { ClientIPC } from '../../dataviser/ClientIPC.api.js'
 
 /**
- * A component that gives a button the extra functionality to view a specific file
+ * A component that represents a file as a single button.
  * 
  * @component
  */
-export function FileViewer(props={}) {
+export function FileEntry(props={}) {
 
-  const _HOST = 'fileviewer'
+  const _HOST = 'fileentry'
 
   function requestFiles() {
 
@@ -19,7 +19,7 @@ export function FileViewer(props={}) {
 
   return (
     <DButton 
-      text="load file"
+      text="file"
       action={ requestFiles }>
     </DButton>
   )
