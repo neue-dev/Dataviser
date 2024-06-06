@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-07 04:39:00
+ * @ Modified time: 2024-06-07 04:58:02
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -36,35 +36,47 @@ export const FS = (function() {
     // The output
     const result = [];
 
-    console.log(dirpaths);
-    
-    // Save the file contents
-    dirpaths.forEach(dirpath => fs.readdir(dirpath, (err, filepaths) => {
-      
-      // An error occured
-      if(err) return console.error(err);
-      
-      // Read each of the files
-      filepaths.forEach(filepath => {
+    // Load the file contents
+    // We can do this synchronously
+    // From the POV of the client this is async anyway
+    dirpaths.forEach(dirpath => {
 
-        // Generate a random ID and the complete path
+      // Grab the files in the directory
+      const filenames = fs.readdirSync(dirpath);
+
+      // Read each of the files
+      filenames.forEach(filename => {
+
+        // Generate the file path
         const id = crypto.randomUUID();
-        const path = `${dirpath}\\\\${filepath}`;
+        const filepath = `${dirpath}\\${filename}`;
 
         // Read the file
-        fs.readFile(path, encoding, (err, data) => {
-
+        // This part is asynchronous
+        // That let's us return the result dict faster
+        fs.readFile(filepath, encoding, (err, data) => {
+          
           // An error occured
           if(err) return console.error(err);
-          
-          // Save the data
-          _cache[id] = { data, path };
 
-          // Append to the output
-          result.push({ id, path });
+          // Save the data
+          _cache[id].data = data;
+          _cache[id].loaded = true;
         });
-      })
-    }))
+
+        // Allocate a slot for the file
+        _cache[id] = {
+          filepath: filepath,
+          loaded: false,
+          data: [],
+        }
+
+        // Append to the output
+        result.push({
+          id, filepath
+        });
+      });
+    })
 
     // Return the list of all files and their ids
     return result;

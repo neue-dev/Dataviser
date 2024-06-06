@@ -28,7 +28,7 @@ export function FilePicker(props={}) {
     let resolveHandle;
     let rejectHandle;
 
-    // Create a response message
+    // Create a response promise
     _responses[message] = {
 
       // Create a new promise
@@ -62,11 +62,34 @@ export function FilePicker(props={}) {
    * @param   { string[] }  dirpaths  An array of directory paths.
    */
   function loadDirectories(dirpaths) {
+    const message = 'fs:load-directories'
+
     window.postMessage({
       host: _HOST,
-      message: 'fs:load-directories',
+      message: message,
       args: [ dirpaths ],
     })
+    
+    // Create a new promise for that
+    let resolveHandle;
+    let rejectHandle;
+
+    // Create a response promise
+    _responses[message] = {
+
+      // Create a new promise
+      promise: new Promise((resolve, reject) => {
+        resolveHandle = resolve;
+        rejectHandle = reject;
+      }),
+
+      // Handles to the resolve and reject
+      resolve: resolveHandle,
+      reject: rejectHandle, 
+    }
+
+    // Respond to the resolution
+    _responses[message].promise.then(result => console.log(result));
   }
 
   /**
@@ -92,8 +115,6 @@ export function FilePicker(props={}) {
     // It's not for us
     if(target != 'filepicker')
       return;
-
-    console.log(_responses[message]);
 
     // Resolve the promise
     _responses[message].resolve(result);
