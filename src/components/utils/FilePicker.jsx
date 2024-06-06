@@ -2,6 +2,7 @@ import * as React from 'react'
 
 // Custom
 import { DButton } from '../base/DButton.jsx'
+import { ClientIPC } from '../../dataviser/ClientIPC.api.js'
 
 /**
  * A component that gives a button the extra functionality to select a folder or a file.
@@ -16,44 +17,20 @@ export function FilePicker(props={}) {
   /**
    * This function selects a folder from the current system.
    */
-  function chooseDirectory() {
-    const message = 'fs:choose-directory';
+  function chooseDirectories() {
+    const message = 'fs:choose-directories';
+    const promise = ClientIPC.call(_HOST, message);
 
-    window.postMessage({
-      host: _HOST,
-      message: message,
-    });
-
-    // Create a new promise for that
-    let resolveHandle;
-    let rejectHandle;
-
-    // Create a response promise
-    _responses[message] = {
-
-      // Create a new promise
-      promise: new Promise((resolve, reject) => {
-        resolveHandle = resolve;
-        rejectHandle = reject;
-      }),
-
-      // Handles to the resolve and reject
-      resolve: resolveHandle,
-      reject: rejectHandle, 
-    }
-
-    // Respond to the resolution
-    _responses[message].promise.then(result => loadDirectories(result));
+    // When the result has been returned, load the dirs
+    promise.then(result => loadDirectories(result));
   }
 
   /**
    * This function selects a file from the current system.
    */
-  function chooseFile() {
-    window.postMessage({ 
-      host: _HOST,
-      message: 'fs:choose-file' 
-    });
+  function chooseFiles() {
+    const message = 'fs:choose-files';
+    const promise = ClientIPC.call(_HOST, message);
   }
 
   /**
@@ -62,38 +39,17 @@ export function FilePicker(props={}) {
    * @param   { string[] }  dirpaths  An array of directory paths.
    */
   function loadDirectories(dirpaths) {
-    const message = 'fs:load-directories'
+    const message = 'fs:load-directories';
+    const args = [ dirpaths ];
+    const promise = ClientIPC.call(_HOST, message, args);
 
-    window.postMessage({
-      host: _HOST,
-      message: message,
-      args: [ dirpaths ],
-    })
-    
-    // Create a new promise for that
-    let resolveHandle;
-    let rejectHandle;
-
-    // Create a response promise
-    _responses[message] = {
-
-      // Create a new promise
-      promise: new Promise((resolve, reject) => {
-        resolveHandle = resolve;
-        rejectHandle = reject;
-      }),
-
-      // Handles to the resolve and reject
-      resolve: resolveHandle,
-      reject: rejectHandle, 
-    }
-
-    // Respond to the resolution
-    _responses[message].promise.then(result => console.log(result));
+    // When the result has been returned, load the dirs
+    promise.then(result => console.log(result));
   }
 
   /**
    * Loads all the files in the provided folder path into memory.
+   * ! to code
    * 
    * @param   { string[] }  filepaths  An array of filepaths.
    */
@@ -105,25 +61,10 @@ export function FilePicker(props={}) {
     })
   }
 
-  window.addEventListener('message', e => {
-    
-    // Parse the message
-    const target = e.data?.target ?? '';
-    const message = e.data?.message ?? '';
-    const result = e.data?.result ?? '';
-
-    // It's not for us
-    if(target != 'filepicker')
-      return;
-
-    // Resolve the promise
-    _responses[message].resolve(result);
-  })
-
   return (
     <DButton 
       text={`choose ${props.type ?? 'folder'}`}
-      action={ props.type == 'file' ? chooseFile : chooseDirectory }>
+      action={ props.type == 'file' ? chooseFiles : chooseDirectories }>
     </DButton>
   )
 }

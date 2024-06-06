@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-07 04:58:02
+ * @ Modified time: 2024-06-07 05:09:29
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -82,15 +82,17 @@ export const FS = (function() {
     return result;
   }
 
+  // ! to code: the loadFiles function
+
   /**
    * Requests for the data of a loaded file through it's id.
    * Note that binary data is stored as an array buffer.
    * 
    * @param   { string }  id  The id of the file. 
-   * @return  { string }      A string containing the data of the file.
+   * @return  { string }      The data stored by the file.
    */
   _.request = function(id) {
-    return _cache[id];
+    return _cache[id].data;
   }
 
   return {

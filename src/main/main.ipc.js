@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-07 04:58:48
+ * @ Modified time: 2024-06-07 05:23:23
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -36,7 +36,7 @@ export const IPC = (function() {
    * Listens for when the user decides to open a folder.
    * The folder picking is done within the main process.
    */
-  ipcMain.handle('fs:choose-directory', async(e, ...args) => {
+  ipcMain.handle('fs:choose-directories', async(e, ...args) => {
     
     // Wait for IPC to be initted before handling anything
     if(!_.isInitted)
@@ -58,7 +58,7 @@ export const IPC = (function() {
    * Listens for when the user decides to open a file.
    * The file picking is done within the main process.
    */
-  ipcMain.handle('fs:choose-file', async(e, ...args) => {
+  ipcMain.handle('fs:choose-files', async(e, ...args) => {
     
     // Wait for IPC to be initted before handling anything
     if(!_.isInitted)
@@ -96,7 +96,6 @@ export const IPC = (function() {
   /**
    * Listens for when the user decides to load a bunch of file contents into memory.
    * The result of this process is saved in memory.
-   * ! to fix
    */
   ipcMain.handle('fs:load-files', async(e, ...args) => {
   
@@ -108,7 +107,7 @@ export const IPC = (function() {
     const filepaths = args[0];
 
     // Load the files into memory
-    FS.loadFile(filepaths);
+    return FS.loadFile(filepaths);
   });
 
   /**
