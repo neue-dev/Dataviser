@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-06 17:18:21
+ * @ Modified time: 2024-06-06 17:22:33
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -23,6 +23,7 @@ export const FS = (function() {
   /**
    * Loads all the files in a folder and saves its contents into memory.
    * Generates a unique id for each file.
+   * Note that a null encoding tells the file reader to read the contents in binary.
    * 
    * @param   { string }  dirpath   The path to the folder.
    * @param   { object }  options   Options for reading the file.  
@@ -69,11 +70,13 @@ export const FS = (function() {
 
   /**
    * Requests for the data of a loaded file through it's id.
+   * Note that binary data is also stored as a string here.
    * 
    * @param   { string }  id  The id of the file. 
+   * @return  { string }      A string containing the data of the file.
    */
   _.request = function(id) {
-    
+    return _cache[id];
   }
 
   return {

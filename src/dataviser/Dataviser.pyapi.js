@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 20:29:25
- * @ Modified time: 2024-04-30 09:00:54
+ * @ Modified time: 2024-06-06 17:47:13
  * @ Description:
  * 
  * This file has some helper functions for interacting with Pyodide.
@@ -234,7 +234,7 @@ export const DataviserPyAPI = (function() {
    * Returns the result to the callback.
    * 
    * @param   { object }    jsonDataFrames  A dict of JSON dataframes.
-   * @param   { array }     rows            An array of row names to include.
+   * @param   { string[] }  rows            An array of row names to include.
    * @param   { function }  callback        The callback to receive the resulting filtered dfs.  
    */
   _.dfsFilterRows = function(jsonDataFrames, rows, callback=d=>d) {
@@ -255,7 +255,7 @@ export const DataviserPyAPI = (function() {
    * Returns the result to the callback.
    * 
    * @param   { object }    jsonDataFrames  A dict of JSON dataframes.
-   * @param   { array }     cols            An array of column names to include.
+   * @param   { string[] }  cols            An array of column names to include.
    * @param   { function }  callback        The callback to receive the resulting filtered dfs.  
    */
   _.dfsFilterCols = function(jsonDataFrames, cols, callback=d=>d) {
@@ -276,7 +276,7 @@ export const DataviserPyAPI = (function() {
    * Returns the result to the callback.
    * 
    * @param   { object }    jsonDataFrames  A dict of JSON dataframes.
-   * @param   { array }     rowcols         An array of row-column names to include.
+   * @param   { string[] }  rowcols         An array of row-column names to include.
    * @param   { function }  callback        The callback to receive the resulting filtered dfs.  
    */
   _.dfsFilterRowcols = function(jsonDataFrames, rowcols, callback=d=>d) {

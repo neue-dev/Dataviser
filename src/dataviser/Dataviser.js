@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-23 08:45:34
- * @ Modified time: 2024-05-13 12:34:19
+ * @ Modified time: 2024-06-06 17:46:43
  * @ Description:
  * 
  * Manages all the dataviser functionality.
@@ -416,7 +416,7 @@ export const Dataviser = (function() {
    * Converts the file contents into dataframes.
    * NOTE this function assumes that all the files are pickle files.
    * 
-   * @param   { array }   files   An array of file handles to read.
+   * @param   { fileHandle[] }  files   An array of file handles to read.
    */
   _.readData = function(files) {
 

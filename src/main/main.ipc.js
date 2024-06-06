@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-06 17:05:48
+ * @ Modified time: 2024-06-06 17:44:53
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -35,9 +35,8 @@ export const IPC = (function() {
   /**
    * Listens for when the user decides to open a folder.
    * The folder picking is done within the main process.
-   * The result of this process is saved in memory.
    */
-  ipcMain.handle('fs:load-directory', async(e, ...args) => {
+  ipcMain.handle('fs:choose-directory', async(e, ...args) => {
     
     // Wait for IPC to be initted before handling anything
     if(!_.isInitted)
@@ -51,12 +50,47 @@ export const IPC = (function() {
     // Get the array of selected filepaths
     const filepaths = result.filePaths;
 
-    console.log(result);
-
     // ! move this into another message sent by the client, don't couple FS and IPC together
     // Load the file contents into memory
     filepaths.forEach(filepath => FS.loadDirectory(filepath));
   });
+
+  /**
+   * Listens for when the user decides to open a file.
+   * The file picking is done within the main process.
+   */
+  ipcMain.handle('fs:choose-file', async(e, ...args) => {
+    
+    // Wait for IPC to be initted before handling anything
+    if(!_.isInitted)
+      return;
+
+    // Prompt to select a directory
+    const result = await dialog.showOpenDialog(
+      _.mainWindow, { properties: [ 'openFile' ] }
+    );
+
+    // Get the array of selected filepaths
+    const filepaths = result.filePaths;
+  });
+
+  /**
+   * Listens for when the user decides to load a folder's contents into memory.
+   * The result of this process is saved in memory.
+   */
+  ipcMain.handle('fs:load-files', async(e, ...args) => {
+  
+    // Wait for IPC to be initted before handling anything
+    if(!_.isInitted)
+      return;
+
+    // Get the args
+    const dirpath = args[0];
+
+    // ! move this into another message sent by the client, don't couple FS and IPC together
+    // Load the file contents into memory
+    filepaths.forEach(filepath => FS.loadDirectory(filepath));
+  });  
 
   /**
    * Fallback for erroneous invocations.

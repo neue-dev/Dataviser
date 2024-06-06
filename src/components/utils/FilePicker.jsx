@@ -15,7 +15,7 @@ export function FilePicker(props={}) {
    */
   function chooseFolder() {
     window.postMessage({
-      message: 'fs:load-directory'
+      message: 'fs:choose-directory'
     });
   }
 
@@ -24,8 +24,31 @@ export function FilePicker(props={}) {
    */
   function chooseFile() {
     window.postMessage({ 
-      message: 'fs:load-file' 
+      message: 'fs:choose-file' 
     });
+  }
+
+  /**
+   * Loads all the files in the provided folder path into memory.
+   * 
+   * @param   { string[] }  filepaths   An array of filepaths.
+   */
+  function loadFiles(filepaths) {
+    window.postMessage({
+      message: 'fs:load-files',
+      filepaths: [],
+    })
+  }
+
+  /**
+   * Loads all the files in the provided folder path into memory.
+   * 
+   * @param   { string }  filepath  The file path.
+   */
+  function loadFile(filepath) {
+    window.postMessage({
+      message: 'fs:load-file'
+    })
   }
 
   return (
