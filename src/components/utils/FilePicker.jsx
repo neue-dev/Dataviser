@@ -13,7 +13,7 @@ export function FilePicker(props={}) {
   /**
    * This function selects a folder from the current system.
    */
-  function chooseFolder() {
+  function chooseDirectory() {
     window.postMessage({
       message: 'fs:choose-directory'
     });
@@ -31,30 +31,31 @@ export function FilePicker(props={}) {
   /**
    * Loads all the files in the provided folder path into memory.
    * 
-   * @param   { string[] }  filepaths   An array of filepaths.
+   * @param   { string[] }  dirpaths  An array of directory paths.
    */
-  function loadFiles(filepaths) {
+  function loadDirectories(dirpaths) {
     window.postMessage({
-      message: 'fs:load-files',
-      filepaths: [],
+      message: 'fs:load-directories',
+      args: [ dirpaths ],
     })
   }
 
   /**
    * Loads all the files in the provided folder path into memory.
    * 
-   * @param   { string }  filepath  The file path.
+   * @param   { string[] }  filepaths  An array of filepaths.
    */
-  function loadFile(filepath) {
+  function loadFiles(filepaths) {
     window.postMessage({
-      message: 'fs:load-file'
+      message: 'fs:load-files',
+      args: [ filepaths ],
     })
   }
 
   return (
     <DButton 
       text={`choose ${props.type ?? 'folder'}`}
-      action={ props.type == 'file' ? chooseFile : chooseFolder }>
+      action={ props.type == 'file' ? chooseFile : chooseDirectory }>
     </DButton>
   )
 }
