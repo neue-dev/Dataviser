@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-06 17:22:33
+ * @ Modified time: 2024-06-07 04:39:00
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -28,16 +28,18 @@ export const FS = (function() {
    * @param   { string }  dirpath   The path to the folder.
    * @param   { object }  options   Options for reading the file.  
    */
-  _.loadDirectory = function(dirpath, options={}) {
+  _.loadDirectories = function(dirpaths, options={}) {
 
     // The options
     const encoding = options.encoding ?? 'utf-8';
 
     // The output
-    const output = [];
+    const result = [];
+
+    console.log(dirpaths);
     
     // Save the file contents
-    fs.readdir(dirpath, (err, filepaths) => {
+    dirpaths.forEach(dirpath => fs.readdir(dirpath, (err, filepaths) => {
       
       // An error occured
       if(err) return console.error(err);
@@ -59,18 +61,18 @@ export const FS = (function() {
           _cache[id] = { data, path };
 
           // Append to the output
-          output.push({ id, path });
+          result.push({ id, path });
         });
       })
-    })
+    }))
 
     // Return the list of all files and their ids
-    return output;
+    return result;
   }
 
   /**
    * Requests for the data of a loaded file through it's id.
-   * Note that binary data is also stored as a string here.
+   * Note that binary data is stored as an array buffer.
    * 
    * @param   { string }  id  The id of the file. 
    * @return  { string }      A string containing the data of the file.

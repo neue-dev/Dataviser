@@ -10,13 +10,40 @@ import { DButton } from '../base/DButton.jsx'
  */
 export function FilePicker(props={}) {
 
+  const _HOST = 'filepicker'
+  const _responses = {};
+
   /**
    * This function selects a folder from the current system.
    */
   function chooseDirectory() {
+    const message = 'fs:choose-directory';
+
     window.postMessage({
-      message: 'fs:choose-directory'
+      host: _HOST,
+      message: message,
     });
+
+    // Create a new promise for that
+    let resolveHandle;
+    let rejectHandle;
+
+    // Create a response message
+    _responses[message] = {
+
+      // Create a new promise
+      promise: new Promise((resolve, reject) => {
+        resolveHandle = resolve;
+        rejectHandle = reject;
+      }),
+
+      // Handles to the resolve and reject
+      resolve: resolveHandle,
+      reject: rejectHandle, 
+    }
+
+    // Respond to the resolution
+    _responses[message].promise.then(result => loadDirectories(result));
   }
 
   /**
@@ -24,6 +51,7 @@ export function FilePicker(props={}) {
    */
   function chooseFile() {
     window.postMessage({ 
+      host: _HOST,
       message: 'fs:choose-file' 
     });
   }
@@ -35,6 +63,7 @@ export function FilePicker(props={}) {
    */
   function loadDirectories(dirpaths) {
     window.postMessage({
+      host: _HOST,
       message: 'fs:load-directories',
       args: [ dirpaths ],
     })
@@ -47,10 +76,28 @@ export function FilePicker(props={}) {
    */
   function loadFiles(filepaths) {
     window.postMessage({
+      host: _HOST,
       message: 'fs:load-files',
       args: [ filepaths ],
     })
   }
+
+  window.addEventListener('message', e => {
+    
+    // Parse the message
+    const target = e.data?.target ?? '';
+    const message = e.data?.message ?? '';
+    const result = e.data?.result ?? '';
+
+    // It's not for us
+    if(target != 'filepicker')
+      return;
+
+    console.log(_responses[message]);
+
+    // Resolve the promise
+    _responses[message].resolve(result);
+  })
 
   return (
     <DButton 
