@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 09:11:39
- * @ Modified time: 2024-06-06 16:36:50
+ * @ Modified time: 2024-06-06 16:51:22
  * @ Description:
  * 
  * This file contains the main process of the app.
@@ -9,15 +9,17 @@
 
 // Modules
 const { app, BrowserWindow } = require('electron');
-const path = require('node:path');
-const fs = require('node:fs');
 
 // Main subprocesses
 const { IPC } = require('./main/main.ipc');
 
+/**
+ * The main process code.
+ */
 const MAIN = (function() {
 
   const _ = {};
+  let _mainWindow = null;
 
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
   if (require('electron-squirrel-startup'))
@@ -29,7 +31,7 @@ const MAIN = (function() {
   _.createWindow = function() {
     
     // Create the browser window.
-    const mainWindow = new BrowserWindow({
+    _mainWindow = new BrowserWindow({
 
       // Kiosk mode basically
       frame: false,
@@ -42,11 +44,11 @@ const MAIN = (function() {
     });
 
     // Load the index.html of the app.
-    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-    mainWindow.maximize();
+    _mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+    _mainWindow.maximize();
 
     // Setup the IPC
-    IPC.setup(mainWindow);
+    IPC.setup(_mainWindow);
   };
 
   /**
