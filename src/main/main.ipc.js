@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-07 05:23:23
+ * @ Modified time: 2024-06-07 05:28:59
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -108,6 +108,23 @@ export const IPC = (function() {
 
     // Load the files into memory
     return FS.loadFile(filepaths);
+  });
+
+  /**
+   * Listens for when the user decides to request the data for loaded files.
+   * The result of this process sent back to the client.
+   */
+  ipcMain.handle('fs:request-files', async(e, ...args) => {
+  
+    // Wait for IPC to be initted before handling anything
+    if(!_.isInitted)
+      return;
+
+    // Get the args
+    const ids = args[0];
+
+    // Load the files into memory
+    return FS.requestFiles(ids);
   });
 
   /**

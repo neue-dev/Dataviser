@@ -1,10 +1,15 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 05:10:47
- * @ Modified time: 2024-06-07 05:20:42
+ * @ Modified time: 2024-06-07 05:27:35
  * @ Description:
  * 
  * This file provides utility function to help us deal with the client-side implementation of the IPC.
+ * In this case, we handle IPC communication in a three-way manner.
+ * The actual client window sends messages through the window.postMessage function which the preloader then receives.
+ * Upon receiving these requests, the preloader invokes the actual main process function associated with the request.
+ * Then the resulting data travels back up the preloader and back to the client.
+ * All the while, we're using promises to manage the state of these requests on the client side.
  */
 
 export const ClientIPC = (function() {

@@ -12,7 +12,6 @@ import { ClientIPC } from '../../dataviser/ClientIPC.api.js'
 export function FilePicker(props={}) {
 
   const _HOST = 'filepicker'
-  const _responses = {};
 
   /**
    * This function selects a folder from the current system.
@@ -54,11 +53,12 @@ export function FilePicker(props={}) {
    * @param   { string[] }  filepaths  An array of filepaths.
    */
   function loadFiles(filepaths) {
-    window.postMessage({
-      host: _HOST,
-      message: 'fs:load-files',
-      args: [ filepaths ],
-    })
+    const message = 'fs:load-files';
+    const args = [ filepaths ];
+    const promise = ClientIPC.call(_HOST, message, args);
+
+    // When the result has been returned, load the dirs
+    promise.then(result => console.log(result));
   }
 
   return (

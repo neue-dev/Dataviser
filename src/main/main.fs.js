@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-07 05:09:29
+ * @ Modified time: 2024-06-07 05:32:22
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -85,14 +85,30 @@ export const FS = (function() {
   // ! to code: the loadFiles function
 
   /**
-   * Requests for the data of a loaded file through it's id.
-   * Note that binary data is stored as an array buffer.
+   * Requests for the data of loaded files through their ids.
+   * Note that binary data is stored as an array buffer and will be returned as such.
    * 
-   * @param   { string }  id  The id of the file. 
-   * @return  { string }      The data stored by the file.
+   * @param   { string[] }  ids   The id of the files. 
+   * @return  { object }          The data stored by the files.
    */
-  _.request = function(id) {
-    return _cache[id].data;
+  _.requestFiles = function(ids) {
+    const result = {};
+
+    ids.forEach(id => {
+
+      // Invalid id
+      if(!_cache[id])
+        return console.error('Invalid Id.', id);
+
+      // Inform the client that that file is pending
+      if(!_cache[id].loaded)
+        return result[id] = 'pending...'
+
+      // Give back the file data
+      return result[id] = _cache[id].data;
+    });
+
+    return result;
   }
 
   return {
