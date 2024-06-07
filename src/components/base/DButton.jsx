@@ -8,9 +8,10 @@ export function DButton(props={}) {
     <Button 
       onClick={props.action}
       colorScheme={props.colorScheme ?? 'teal'} 
-      variant="outline" 
+      size={props.size ?? 'lg'}
+      variant={props.variant ?? 'outline'}
       
-      mt={props.mt ?? '0.75em'} 
+      mt={props.mt ?? '0'} 
       pt="0.22em" pb="0.33em">
       
       {props.text}

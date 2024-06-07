@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 17:58:25
- * @ Modified time: 2024-06-07 18:02:57
+ * @ Modified time: 2024-06-07 18:13:46
  * @ Description:
  * 
  * Handles our references to files and the data they store.
@@ -50,8 +50,10 @@ export const ClientFS = (function() {
     const args = [ dirpaths ];
     const promise = ClientIPC.call(_HOST, message, args);
 
-    // When the result has been returned, load the dirs
-    promise.then(result => console.log(result));
+    // When the result has been returned, store the file references
+    promise.then(result => result.forEach(entry => {
+      _refs[entry.id] = entry;
+    }));
   }
 
   /**
@@ -65,8 +67,35 @@ export const ClientFS = (function() {
     const args = [ filepaths ];
     const promise = ClientIPC.call(_HOST, message, args);
 
-    // When the result has been returned, load the dirs
-    promise.then(result => console.log(result));
+    // When the result has been returned, store the file references
+    promise.then(result => result.forEach(entry => {
+      _refs[entry.id] = entry;
+    }));
+  }
+
+  /**
+   * Returns a list of all the files references.
+   * Each entry in the list contains the file id and the filepath.
+   * 
+   * @return  { object[] }  A list of all the file references.  
+   */
+  _.getRefList = function() {
+    const refs = [];
+    const ids = Object.keys(_refs);
+
+    // Creates a list of all the references
+    for(let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const filepath = _refs[id].filepath;
+
+      // Push a file data entry
+      refs.push({ 
+        id: id, 
+        filepath: filepath,
+      });
+    }
+
+    return refs;
   }
 
   return {
