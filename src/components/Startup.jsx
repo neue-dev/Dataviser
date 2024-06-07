@@ -21,20 +21,20 @@ import { FileTable } from "./FileTable.jsx"
  */
 export function Startup() {
   return (
-    <Card className="startup" px="1em" pt="0.5em">
-      <DCardHeader className="startup-title" text="dataviser"/>
+    <Card className="startup" px="0.5em" pt="0.25em">
+      <DCardHeader className="startup-title" text="dataviser" />
 
       <DCardBody className="startup-content">
         <Box>
-          <Text pt='0.75em' fontSize='sm'>
-            Dataviser is a data visualization utility. To get started, select a folder containing any number of data files.
+          <Text pt='0.75em' fontSize='xs' lineHeight='1.75em'>
+            To get started, select a folder containing any number of data files.
           </Text>
-        </Box>
+          <br />
 
-        <Box>
           <FilePicker type="folder" />
+          <br />
         </Box>
-
+          
         <FileTable />
       </DCardBody>
       

@@ -12,7 +12,7 @@ import { Heading } from '@chakra-ui/react'
 export function DCardHeader(props={}) {
   return (
     <CardHeader>
-      <Heading fontSize={props.fontSize ?? '6xl'}>
+      <Heading fontSize={props.fontSize ?? '4xl'} textOverflow="ellipsis" whiteSpace="nowrap" overflow="hidden">
         {props.text}
       </Heading>
     </CardHeader>
