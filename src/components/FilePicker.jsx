@@ -1,8 +1,8 @@
 import * as React from 'react'
 
 // Custom
-import { DButton } from '../base/DButton.jsx'
-import { ClientIPC } from '../../dataviser/ClientIPC.api.js'
+import { DButton } from './base/DButton.jsx'
+import { ClientIPC } from '../dataviser/ClientIPC.api.js'
 
 /**
  * A component that gives a button the extra functionality to select a folder or a file.
@@ -30,6 +30,9 @@ export function FilePicker(props={}) {
   function chooseFiles() {
     const message = 'fs:choose-files';
     const promise = ClientIPC.call(_HOST, message);
+
+    // When the result has been returned, load the dirs
+    promise.then(result => loadFiles(result));
   }
 
   /**
@@ -48,7 +51,7 @@ export function FilePicker(props={}) {
 
   /**
    * Loads all the files in the provided folder path into memory.
-   * ! to code
+   * ! to code change the console log and make sure this works
    * 
    * @param   { string[] }  filepaths  An array of filepaths.
    */
