@@ -11,7 +11,6 @@ export function Dataviser() {
   return (
     <SimpleGrid className="dataviser" columns="3" spacing="1rem" height="100%" p="2rem">
       <Startup />
-      <FileTable />
     </SimpleGrid>
   )
 }

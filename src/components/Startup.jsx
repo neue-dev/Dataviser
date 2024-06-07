@@ -9,7 +9,9 @@ import { Box } from '@chakra-ui/react'
 // Custom
 import { DCardHeader } from "./base/DCardHeader.jsx";
 import { DCardBody } from "./base/DCardBody.jsx";
+import { DCardFooter } from "./base/DCardFooter.jsx";
 import { FilePicker } from "./FilePicker.jsx";
+import { FileTable } from "./FileTable.jsx"
 
 /**
  * The startup component contains the prompt we give to the user.
@@ -21,6 +23,7 @@ export function Startup() {
   return (
     <Card className="startup" px="1em" pt="0.5em">
       <DCardHeader className="startup-title" text="dataviser"/>
+
       <DCardBody className="startup-content">
         <Box>
           <Text pt='0.75em' fontSize='sm'>
@@ -31,7 +34,11 @@ export function Startup() {
         <Box>
           <FilePicker type="folder" />
         </Box>
+
+        <FileTable />
       </DCardBody>
+      
+      <DCardFooter></DCardFooter>
     </Card>
   )
 }
