@@ -1,16 +1,41 @@
-import * as React from "react";
+/**
+ * @ Author: Mo David
+ * @ Create Time: 2024-06-05 16:56:26
+ * @ Modified time: 2024-06-11 19:21:07
+ * @ Description:
+ * 
+ * The main component that houses the app.
+ * Basically App.jsx.
+ */
 
-// Chakra
-import { SimpleGrid } from '@chakra-ui/react'
-import { FileTable } from './FileTable.jsx'
+import * as React from 'react';
+import { useState } from 'react'
 
 // Custom
-import { Startup } from "./Startup.jsx";
+import { DataviserContext } from './Dataviser.ctx.jsx'
+import { StartMenu } from './start-menu/StartMenu.jsx';
 
+/**
+ * Dataviser component class.
+ * 
+ * @class
+ */
 export function Dataviser() {
+  
+  // This is the initial app state
+  const _state = {
+    showTitle: true
+  };
+  
+  // A handle to that state which React manages for us
+  const [ dataviserContext, setDataviserContext ] = useState(_state);
+
+  // Wrap the app in a context provider
   return (
-    <SimpleGrid className="dataviser" columns="5" spacing="1rem" height="100%" p="2rem">
-      <Startup />
-    </SimpleGrid>
+    <DataviserContext.Provider value={ dataviserContext }>
+      <div className="dataviser">
+        <StartMenu />
+      </div>
+    </DataviserContext.Provider>
   )
 }
