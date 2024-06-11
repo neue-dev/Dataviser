@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-11 16:58:52
+ * @ Modified time: 2024-06-11 17:39:03
  * @ Description:
  */
 
@@ -57,7 +57,7 @@ export const ClientPyodide = (function() {
    * @param   { object }    context   The variables and data we want to pass to the script.
    * @return  { Promise }             A promise for a complete execution of the script.
    */
-  _.dispatchProcess = (script, context) => {
+  _._processDispatch = (script, context) => {
 
     // Increment the id each time
     const id = _.processId += _.processId + 1;
@@ -66,7 +66,7 @@ export const ClientPyodide = (function() {
     return new Promise((resolve, reject) => {
       
       // The function to call when the process finishes
-      // Basically, we resolve the promise we return so the caller can now it's done
+      // Basically, we resolve the promise we return so the caller can know it's done
       _.processes[id] = {
         onResolve: resolve,
         onReject: reject,
@@ -74,11 +74,26 @@ export const ClientPyodide = (function() {
       
       // We send a message to the worker to tell it to run the script.
       pyodideWorker.postMessage({
-        ...context,
+        message: 'process-dispatch',
         python: script,
+        context, 
         id,
       });
     });
+  }
+
+  // ! to implement
+  _.processSetContext = function() {
+
+    // Sets the context of the environment
+    pyodideWorker.postMessage({
+      message: 'context-set',
+      context, 
+    });
+  }
+
+  _.processGetContext = function() {
+    
   }
   
   /**
@@ -91,11 +106,11 @@ export const ClientPyodide = (function() {
    *                                        Note that we pass the result of the script to the callback.
    * @param   { function }  errorCallback   An optional parameter for handling errors.
    */
-  _.runProcess = async(script, context, callback, errorCallback) => {
+  _.processRun = async(script, context, callback, errorCallback) => {
 
     // Try the script
     try {
-      const { results, error } = await _.dispatchProcess(script, context);
+      const { results, error } = await _._processDispatch(script, context);
 
       // We got something back
       if (results)
@@ -112,11 +127,14 @@ export const ClientPyodide = (function() {
   }
 
   // Ensures pyodide runs faster on subsequent calls
-  _.runProcess(`
+  _.processRun(`
     import pandas as pd
     print('Warm-up script...')
     print('Pyodide configured.')
-  `, e => e);
+    print(test)
+  `, {
+    test: 'hello?'
+  }, e => e);
   
   return {
     ..._,

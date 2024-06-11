@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-06-11 17:01:14
+ * @ Modified time: 2024-06-11 17:38:23
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -32,33 +32,76 @@ if('function' == typeof importScripts) {
     ]);
   }
 
+  // ! to implement
+  function pythonGetContext() {
+    
+  }
+
+  /**
+   * Sets the context of a script (its data) through its globals.
+   * 
+   * @param   { object }  context   The data to be given the script.
+   */
+  function pythonSetContext(context) {
+
+    // Parse the keys of the provided context
+    let globals = Object.keys(context);
+    
+    // Provide the context of the script through the globals
+    for(let i = 0; i < globals.length; i++)
+      self.pyodide.globals.set(globals[i], context[globals[i]]);
+  }
+
+  /**
+   * Runs a python script using Pyodide.
+   * 
+   * @param   { string }  python  A string contaning Python code.
+   * @return  { object }          The results of the script.
+   */
+  async function pythonRun(python, context={}) {
+    
+    // Load packages and libraries based on the script imports
+    await self.pyodide.loadPackagesFromImports(python);
+
+    // Set the context of the script first
+    pythonSetContext(context);
+
+    // Save the results of the script
+    return self.pyodide.runPython(python);
+  }
+
   /**
    * This is the event handler for messages received from the main thread.
    * It's called whenever we dispatch a Python process (script) for execution.
    * 
    * @param   { event }   e   The event object. 
    */
-  self.onmessage = async (e) => {
+  self.onmessage = async e => {
     
     // Wait for config if it's not done
     await configPyodidePromise;
 
     // Retrieve the data and the script code
-    const { id, python, ...context } = e.data;
-
-    // For each piece of data we want the script to have access
-    // we copy it unto the worker
-    for (const key of Object.keys(context))
-      self[key] = context[key];
+    const { id, message, python, context } = e.data;
+    
+    // What we're going to return
+    let results = {};
 
     // We actually try to run the script
     try {
 
-      // Load packages and libraries based on the script imports
-      await self.pyodide.loadPackagesFromImports(python);
+      switch(message) {
+        case 'script-dispatch':
+          results = pythonRun(python, context);
+          break;
 
-      // Save the results of the script and send to the main thread
-      const results = await self.pyodide.runPythonAsync(python);
+        case 'context-set':
+          pythonSetContext(context);
+          break;
+      }
+
+      // Send to the results to the renderer thread
+      // ! change this, doesn't need to always send an id
       self.postMessage({ results, id });
 
     // Something happened
