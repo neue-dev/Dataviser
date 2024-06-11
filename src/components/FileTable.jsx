@@ -14,7 +14,7 @@ import { useState } from 'react';
 import { Container, Center, Stack, HStack, Spacer } from '@chakra-ui/react'
 
 // Custom
-import { ClientFS } from '../dataviser/ClientFS.api'
+import { ClientFS } from '../client/client.fs.js'
 import { DButton } from './base/DButton.jsx';
 
 export function FileTable(props={}) {

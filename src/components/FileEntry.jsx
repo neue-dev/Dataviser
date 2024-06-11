@@ -6,7 +6,7 @@ import { Text } from '@chakra-ui/react'
 // Custom
 import { DButton } from './base/DButton.jsx'
 import { DEntry } from './base/DEntry.jsx'
-import { ClientIPC } from '../dataviser/ClientIPC.api.js'
+import { ClientIPC } from '../client/client.ipc.js'
 
 /**
  * A component that represents a file as a single button.

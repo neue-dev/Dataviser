@@ -1,14 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 17:58:25
- * @ Modified time: 2024-06-07 18:13:46
+ * @ Modified time: 2024-06-11 16:50:37
  * @ Description:
  * 
  * Handles our references to files and the data they store.
  */
 
 // Custom
-import { ClientIPC } from './ClientIPC.api'
+import { ClientIPC } from './client.ipc'
 
 export const ClientFS = (function() {
 

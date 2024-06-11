@@ -1,15 +1,19 @@
-
-
+/**
+ * @ Author: Mo David
+ * @ Create Time: 2024-06-11 16:30:23
+ * @ Modified time: 2024-06-11 16:58:52
+ * @ Description:
+ */
 
 /**
  * Our own API for interacting with the Pyodide worker.
  * This is adapated from an implementation I found online.
  * Note that I wrapped it around its own IIFE to enclose its data.
 */
-export const PyodideAPI = (function() {
+export const ClientPyodide = (function() {
   
   // Create the worker from its URL
-  const pyodideWorkerURL = new URL('./Pyodide.worker.js', import.meta.url);
+  const pyodideWorkerURL = new URL('./client.pyodide.worker.js', import.meta.url);
   const pyodideWorker = new Worker(pyodideWorkerURL);
 
   // The api object 
@@ -120,5 +124,5 @@ export const PyodideAPI = (function() {
 })();
 
 export default {
-  PyodideAPI,
+  ClientPyodide,
 }

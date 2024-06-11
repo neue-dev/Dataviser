@@ -2,7 +2,7 @@ import * as React from 'react'
 
 // Custom
 import { DButton } from './base/DButton.jsx'
-import { ClientFS } from '../dataviser/ClientFS.api.js'
+import { ClientFS } from '../client/client.fs.js'
 
 /**
  * A component that gives a button the extra functionality to select a folder or a file.
