@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-11 17:39:03
+ * @ Modified time: 2024-06-14 22:29:05
  * @ Description:
  */
 
@@ -103,7 +103,7 @@ export const ClientPyodide = (function() {
    * @param   { string }    script          The string literal representing the script. 
    * @param   { object }    context         The data we want to pass to the script.
    * @param   { function }  callback        The function we want to execute upon the end of the script.
-   *                                        Note that we pass the result of the script to the callback.
+   *                                            Note that we pass the result of the script to the callback.
    * @param   { function }  errorCallback   An optional parameter for handling errors.
    */
   _.processRun = async(script, context, callback, errorCallback) => {
@@ -131,10 +131,7 @@ export const ClientPyodide = (function() {
     import pandas as pd
     print('Warm-up script...')
     print('Pyodide configured.')
-    print(test)
-  `, {
-    test: 'hello?'
-  }, e => e);
+  `, { }, e => e);
   
   return {
     ..._,
