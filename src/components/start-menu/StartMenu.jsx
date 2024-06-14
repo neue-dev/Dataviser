@@ -3,13 +3,14 @@ import { useRef } from 'react';
 import { useState } from 'react';
 
 // Chakra
-import { Container, Center, Box, Heading, Button, Stack, Text } from '@chakra-ui/react'
+import { Container, Center, Box, Heading, Button, Stack, Text, Toast, useToast } from '@chakra-ui/react'
 
 // Spring
 import { Controller, animated, useSpring } from '@react-spring/web'
 
 // APIs
 import { ClientFS } from '../../client/client.fs'
+import { ClientToast } from '../../client/client.toast'
 
 /**
  * The startup component contains the prompt we give to the user.
@@ -20,6 +21,7 @@ import { ClientFS } from '../../client/client.fs'
 export function StartMenu() {
 
   // Component state
+  let toast = useToast();
   let isOpen = useRef(false);
 
   // Some start menu constants

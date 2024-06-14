@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-11 19:21:07
+ * @ Modified time: 2024-06-14 18:39:16
  * @ Description:
  * 
  * The main component that houses the app.
@@ -35,7 +35,7 @@ export function Dataviser() {
     <DataviserContext.Provider value={ dataviserContext }>
       <div className="dataviser">
         <StartMenu />
-      </div>
+      </div>      
     </DataviserContext.Provider>
   )
 }
