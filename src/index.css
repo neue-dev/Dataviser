@@ -75,6 +75,24 @@
   letter-spacing: 0.02em;
 }
 
+.chakra-alert {
+  padding: 0.5em 0.7em !important;
+}
+
+.chakra-alert__title {
+  margin-bottom: 0;
+  font-size: 1em !important;
+}
+
+.chakra-alert__icon {
+  margin-top: 0.1em;
+  scale: 0.8 !important;
+}
+
+.chakra-alert__desc {
+  font-size: 0.8em !important;
+}
+
 *::-webkit-scrollbar {
   width: 8px;
   background-color: rgba(var(--black), 0.2);

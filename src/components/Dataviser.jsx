@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-14 19:15:43
+ * @ Modified time: 2024-06-14 19:51:24
  * @ Description:
  * 
  * The main component that houses the app.
@@ -12,11 +12,14 @@ import * as React from 'react';
 import { useState } from 'react'
 
 // Chakra
-import { Box, Button, Flex, Grid, Heading, Stack } from '@chakra-ui/react'
+import { Box, Flex, Grid, Stack } from '@chakra-ui/react'
+import { Button, Heading } from '@chakra-ui/react'
+import { Toast, useToast } from '@chakra-ui/react'
 
 // Custom
 import { DataviserContext } from './Dataviser.ctx.jsx'
-import { ClientFS, ClientToast } from '../client/client.fs.js'
+import { ClientFS } from '../client/client.fs.js'
+import { ClientToast } from '../client/client.toast.js'
 
 /**
  * Dataviser component class.
@@ -52,16 +55,31 @@ export function Dataviser() {
  */
 const _DataviserHeader = function() {
 
-  // ! todo
-  // ! make sure chooseDirectories returns a promise
-  // ! use toast to indicate progress of promise
+  // Create the toast object cuz we need to create those
+  const toast = useToast();
+
+  // Chooses a direcotiry/ies then loads it/them
+  function chooseThenLoadDirectories() {
+    const promise = ClientFS.chooseDirectories();
+    
+    ClientToast.createToast(toast, {
+      promise: promise,
+      success: 'Successfully loaded files.',
+      failure: 'Could not load files.',
+      loading: 'Loading files from selected folder.',
+      position: 'bottom-left'
+    });
+
+    promise.then(result => console.log(result))
+  }
   
   return (
     <Stack spacing="0">
       <_DataviserHeaderTitle />
       <Flex spacing="0" ml="2.8rem">
-        <_DataviserHeaderButton action={ ClientFS.chooseDirectories } text="open folder" />
+        <_DataviserHeaderButton action={ chooseThenLoadDirectories } text="open folder" />
         <_DataviserHeaderButton action={ ClientFS.chooseDirectories } text="view files"/>
+        <_DataviserHeaderButton action={ () => {} } text="add visual"/>
       </Flex>
     </Stack>)
 }

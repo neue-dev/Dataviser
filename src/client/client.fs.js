@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 17:58:25
- * @ Modified time: 2024-06-11 16:50:37
+ * @ Modified time: 2024-06-14 19:31:18
  * @ Description:
  * 
  * Handles our references to files and the data they store.
@@ -23,9 +23,21 @@ export const ClientFS = (function() {
   _.chooseDirectories = function() {
     const message = 'fs:choose-directories';
     const promise = ClientIPC.call(_HOST, message);
+    
+    // The output promise for the files to load
+    let outResolve;
+    let outReject;
+    let outPromise = new Promise((resolve, reject) => {
+      outResolve = resolve;
+      outReject = reject;
+    });
 
     // When the result has been returned, load the dirs
-    promise.then(result => _.loadDirectories(result));
+    promise.then(result => _.loadDirectories(result)
+      .then(result => outResolve(result)));
+
+    // Return the promise so we can wait for it elsewhere
+    return outPromise;
   }
 
   /**
@@ -35,9 +47,21 @@ export const ClientFS = (function() {
   _.chooseFiles = function() {
     const message = 'fs:choose-files';
     const promise = ClientIPC.call(_HOST, message);
+    
+    // The output promise for the files to load
+    let outResolve;
+    let outReject;
+    let outPromise = new Promise((resolve, reject) => {
+      outResolve = resolve;
+      outReject = reject;
+    });
 
     // When the result has been returned, load the dirs
-    promise.then(result => _.loadFiles(result));
+    promise.then(result => _.loadFiles(result)
+      .then(result => outResolve(result)));
+
+    // Return the promise so we can wait for it elsewhere
+    return outPromise;
   }
 
   /**
@@ -54,11 +78,13 @@ export const ClientFS = (function() {
     promise.then(result => result.forEach(entry => {
       _refs[entry.id] = entry;
     }));
+
+    // Return the promise so we can wait for it elsewhere
+    return promise;
   }
 
   /**
    * Loads all the files in the provided folder path into memory.
-   * ! to code change the console log and make sure this works
    * 
    * @param   { string[] }  filepaths  An array of filepaths.
    */
@@ -71,6 +97,9 @@ export const ClientFS = (function() {
     promise.then(result => result.forEach(entry => {
       _refs[entry.id] = entry;
     }));
+
+    // Return the promise so we can wait for it elsewhere
+    return promise;
   }
 
   /**
