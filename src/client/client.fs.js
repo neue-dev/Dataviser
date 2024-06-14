@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 17:58:25
- * @ Modified time: 2024-06-14 19:31:18
+ * @ Modified time: 2024-06-14 21:15:07
  * @ Description:
  * 
  * Handles our references to files and the data they store.
@@ -17,10 +17,15 @@ export const ClientFS = (function() {
   const _HOST = 'fs';
 
   /**
-   * This function selects a folder from the current system.
+   * This function requests a select-folder prompt from the current system.
    * It then calls _.loadDirectories, which loads the files in the folder unto memory.
+   * 
+   * @param   { object }    options   The options to be passed to the main process.
+   * @return  { Promise }             A promise indicating the status of the request.
    */
-  _.chooseDirectories = function() {
+  _.chooseDirectories = function(options={}) {
+
+    // Some constants
     const message = 'fs:choose-directories';
     const promise = ClientIPC.call(_HOST, message);
     
@@ -33,7 +38,7 @@ export const ClientFS = (function() {
     });
 
     // When the result has been returned, load the dirs
-    promise.then(result => _.loadDirectories(result)
+    promise.then(result => _.loadDirectories(result, options)
       .then(result => outResolve(result)));
 
     // Return the promise so we can wait for it elsewhere
@@ -41,10 +46,15 @@ export const ClientFS = (function() {
   }
 
   /**
-   * This function selects a file from the current system.
+   * This function requests a select-file from the current system.
    * It then loads the file contents unto memory.
+   * 
+   * @param   { object }    options   The options to be passed to the main process.
+   * @return  { Promise }             A promise indicating the status of the request.
    */
-  _.chooseFiles = function() {
+  _.chooseFiles = function(options={}) {
+
+    // Some constants
     const message = 'fs:choose-files';
     const promise = ClientIPC.call(_HOST, message);
     
@@ -57,7 +67,7 @@ export const ClientFS = (function() {
     });
 
     // When the result has been returned, load the dirs
-    promise.then(result => _.loadFiles(result)
+    promise.then(result => _.loadFiles(result, options)
       .then(result => outResolve(result)));
 
     // Return the promise so we can wait for it elsewhere
@@ -65,13 +75,17 @@ export const ClientFS = (function() {
   }
 
   /**
-   * Loads all the files in the provided folder path into memory.
+   * Requests to load all the files in the provided folder paths into memory.
    * 
    * @param   { string[] }  dirpaths  An array of directory paths.
+   * @param   { object }    options   The options to be passed to the main process.
+   * @return  { Promise }             A promise indicating the status of the request.
    */
-  _.loadDirectories = function(dirpaths) {
+  _.loadDirectories = function(dirpaths, options={}) {
+
+    // Some constants
     const message = 'fs:load-directories';
-    const args = [ dirpaths ];
+    const args = [ dirpaths, options ];
     const promise = ClientIPC.call(_HOST, message, args);
 
     // When the result has been returned, store the file references
@@ -84,13 +98,16 @@ export const ClientFS = (function() {
   }
 
   /**
-   * Loads all the files in the provided folder path into memory.
+   * Requests to load all the files in the provided filepaths into memory.
    * 
-   * @param   { string[] }  filepaths  An array of filepaths.
+   * @param   { string[] }  filepaths   An array of filepaths.
+   * @return  { Promise }               A promise indicating the status of the request.
    */
-  _.loadFiles = function(filepaths) {
+  _.loadFiles = function(filepaths, options={}) {
+
+    // Some constants
     const message = 'fs:load-files';
-    const args = [ filepaths ];
+    const args = [ filepaths, options ];
     const promise = ClientIPC.call(_HOST, message, args);
 
     // When the result has been returned, store the file references
@@ -99,6 +116,28 @@ export const ClientFS = (function() {
     }));
 
     // Return the promise so we can wait for it elsewhere
+    return promise;
+  }
+
+  /**
+   * Requests for the actual data stored by the files.
+   * If no file ids are provided, it retrieves all the files by default.
+   * 
+   * @param   { array }     ids       The ids of the files to load.
+   * @param   { object }    options   The options to be passed to the main process.
+   * @return  { Promise }             A promise indicating the status of the request.
+   */
+  _.requestFiles = function(ids=[], options={}) {
+
+    // Some constants
+    const message = 'fs:request-files';
+    const args = [ ids, options ];
+    const promise = ClientIPC.call(_HOST, message, args);
+
+    promise.then(result => {
+      console.log(result)
+    })
+
     return promise;
   }
 

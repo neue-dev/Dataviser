@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-14 20:28:28
+ * @ Modified time: 2024-06-14 21:39:12
  * @ Description:
  * 
  * The main component that houses the app.
@@ -21,6 +21,7 @@ import { Toast, useToast } from '@chakra-ui/react'
 import { DataviserContext } from './Dataviser.ctx.jsx'
 import { ClientFS } from '../client/client.fs.js'
 import { ClientToast } from '../client/client.toast.js'
+import ClientIPC from '../client/client.ipc.js';
 
 /**
  * Dataviser component class.
@@ -66,7 +67,7 @@ const _DataviserHeader = function() {
   function chooseThenLoadDirectories() {
 
     // This promise resolves and returns handles to all the loaded files
-    const promise = ClientFS.chooseDirectories();
+    const promise = ClientFS.chooseDirectories({ encoding: null });
 
     // Creates a toast that gives feedback on what happened
     ClientToast.createToast(_toast, {
@@ -81,6 +82,13 @@ const _DataviserHeader = function() {
     promise.then(result => { 
       _state.files = result;
     })
+  }
+
+  /**
+   * Convert the loaded binaries into their respective dataframes in memory.
+   */
+  function processLoadedFiles() {
+    // const setInterval(() => ClientFS.requestFiles(ids).then(result => console.log(result)), 1000)
   }
 
   /**

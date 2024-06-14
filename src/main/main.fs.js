@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-07 05:32:22
+ * @ Modified time: 2024-06-14 21:34:59
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -31,7 +31,8 @@ export const FS = (function() {
   _.loadDirectories = function(dirpaths, options={}) {
 
     // The options
-    const encoding = options.encoding ?? 'utf-8';
+    // Note that we have to check whether or not the encoding is in the options ('null' means binary encoding)
+    const encoding = 'encoding' in options ? options.encoding : 'utf-8';
 
     // The output
     const result = [];
@@ -59,8 +60,19 @@ export const FS = (function() {
           // An error occured
           if(err) return console.error(err);
 
-          // Save the data
-          _cache[id].data = data;
+          // Save the data according to encoding
+          switch(encoding) {
+              
+            // Save the data as is
+            case 'utf-8':
+              _cache[id].data = data;
+              break;
+              
+            // Convert the data into a binary array
+            default: 
+              _cache[id].data = new Uint8Array(data);
+              break;
+          }
           _cache[id].loaded = true;
         });
 
@@ -88,10 +100,11 @@ export const FS = (function() {
    * Requests for the data of loaded files through their ids.
    * Note that binary data is stored as an array buffer and will be returned as such.
    * 
-   * @param   { string[] }  ids   The id of the files. 
-   * @return  { object }          The data stored by the files.
+   * @param   { string[] }  ids       The id of the files. 
+   * @param   { object }    options   Options for reading the file.  
+   * @return  { object }              The data stored by the files.
    */
-  _.requestFiles = function(ids) {
+  _.requestFiles = function(ids, options={}) {
     const result = {};
 
     ids.forEach(id => {

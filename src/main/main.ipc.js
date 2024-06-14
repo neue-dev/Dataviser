@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-07 05:28:59
+ * @ Modified time: 2024-06-14 21:11:37
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -88,9 +88,10 @@ export const IPC = (function() {
 
     // Get the args
     const dirpaths = args[0];
+    const options = args[1];
 
     // Load the files in the directory to memory
-    return FS.loadDirectories(dirpaths);
+    return FS.loadDirectories(dirpaths, options);
   });
 
   /**
@@ -105,9 +106,10 @@ export const IPC = (function() {
 
     // Get the args
     const filepaths = args[0];
+    const options = args[1];
 
     // Load the files into memory
-    return FS.loadFile(filepaths);
+    return FS.loadFile(filepaths, options);
   });
 
   /**
@@ -122,9 +124,10 @@ export const IPC = (function() {
 
     // Get the args
     const ids = args[0];
+    const options = args[1];
 
     // Load the files into memory
-    return FS.requestFiles(ids);
+    return FS.requestFiles(ids, options);
   });
 
   /**
