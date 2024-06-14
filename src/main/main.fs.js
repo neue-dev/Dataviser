@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-14 21:34:59
+ * @ Modified time: 2024-06-14 22:46:13
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -21,12 +21,77 @@ export const FS = (function() {
   const _cache = {};
 
   /**
+   * Returns whether or not all the files within the cache have fully loaded.
+   * 
+   * @return  { boolean }   Whether or not all the files have loaded. 
+   */
+  _.checkCacheLoadState = function() {
+
+    // Get the ids of the loaded files
+    const ids = Object.keys(_cache);
+
+    // Check if all files have been loaded
+    for(let i = 0; i < ids.length; i++)
+      if(!_cache[ids[i]].loaded)
+        return false;
+      
+    return true;
+  }
+
+  /**
+   * Writes a file to the memory cache.
+   * 
+   * @param   { string }    id        A unique id for the file.
+   * @param   { string }    filepath  The filepath of the file.
+   * @param   { function }  callback  A callback to execute after each file cache.
+   */
+  _.cacheFile = function(id, filepath, encoding, callback=d=>d) {
+
+    // Read the file
+    // This part is asynchronous
+    // That let's us return the result dict faster
+    fs.readFile(filepath, encoding, (err, data) => {
+      
+      // An error occured
+      if(err) return console.error(err);
+
+      // Save the data according to encoding
+      switch(encoding) {
+          
+        // Save the data as is
+        case 'utf-8':
+          _cache[id].data = data;
+          break;
+          
+        // Convert the data into a binary array
+        default: 
+          _cache[id].data = new Uint8Array(data);
+          break;
+      }
+      
+      // Set the file to loaded
+      _cache[id].loaded = true;
+
+      // Execute the callback
+      callback();
+    });
+
+    // Allocate a slot for the file
+    _cache[id] = {
+      filepath: filepath,
+      loaded: false,
+      data: [],
+    }
+  }
+
+  /**
    * Loads all the files in a folder and saves its contents into memory.
    * Generates a unique id for each file.
    * Note that a null encoding tells the file reader to read the contents in binary.
    * 
-   * @param   { string }  dirpath   The path to the folder.
-   * @param   { object }  options   Options for reading the file.  
+   * @param   { string }    dirpath   The path to the folder.
+   * @param   { object }    options   Options for reading the file.  
+   * @return  { Promise }             The promise for loading the files into memory.
    */
   _.loadDirectories = function(dirpaths, options={}) {
 
@@ -34,8 +99,13 @@ export const FS = (function() {
     // Note that we have to check whether or not the encoding is in the options ('null' means binary encoding)
     const encoding = 'encoding' in options ? options.encoding : 'utf-8';
 
-    // The output
-    const result = [];
+    // Creates a new promise which we return
+    let onResolve;
+    let onReject;
+    const outPromise = new Promise((resolve, reject) => {
+      onResolve = resolve;
+      onReject = reject;
+    })
 
     // Load the file contents
     // We can do this synchronously
@@ -52,46 +122,16 @@ export const FS = (function() {
         const id = crypto.randomUUID();
         const filepath = `${dirpath}\\${filename}`;
 
-        // Read the file
-        // This part is asynchronous
-        // That let's us return the result dict faster
-        fs.readFile(filepath, encoding, (err, data) => {
-          
-          // An error occured
-          if(err) return console.error(err);
-
-          // Save the data according to encoding
-          switch(encoding) {
-              
-            // Save the data as is
-            case 'utf-8':
-              _cache[id].data = data;
-              break;
-              
-            // Convert the data into a binary array
-            default: 
-              _cache[id].data = new Uint8Array(data);
-              break;
-          }
-          _cache[id].loaded = true;
-        });
-
-        // Allocate a slot for the file
-        _cache[id] = {
-          filepath: filepath,
-          loaded: false,
-          data: [],
-        }
-
-        // Append to the output
-        result.push({
-          id, filepath
+        // We cache the file and pass a callback to it
+        _.cacheFile(id, filepath, encoding, () => {
+          if(_.checkCacheLoadState())
+            onResolve(_cache);
         });
       });
     })
 
-    // Return the list of all files and their ids
-    return result;
+    // Return a promise for loading the data 
+    return outPromise;
   }
 
   // ! to code: the loadFiles function

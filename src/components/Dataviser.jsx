@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-14 21:50:39
+ * @ Modified time: 2024-06-14 22:49:39
  * @ Description:
  * 
  * The main component that houses the app.
@@ -34,7 +34,6 @@ export function Dataviser() {
   const _state = {
     showTitle: true,
     files: [], 
-    data: [],
   };
 
   // Wrap the app in a context provider
@@ -82,39 +81,14 @@ const _DataviserHeader = function() {
     // Store the file references in the app state
     promise.then(result => { 
       _state.files = result;
-
-      processLoadedFiles();
     })
   }
 
   /**
-   * Convert the loaded binaries into their respective dataframes in memory.
+   * ! Put this function elsewhere (in another class).
    */
-  function processLoadedFiles() {
+  function convertFilesToDataframes() {
     
-    // Get the ids of the files we loaded
-    const ids = _state.files.map(file => file.id);
-    const filesLoaded = setInterval(() => 
-      
-      // ! change this so it doesnt use setInterval but instead uses promises
-      // ! this is very inefficient because it keeps passing the large data even though the objects have been loaded and haven't been updated
-      ClientFS.requestFiles(ids).then(result => {        
-
-        // Get the returned ids of the files
-        const ids = Object.keys(result);
-
-        // Check if all files have been loaded
-        for(let i = 0; i < result.length; i++) 
-          if(!result[i].loaded)
-            return;
-
-        // Save the data
-        _state.data = ids.map(id => result[id]);
-
-        // Stop the polling once all the files have been loaded
-        clearInterval(filesLoaded);
-
-      }), 1000);
   }
 
   /**

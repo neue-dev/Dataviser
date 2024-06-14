@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 17:58:25
- * @ Modified time: 2024-06-14 21:15:07
+ * @ Modified time: 2024-06-14 22:47:35
  * @ Description:
  * 
  * Handles our references to files and the data they store.
@@ -86,15 +86,10 @@ export const ClientFS = (function() {
     // Some constants
     const message = 'fs:load-directories';
     const args = [ dirpaths, options ];
-    const promise = ClientIPC.call(_HOST, message, args);
-
-    // When the result has been returned, store the file references
-    promise.then(result => result.forEach(entry => {
-      _refs[entry.id] = entry;
-    }));
+    const outPromise = ClientIPC.call(_HOST, message, args);
 
     // Return the promise so we can wait for it elsewhere
-    return promise;
+    return outPromise;
   }
 
   /**
@@ -108,15 +103,15 @@ export const ClientFS = (function() {
     // Some constants
     const message = 'fs:load-files';
     const args = [ filepaths, options ];
-    const promise = ClientIPC.call(_HOST, message, args);
+    const outPromise = ClientIPC.call(_HOST, message, args);
 
     // When the result has been returned, store the file references
-    promise.then(result => result.forEach(entry => {
+    outPromise.then(result => result.forEach(entry => {
       _refs[entry.id] = entry;
     }));
 
     // Return the promise so we can wait for it elsewhere
-    return promise;
+    return outPromise;
   }
 
   /**
@@ -132,13 +127,13 @@ export const ClientFS = (function() {
     // Some constants
     const message = 'fs:request-files';
     const args = [ ids, options ];
-    const promise = ClientIPC.call(_HOST, message, args);
+    const outPromise = ClientIPC.call(_HOST, message, args);
 
-    promise.then(result => {
+    outPromise.then(result => {
       console.log(result)
     })
 
-    return promise;
+    return outPromise;
   }
 
   /**
