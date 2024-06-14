@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 18:30:08
- * @ Modified time: 2024-06-14 19:48:15
+ * @ Modified time: 2024-06-14 20:23:49
  * @ Description:
  * 
  * This file deals with all the toasts the application might create.
@@ -37,7 +37,7 @@ export const ClientToast = (function() {
     const style = {
       isClosable: true,
       position: 'bottom-right',
-      duration: 20000,
+      duration: 2000,
       variant: 'left-accent',
       size: 'xs',
 

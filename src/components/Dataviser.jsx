@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-14 19:51:24
+ * @ Modified time: 2024-06-14 20:28:28
  * @ Description:
  * 
  * The main component that houses the app.
@@ -10,6 +10,7 @@
 
 import * as React from 'react';
 import { useState } from 'react'
+import { useContext } from 'react'
 
 // Chakra
 import { Box, Flex, Grid, Stack } from '@chakra-ui/react'
@@ -30,15 +31,13 @@ export function Dataviser() {
   
   // This is the initial app state
   const _state = {
-    showTitle: true
+    showTitle: true,
+    files: [], 
   };
-  
-  // A handle to that state which React manages for us
-  const [ dataviserContext, setDataviserContext ] = useState(_state);
 
   // Wrap the app in a context provider
   return (
-    <DataviserContext.Provider value={ dataviserContext }>
+    <DataviserContext.Provider value={ _state }>
       <div className="dataviser">
         <_DataviserHeader />
         <Grid>
@@ -56,21 +55,41 @@ export function Dataviser() {
 const _DataviserHeader = function() {
 
   // Create the toast object cuz we need to create those
-  const toast = useToast();
+  const _toast = useToast();
+  const _state = useContext(DataviserContext);
 
-  // Chooses a direcotiry/ies then loads it/them
+  /**
+   * This function communicates with the main thread.
+   * It asks to create a prompt for the user to select a folder.
+   * After a folder is chosen, the files inside it are loaded and a reference to these are returned.
+   */
   function chooseThenLoadDirectories() {
+
+    // This promise resolves and returns handles to all the loaded files
     const promise = ClientFS.chooseDirectories();
-    
-    ClientToast.createToast(toast, {
+
+    // Creates a toast that gives feedback on what happened
+    ClientToast.createToast(_toast, {
       promise: promise,
       success: 'Successfully loaded files.',
       failure: 'Could not load files.',
       loading: 'Loading files from selected folder.',
       position: 'bottom-left'
     });
+    
+    // Store the file references in the app state
+    promise.then(result => { 
+      _state.files = result;
+    })
+  }
 
-    promise.then(result => console.log(result))
+  /**
+   * This function displays the files loaded into memory as a modal.
+   * 
+   * ! to implement
+   */
+  function viewLoadedFiles() {
+    
   }
   
   return (
