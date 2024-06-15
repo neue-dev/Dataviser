@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-15 20:39:31
+ * @ Modified time: 2024-06-15 20:49:08
  * @ Description:
  * 
  * The main component that houses the app.
@@ -79,12 +79,17 @@ const _DataviserHeader = function() {
     });
     
     // Store the file references in the app state
-    promise.then(result => { 
-      _state.files = result;
+    promise.then(result => {
 
       // ! maybe not here?
       convertFilesToDataframes();
     })
+  }
+
+  // ! todo jsdoc
+  function requestFileData() {
+
+    //! todo show the files in a modal
   }
 
   /**
@@ -92,31 +97,26 @@ const _DataviserHeader = function() {
    */
   function convertFilesToDataframes() {
 
-    // This promise resolves and returns handles to all the loaded files
-    // ! todo: set this promise to the promise for dataframe conversion
-
-    // Request the files first
-    // ! remove this request, or put it outside this function as a sepaarte method
+    // Request for files first
     ClientFS.requestFiles().then(result => {
-      _state.files;
+      _state.files = result;
 
-      console.log(_state.files);
-      console.log(result)
+      ClientPython.includeLibrary('depickler');
+      ClientPython.sendData({ files: _state.files });
+      ClientPython.runScript(`
+        dfs = {}
+        files_py = files.to_py()
+        i = 0
+        print(len(files_py.values()))
 
-      // ClientPython.includeLibrary('depickler');
-      // ClientPython.sendData({ files: _state.files });
-      // ClientPython.runScript(`
-      //   dfs = {}
-      //   files_py = files.to_py()
-      //   i = 0
-      //   print(len(files_py.values()))
+        print('hello??');
   
-      //   for file in files_py:
-      //     print(i, file)
-      //     dfs[file] = depickle_byte_array(files_py[file]['data'])
-      //     i+=1
-      //   dfs
-      // `);
+        for file in files_py:
+          print(i, file)
+          dfs[file] = depickle_byte_array(files_py[file])
+          i+=1
+        dfs
+      `);
     });
 
     const promise = new Promise((resolve, reject) => {});

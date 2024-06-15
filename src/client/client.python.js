@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-15 20:28:24
+ * @ Modified time: 2024-06-15 20:53:06
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -13,10 +13,21 @@ export const ClientPython = (function() {
   
   const _ = {};
 
+  // Some default dependencies we import if they haven't been defined
+  const _dependencies = `
+    try:
+      pickle
+    except:
+      import pickle
+
+    try:
+      pd
+    except:
+      import pandas as pd
+  `;
+
   // Depickler functions
   const _depickler = `
-    import pickle
-
     def depickle_byte_array(byte_array):
       '''
       This function depickles a single byte array.
@@ -60,6 +71,9 @@ export const ClientPython = (function() {
    * @param   { string }  library   The name of the library we want. 
    */
   _.includeLibrary = function(library) {
+
+    // Always import the dependencies first
+    ClientPyodide.processRun(_dependencies, {}, d=>d);
 
     // Import the provided library
     switch(library) {
