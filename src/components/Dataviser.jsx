@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-15 21:56:40
+ * @ Modified time: 2024-06-15 22:21:28
  * @ Description:
  * 
  * The main component that houses the app.
@@ -9,7 +9,6 @@
  */
 
 import * as React from 'react';
-import { useState } from 'react'
 import { useContext } from 'react'
 
 // Chakra
@@ -19,6 +18,8 @@ import { Toast, useToast } from '@chakra-ui/react'
 
 // Custom
 import { DataviserContext } from './Dataviser.ctx.jsx'
+import { DVisual } from './DVisual.jsx';
+
 import { ClientFS } from '../client/client.fs.js'
 import { ClientToast } from '../client/client.toast.js'
 import { ClientPython } from '../client/client.python.js';
@@ -42,7 +43,7 @@ export function Dataviser() {
       <div className="dataviser">
         <_DataviserHeader />
         <Grid>
-          
+          <DVisual />
         </Grid>
       </div>      
     </DataviserContext.Provider>)
