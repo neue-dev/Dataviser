@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-16 00:35:18
+ * @ Modified time: 2024-06-16 01:03:54
  * @ Description:
  * 
  * The main component that houses the app.
@@ -130,19 +130,11 @@ const _DataviserHeader = function() {
         files_py = files.to_py()
           
         for file in files_py:
+          d = files_py[file]
+          dfs[file] = pd.DataFrame(d)
+          dicts[file] = dfs[file].to_dict()
 
-          # Data and rows
-          d = []
-          
-          for row in files_py[file].split('\\n'):
-            d.append(row.split(','))
-
-          d = np.array(d)
-
-          print(d)
-            
-          # dfs[file] = depickle_byte_array(files_py[file])
-          # dicts[file] = dfs[file].to_dict()
+          print(dfs[file])
       `)
 
       // If error occurred, reject promise
