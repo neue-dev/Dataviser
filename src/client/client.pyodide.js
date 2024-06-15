@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-15 21:52:16
+ * @ Modified time: 2024-06-15 18:41:13
  * @ Description:
  */
 
@@ -60,17 +60,17 @@ export const ClientPyodide = (function() {
     
     // Increment the id each time
     const id = _processId++;
+
+    // We send a message to the worker to tell it to run the script.
+    _pyodideWorker.postMessage({
+      message: 'process-dispatch',
+      python: script,
+      context: context,
+      id: id,
+    });
     
     // Return a promise for the resolution of the process
     const promise = new Promise((resolve, reject) => {
-
-      // We send a message to the worker to tell it to run the script.
-      _pyodideWorker.postMessage({
-        message: 'process-dispatch',
-        python: script,
-        context: context,
-        id: id,
-      });
       
       // The function to call when the process finishes
       // Basically, we resolve the promise we return so the caller can know it's done
@@ -123,11 +123,16 @@ export const ClientPyodide = (function() {
       // Create the promise
       const promise = _._processDispatch(script, context);
 
+      console.log('script executed', script);
+      console.log('waiting for response...');
+
       // Wait for the promise
       promise.then(output => {
         
         // Grab the details of the output
         const { results, error } = output;
+
+        console.log(output);
 
         // We got something back
         if (results) {

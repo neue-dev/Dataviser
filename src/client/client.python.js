@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-16 01:19:19
+ * @ Modified time: 2024-06-15 18:45:58
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -120,7 +120,8 @@ export const ClientPython = (function() {
    * Requests for particular data from Pyodide.
    * Note that we do this by specifying the variable names of the data we want within Pyodide.
    * 
-   * @param   { object }  data  The names of the data we want from Pyodide. 
+   * @param   { object }    data  The names of the data we want from Pyodide. 
+   * @return  { Promise }         A promise for the requested data.
    */
   _.requestData = function(data=[]) {
 
@@ -131,11 +132,15 @@ export const ClientPython = (function() {
         ${string}
       }
 
+      print(out)
+
       json.dumps(out)
     `;
 
+    console.log(script);
+
     // Return a promise for the requested data
-    return ClientPyodide.processRun(script);
+    return _.runScript(script);
   }
 
   /**

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-16 01:19:53
+ * @ Modified time: 2024-06-15 18:45:48
  * @ Description:
  * 
  * The main component that houses the app.
@@ -128,15 +128,11 @@ const _DataviserHeader = function() {
         dfs = {}
         dicts = {}
         #files_py = files.to_py()
-
-        print(files)
           
         for file in files:
           d = files[file]
           dfs[file] = pd.DataFrame(d)
           dicts[file] = dfs[file].to_dict()
-
-          print(dfs[file])
       `)
 
       // If error occurred, reject promise
@@ -166,8 +162,22 @@ const _DataviserHeader = function() {
    * 
    * ! to implement
    */
-  function viewLoadedFiles() {
+  function viewDataframes() {
+    const promise = ClientPython.requestData(['dicts'])
     
+    promise.then(out => {
+      console.log(out)
+    });
+
+    // Creates a toast that gives feedback on what happened
+    ClientToast.createToast(_toast, {
+      promise: promise,
+
+      success: 'Dataframes are loaded.',
+      failure: 'Dataframes are broken.',
+      loading: 'Requesting dataframes.',
+      position: 'bottom-left'
+    });
   }
   
   // ! todo: change this to viewLoadedFiles instead of convertFilesToDataframes; convert should be automatic after loading files
@@ -176,7 +186,8 @@ const _DataviserHeader = function() {
       <_DataviserHeaderTitle />
       <Flex spacing="0" ml="2.8rem">
         <_DataviserHeaderButton action={ chooseThenLoadDirectories } text="open folder" />
-        <_DataviserHeaderButton action={ convertFilesToDataframes } text="view files"/>
+        <_DataviserHeaderButton action={ convertFilesToDataframes } text="generate dfs !remove"/>
+        <_DataviserHeaderButton action={ viewDataframes } text="view dataframes"/>
         <_DataviserHeaderButton action={ () => {} } text="add visual"/>
       </Flex>
     </Stack>)

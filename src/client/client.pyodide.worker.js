@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-06-16 01:20:40
+ * @ Modified time: 2024-06-15 18:45:23
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -58,7 +58,7 @@ if('function' == typeof importScripts) {
       string += `${globals[i]} = ${globals[i]}.to_py()\n`;
 
     // Run the script
-    pythonRun(string);
+    pythonRun(string, null);
   }
 
   /**
@@ -73,7 +73,8 @@ if('function' == typeof importScripts) {
     await self.pyodide.loadPackagesFromImports(python);
 
     // Set the context of the script first
-    pythonSetContext(context);
+    if(context)
+      pythonSetContext(context);
 
     // Save the results of the script
     return self.pyodide.runPython(python);
