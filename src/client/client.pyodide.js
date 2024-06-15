@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-14 22:29:05
+ * @ Modified time: 2024-06-15 19:46:09
  * @ Description:
  */
 
@@ -13,36 +13,35 @@
 export const ClientPyodide = (function() {
   
   // Create the worker from its URL
-  const pyodideWorkerURL = new URL('./client.pyodide.worker.js', import.meta.url);
-  const pyodideWorker = new Worker(pyodideWorkerURL);
+  const _pyodideWorkerURL = new URL('./client.pyodide.worker.js', import.meta.url);
+  const _pyodideWorker = new Worker(_pyodideWorkerURL);
 
   // The api object 
-  const _ = {
-    workerURL: pyodideWorkerURL,
-    worker: pyodideWorker,
-    processes: {},
-    processId: 0,
-  };
+  const _ = {};
+  let _processId = 0;
+  let _processes = {};
+  let _workerURL = _pyodideWorkerURL;
+  let _worker = _pyodideWorker;
 
   /**
    * This primarily responds to the messages sent by the worker after executing a script.
    * 
    * @param   { event }   e   The event object. 
    */
-  pyodideWorker.onmessage = e => {
+  _pyodideWorker.onmessage = e => {
   
     // Retrieve the data sent by the worker and the resolving callback
     const { id } = e.data;
     
     // The process already ended
-    if(!_.processes[id])
+    if(!_processes[id])
       return;
 
     // Get the callbacks
-    const { onResolve, onReject } = _.processes[id];
+    const { onResolve, onReject } = _processes[id];
     
     // The process id done, so remove it
-    delete _.processes[id];
+    delete _processes[id];
 
     // Resolve or reject the promise
     if(e.error) return onReject(e.error);
@@ -58,35 +57,37 @@ export const ClientPyodide = (function() {
    * @return  { Promise }             A promise for a complete execution of the script.
    */
   _._processDispatch = (script, context) => {
-
+    
     // Increment the id each time
-    const id = _.processId += _.processId + 1;
+    const id = _processId++;
     
     // Return a promise for the resolution of the process
-    return new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
+
+      // We send a message to the worker to tell it to run the script.
+      _pyodideWorker.postMessage({
+        message: 'process-dispatch',
+        python: script,
+        context: context,
+        id: id,
+      });
       
       // The function to call when the process finishes
       // Basically, we resolve the promise we return so the caller can know it's done
-      _.processes[id] = {
+      _processes[id] = {
         onResolve: resolve,
         onReject: reject,
       };
-      
-      // We send a message to the worker to tell it to run the script.
-      pyodideWorker.postMessage({
-        message: 'process-dispatch',
-        python: script,
-        context, 
-        id,
-      });
     });
+
+    return promise;
   }
 
   // ! to implement
-  _.processSetContext = function() {
+  _.processSetContext = function(context={}) {
 
     // Sets the context of the environment
-    pyodideWorker.postMessage({
+    _pyodideWorker.postMessage({
       message: 'context-set',
       context, 
     });
@@ -110,16 +111,32 @@ export const ClientPyodide = (function() {
 
     // Try the script
     try {
-      const { results, error } = await _._processDispatch(script, context);
 
-      // We got something back
-      if (results)
-        callback(results);
+      // Create the promise
+      const promise = _._processDispatch(script, context);
 
-      // The script encountered an error
-      else if (error)
-        console.error("Python script error: ", error, script);
- 
+      // Wait for the promise
+      promise.then(output => {
+        
+        // Grab the details of the output
+        const { results, error } = output;
+
+        console.log('out', output);
+
+        // We got something back
+        if (results) {
+          callback(results); 
+          
+        // The script encountered an error
+        } else if (error) {
+          console.error("Python script error: ", error, script);
+          
+        // Results was probably undefined
+        } else if(!results) {
+          console.log('Python script executed and returned nothing.');
+        }
+      })
+        
     // Something wrong happened with the JS
     } catch (e) {
       console.error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`);

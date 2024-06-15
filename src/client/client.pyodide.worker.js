@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-06-11 17:38:23
+ * @ Modified time: 2024-06-15 19:42:02
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -91,8 +91,8 @@ if('function' == typeof importScripts) {
     try {
 
       switch(message) {
-        case 'script-dispatch':
-          results = pythonRun(python, context);
+        case 'process-dispatch':
+          results = await pythonRun(python, context);
           break;
 
         case 'context-set':
@@ -101,7 +101,6 @@ if('function' == typeof importScripts) {
       }
 
       // Send to the results to the renderer thread
-      // ! change this, doesn't need to always send an id
       self.postMessage({ results, id });
 
     // Something happened

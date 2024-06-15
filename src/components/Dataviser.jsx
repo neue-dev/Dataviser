@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-14 22:49:39
+ * @ Modified time: 2024-06-15 19:34:36
  * @ Description:
  * 
  * The main component that houses the app.
@@ -21,7 +21,7 @@ import { Toast, useToast } from '@chakra-ui/react'
 import { DataviserContext } from './Dataviser.ctx.jsx'
 import { ClientFS } from '../client/client.fs.js'
 import { ClientToast } from '../client/client.toast.js'
-import ClientIPC from '../client/client.ipc.js';
+import { ClientPython } from '../client/client.python.js';
 
 /**
  * Dataviser component class.
@@ -72,7 +72,7 @@ const _DataviserHeader = function() {
     // Creates a toast that gives feedback on what happened
     ClientToast.createToast(_toast, {
       promise: promise,
-      success: 'Successfully loaded files.',
+      success: 'Files have been loaded in memory.',
       failure: 'Could not load files.',
       loading: 'Loading files from selected folder.',
       position: 'bottom-left'
@@ -81,6 +81,9 @@ const _DataviserHeader = function() {
     // Store the file references in the app state
     promise.then(result => { 
       _state.files = result;
+
+      // ! maybe not here?
+      convertFilesToDataframes();
     })
   }
 
@@ -88,7 +91,21 @@ const _DataviserHeader = function() {
    * ! Put this function elsewhere (in another class).
    */
   function convertFilesToDataframes() {
-    
+
+    // This promise resolves and returns handles to all the loaded files
+    // ! todo: set this promise to the promise for dataframe conversion
+
+    const promise = new Promise((resolve, reject) => {});
+
+    // Creates a toast that gives feedback on what happened
+    ClientToast.createToast(_toast, {
+      promise: promise,
+
+      success: 'Files were converted into dataframes.',
+      failure: 'Error converting files.',
+      loading: 'Converting files into dataframes.',
+      position: 'bottom-left'
+    });
   }
 
   /**

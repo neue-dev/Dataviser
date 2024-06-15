@@ -1,18 +1,20 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-14 22:28:05
+ * @ Modified time: 2024-06-15 19:44:49
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
  */
 
-const ClientPython = (function() {
+import { ClientPyodide } from "./client.pyodide";
+
+export const ClientPython = (function() {
   
   const _ = {};
 
   // Depickler functions
-  _.depickler = `
+  const _depickler = `
     def depickle_byte_array(byte_array):
       '''
       This function depickles a single byte array.
@@ -46,6 +48,33 @@ const ClientPython = (function() {
 
       return dfs
   `;
+
+  /**
+   * Defines the given variables in the Python namespace.
+   * 
+   * @param   { object }  variables   The variables to define within the namespace.
+   */
+  _.defineVariables = function(variables={}) {
+    ClientPyodide.processSetContext(variables);
+  }
+
+  // ! remove
+  _.test = function() {
+    ClientPyodide.processRun(`
+      print(haa)
+      print(haaa)
+      print(haaaa)
+      haa
+      `, {}, e => e);
+  }
+
+  _.defineVariables({
+    haa: '1, 2, 3',
+    haaa: [1, 2, 3],
+    haaaa: 123,
+  });
+
+  _.test();
 
   return {
     ..._,
