@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-15 18:41:13
+ * @ Modified time: 2024-06-15 18:48:16
  * @ Description:
  */
 
@@ -123,16 +123,11 @@ export const ClientPyodide = (function() {
       // Create the promise
       const promise = _._processDispatch(script, context);
 
-      console.log('script executed', script);
-      console.log('waiting for response...');
-
       // Wait for the promise
       promise.then(output => {
         
         // Grab the details of the output
         const { results, error } = output;
-
-        console.log(output);
 
         // We got something back
         if (results) {

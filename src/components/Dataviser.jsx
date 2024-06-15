@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-15 18:45:48
+ * @ Modified time: 2024-06-15 18:48:30
  * @ Description:
  * 
  * The main component that houses the app.
@@ -81,8 +81,6 @@ const _DataviserHeader = function() {
     
     // Store the file references in the app state
     promise.then(result => {
-
-      console.log(result);
 
       // ! maybe not here?
       convertFilesToDataframes();
