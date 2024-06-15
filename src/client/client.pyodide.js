@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-15 21:19:40
+ * @ Modified time: 2024-06-15 21:52:16
  * @ Description:
  */
 
@@ -83,7 +83,11 @@ export const ClientPyodide = (function() {
     return promise;
   }
 
-  // ! to implement
+  /**
+   * Defines variables (context) within the Pyodide environment that hold our data.
+   * 
+   * @param   { object }  context   The data and their associated names. 
+   */
   _.processSetContext = function(context={}) {
 
     // Sets the context of the environment
@@ -91,10 +95,6 @@ export const ClientPyodide = (function() {
       message: 'context-set',
       context, 
     });
-  }
-
-  _.processGetContext = function() {
-    
   }
   
   /**
@@ -107,7 +107,7 @@ export const ClientPyodide = (function() {
    *                                            Note that we pass the result of the script to the callback.
    * @param   { function }  errorCallback   An optional parameter for handling errors.
    */
-  _.processRun = async(script, context, callback, errorCallback) => {
+  _.processRun = async(script, context, callback=d=>d) => {
 
     // The output promise
     let onResolve;
@@ -132,7 +132,7 @@ export const ClientPyodide = (function() {
         // We got something back
         if (results) {
           callback(results); 
-          onResolve(result);
+          onResolve(results);
           
         // The script encountered an error
         } else if (error) {

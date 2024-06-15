@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-15 21:19:28
+ * @ Modified time: 2024-06-15 21:55:09
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -24,6 +24,11 @@ export const ClientPython = (function() {
       pd
     except:
       import pandas as pd
+
+    try:
+      json
+    except:
+      import json
   `;
 
   // Depickler functions
@@ -88,6 +93,28 @@ export const ClientPython = (function() {
         console.log('The library selected is not present in the Dataviser Python scripts catalogue.');
         break;
     }
+  }
+
+  /**
+   * Requests for particular data from Pyodide.
+   * Note that we do this by specifying the variable names of the data we want within Pyodide.
+   * 
+   * @param   { object }  data  The names of the data we want from Pyodide. 
+   */
+  _.requestData = function(data=[]) {
+
+    // Create a script to return the data
+    const string = data.map(key => `'${key}': ${key}`).join(',\n');
+    const script = `
+      out = {
+        ${string}
+      }
+
+      json.dumps(out)
+    `;
+
+    // Return a promise for the requested data
+    return ClientPyodide.processRun(script);
   }
 
   /**

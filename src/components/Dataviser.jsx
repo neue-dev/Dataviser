@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-15 21:22:02
+ * @ Modified time: 2024-06-15 21:56:40
  * @ Description:
  * 
  * The main component that houses the app.
@@ -87,13 +87,15 @@ const _DataviserHeader = function() {
   }
 
   // ! todo jsdoc
-  function requestFileData() {
-
-    //! todo show the files in a modal
+  function requestDataframes() {
+    ClientPython.requestData(['dicts']).then(out => {
+      console.log(out)
+    });
   }
 
   /**
-   * ! Put this function elsewhere (in another class).
+   * Converts the loaded files into dataframes within the Pyodide environment.
+   * Creates a toast which reflect the status of the request.
    */
   function convertFilesToDataframes() {
 
@@ -114,15 +116,15 @@ const _DataviserHeader = function() {
       ClientPython.sendData({ files: _state.files });
 
       // Run the script to convert the file data to dataframes
+      // ! put this script elsewhere, make it more systematic
       ClientPython.runScript(`
         dfs = {}
+        dicts = {}
         files_py = files.to_py()
-        i = 0
-  
+          
         for file in files_py:
           dfs[file] = depickle_byte_array(files_py[file])
-          i+=1
-      
+          dicts[file] = dfs[file].to_dict()
       `)
 
       // If error occurred, reject promise
@@ -156,6 +158,7 @@ const _DataviserHeader = function() {
     
   }
   
+  // ! todo: change this to viewLoadedFiles instead of convertFilesToDataframes; convert should be automatic after loading files
   return (
     <Stack spacing="0">
       <_DataviserHeaderTitle />
