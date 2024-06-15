@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-15 19:46:09
+ * @ Modified time: 2024-06-15 20:16:34
  * @ Description:
  */
 
@@ -120,8 +120,6 @@ export const ClientPyodide = (function() {
         
         // Grab the details of the output
         const { results, error } = output;
-
-        console.log('out', output);
 
         // We got something back
         if (results) {

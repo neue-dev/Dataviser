@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-14 22:46:13
+ * @ Modified time: 2024-06-15 20:42:48
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -140,13 +140,18 @@ export const FS = (function() {
    * Requests for the data of loaded files through their ids.
    * Note that binary data is stored as an array buffer and will be returned as such.
    * 
-   * @param   { string[] }  ids       The id of the files. 
+   * @param   { string[] }  ids       The ids of the files. 
    * @param   { object }    options   Options for reading the file.  
    * @return  { object }              The data stored by the files.
    */
   _.requestFiles = function(ids, options={}) {
     const result = {};
 
+    // Return all the files if no ids provided
+    if(!ids.length)
+      ids = Object.keys(_cache);
+
+    // Retrieve each of the references
     ids.forEach(id => {
 
       // Invalid id

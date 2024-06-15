@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 17:58:25
- * @ Modified time: 2024-06-14 22:47:35
+ * @ Modified time: 2024-06-15 20:40:43
  * @ Description:
  * 
  * Handles our references to files and the data they store.
@@ -129,10 +129,7 @@ export const ClientFS = (function() {
     const args = [ ids, options ];
     const outPromise = ClientIPC.call(_HOST, message, args);
 
-    outPromise.then(result => {
-      console.log(result)
-    })
-
+    // Return the promise
     return outPromise;
   }
 

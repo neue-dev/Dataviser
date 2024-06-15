@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-15 19:44:49
+ * @ Modified time: 2024-06-15 20:28:24
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -15,6 +15,8 @@ export const ClientPython = (function() {
 
   // Depickler functions
   const _depickler = `
+    import pickle
+
     def depickle_byte_array(byte_array):
       '''
       This function depickles a single byte array.
@@ -50,31 +52,47 @@ export const ClientPython = (function() {
   `;
 
   /**
+   * Includes one of the sets of library functions we have here.
+   * By include, we mean we load it into the currently running Pyodide context.
+   * The library functions are just utilities to help us deal with data.
+   * For instance, the 'depickler' contains scripts for converting byte arrays into dataframes.
+   * 
+   * @param   { string }  library   The name of the library we want. 
+   */
+  _.includeLibrary = function(library) {
+
+    // Import the provided library
+    switch(library) {
+      
+      // A library for deserializing data
+      case 'depickler':
+        ClientPyodide.processRun(_depickler, {}, d=>d);
+        break;
+      
+      // The name the user entered doesn't match any lib
+      default:
+        console.log('The library selected is not present in the Dataviser Python scripts catalogue.');
+        break;
+    }
+  }
+
+  /**
    * Defines the given variables in the Python namespace.
    * 
-   * @param   { object }  variables   The variables to define within the namespace.
+   * @param   { object }  data  The variables to define within the namespace.
    */
-  _.defineVariables = function(variables={}) {
-    ClientPyodide.processSetContext(variables);
+  _.sendData = function(data={}) {
+    ClientPyodide.processSetContext(data);
   }
 
-  // ! remove
-  _.test = function() {
-    ClientPyodide.processRun(`
-      print(haa)
-      print(haaa)
-      print(haaaa)
-      haa
-      `, {}, e => e);
+  /**
+   * Runs a custom Python script.
+   * 
+   * @param   { string }  script  The script to run. 
+   */
+  _.runScript = function(script) {
+    ClientPyodide.processRun(script, {}, d=>d);
   }
-
-  _.defineVariables({
-    haa: '1, 2, 3',
-    haaa: [1, 2, 3],
-    haaaa: 123,
-  });
-
-  _.test();
 
   return {
     ..._,
