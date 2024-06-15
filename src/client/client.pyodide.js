@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-15 20:16:34
+ * @ Modified time: 2024-06-15 21:19:40
  * @ Description:
  */
 
@@ -109,6 +109,14 @@ export const ClientPyodide = (function() {
    */
   _.processRun = async(script, context, callback, errorCallback) => {
 
+    // The output promise
+    let onResolve;
+    let onReject;
+    const outPromise = new Promise((resolve, reject) => {
+      onResolve = resolve;
+      onReject = reject;
+    });
+
     // Try the script
     try {
 
@@ -124,21 +132,30 @@ export const ClientPyodide = (function() {
         // We got something back
         if (results) {
           callback(results); 
+          onResolve(result);
           
         // The script encountered an error
         } else if (error) {
           console.error("Python script error: ", error, script);
+          onReject(error);
           
         // Results was probably undefined
         } else if(!results) {
           console.log('Python script executed and returned nothing.');
+          onResolve();
         }
       })
         
     // Something wrong happened with the JS
     } catch (e) {
       console.error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`);
+
+      // Reject the returned promise
+      onReject(e);
     }
+
+    // Return the promise
+    return outPromise;
   }
 
   // Ensures pyodide runs faster on subsequent calls

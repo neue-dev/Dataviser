@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-15 20:49:08
+ * @ Modified time: 2024-06-15 21:22:02
  * @ Description:
  * 
  * The main component that houses the app.
@@ -97,29 +97,44 @@ const _DataviserHeader = function() {
    */
   function convertFilesToDataframes() {
 
+    // Promise for the conversion of the data frames
+    let onResolve;
+    let onReject;
+    const promise = new Promise((resolve, reject) => { 
+      onResolve = resolve;
+      onReject = reject;
+    });
+
     // Request for files first
     ClientFS.requestFiles().then(result => {
+      
       _state.files = result;
 
       ClientPython.includeLibrary('depickler');
       ClientPython.sendData({ files: _state.files });
+
+      // Run the script to convert the file data to dataframes
       ClientPython.runScript(`
         dfs = {}
         files_py = files.to_py()
         i = 0
-        print(len(files_py.values()))
-
-        print('hello??');
   
         for file in files_py:
-          print(i, file)
           dfs[file] = depickle_byte_array(files_py[file])
           i+=1
-        dfs
-      `);
-    });
+      
+      `)
 
-    const promise = new Promise((resolve, reject) => {});
+      // If error occurred, reject promise
+      .catch(error => {
+        onReject(error);
+      })
+      
+      // If successful, resolve promise
+      .then(result => {
+        onResolve(result);
+      });
+    })
 
     // Creates a toast that gives feedback on what happened
     ClientToast.createToast(_toast, {

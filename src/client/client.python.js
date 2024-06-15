@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-15 20:53:06
+ * @ Modified time: 2024-06-15 21:19:28
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -102,10 +102,14 @@ export const ClientPython = (function() {
   /**
    * Runs a custom Python script.
    * 
-   * @param   { string }  script  The script to run. 
+   * @param   { string }    script    The script to run. 
+   * @param   { function }  callback  An optional callback to deal with the data.
+   * @return  { Promise }             A promise for the execution of the script. 
    */
-  _.runScript = function(script) {
-    ClientPyodide.processRun(script, {}, d=>d);
+  _.runScript = function(script, callback=d=>d) {
+
+    // Execute the script
+    return ClientPyodide.processRun(script, {}, callback)
   }
 
   return {
