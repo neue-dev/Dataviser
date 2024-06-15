@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-15 21:55:09
+ * @ Modified time: 2024-06-16 00:20:58
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -29,6 +29,11 @@ export const ClientPython = (function() {
       json
     except:
       import json
+
+    try:
+      np
+    except:
+      import numpy as np
   `;
 
   // Depickler functions

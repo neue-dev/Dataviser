@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-15 20:42:48
+ * @ Modified time: 2024-06-16 01:01:09
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -10,6 +10,7 @@
 // Modules
 const path = require('node:path');
 const fs = require('node:fs');
+const { parse } = require('csv-parse/sync');
 
 /**
  * The file system object provides us with utilities to manage files opened by the user.
@@ -47,10 +48,13 @@ export const FS = (function() {
    */
   _.cacheFile = function(id, filepath, encoding, callback=d=>d) {
 
+    // The encoding we pass to the filereader
+    const fileCodec = encoding == 'csv' ? 'utf-8' : encoding;
+
     // Read the file
     // This part is asynchronous
     // That let's us return the result dict faster
-    fs.readFile(filepath, encoding, (err, data) => {
+    fs.readFile(filepath, fileCodec, (err, data) => {
       
       // An error occured
       if(err) return console.error(err);
@@ -61,6 +65,19 @@ export const FS = (function() {
         // Save the data as is
         case 'utf-8':
           _cache[id].data = data;
+          break;
+
+        // Parse the csv
+        case 'csv':
+          _cache[id].data = parse(data, { columns: false, trim: true })
+
+          // Clean up the data
+          // Make sure numeric data stay numeric
+          for(let i = 0; i < _cache[id].data.length; i++)
+            for(let j = 0; j < _cache[id].data[i].length; j++)
+              if(!isNaN(parseFloat(_cache[id].data[i][j])))
+                _cache[id].data[i][j] = parseFloat(_cache[id].data[i][j]);
+
           break;
           
         // Convert the data into a binary array

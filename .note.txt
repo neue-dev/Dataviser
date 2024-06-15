@@ -1,4 +1,5 @@
 D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\dataviser\.debug\data
+make sure to show cancel operation when cancelling folder select
 
 amazing: how to properly do ipc in electron     https://jaketrent.com/post/select-directory-in-electron/
 d3                                              https://d3js.org/

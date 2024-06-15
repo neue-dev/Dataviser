@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-15 22:21:28
+ * @ Modified time: 2024-06-16 00:35:18
  * @ Description:
  * 
  * The main component that houses the app.
@@ -68,7 +68,7 @@ const _DataviserHeader = function() {
   function chooseThenLoadDirectories() {
 
     // This promise resolves and returns handles to all the loaded files
-    const promise = ClientFS.chooseDirectories({ encoding: null });
+    const promise = ClientFS.chooseDirectories({ encoding: 'csv' });
 
     // Creates a toast that gives feedback on what happened
     ClientToast.createToast(_toast, {
@@ -81,6 +81,8 @@ const _DataviserHeader = function() {
     
     // Store the file references in the app state
     promise.then(result => {
+
+      console.log(result);
 
       // ! maybe not here?
       convertFilesToDataframes();
@@ -111,21 +113,36 @@ const _DataviserHeader = function() {
     // Request for files first
     ClientFS.requestFiles().then(result => {
       
+      // Save the files
       _state.files = result;
 
-      ClientPython.includeLibrary('depickler');
+      // Send data to Python so we can manipulate it there
       ClientPython.sendData({ files: _state.files });
 
       // Run the script to convert the file data to dataframes
       // ! put this script elsewhere, make it more systematic
       ClientPython.runScript(`
+        import numpy as np
+        import pandas as pd
+
         dfs = {}
         dicts = {}
         files_py = files.to_py()
           
         for file in files_py:
-          dfs[file] = depickle_byte_array(files_py[file])
-          dicts[file] = dfs[file].to_dict()
+
+          # Data and rows
+          d = []
+          
+          for row in files_py[file].split('\\n'):
+            d.append(row.split(','))
+
+          d = np.array(d)
+
+          print(d)
+            
+          # dfs[file] = depickle_byte_array(files_py[file])
+          # dicts[file] = dfs[file].to_dict()
       `)
 
       // If error occurred, reject promise

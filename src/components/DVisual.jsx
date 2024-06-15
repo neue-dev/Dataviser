@@ -16,9 +16,9 @@ import { Box } from '@chakra-ui/react'
  */
 export function DVisual(props={}) {
   return (
-    <Box>
+    <Box p="1rem">
+      A graph of the great depression
       <_DVisualD3 />
-      hey?
     </Box>
   )
 }
@@ -49,14 +49,22 @@ function _DVisualD3(props={}) {
     },
   ]);
 
+  // Properties of the visual
+  const width = props.width ?? 960;
+  const height = props.height ?? 480;
+  const margin = {
+    top: props.m ?? props.mt ?? 40,
+    left: props.m ?? props.ml ?? 40,
+    right: props.m ?? props.mr ?? 40,
+    bottom: props.m ?? props.mb ?? 40,
+  };
+
+  const x = d3.scaleBand().range([0, width]).padding(0.1);
+  const y = d3.scaleLinear().range([height, 0]);
+
   useEffect(() => {
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-    const width = 960 - margin.left - margin.right;
-    const height = 500 - margin.top - margin.bottom;
 
-    const x = d3.scaleBand().range([0, width]).padding(0.1);
-    const y = d3.scaleLinear().range([height, 0]);
-
+    // Create the svg and the container for the graphics
     const svg = d3
       .select(".dvisual")
       .append("svg")
@@ -70,6 +78,7 @@ function _DVisualD3(props={}) {
         return d.name;
       })
     );
+
     y.domain([
       0,
       d3.max(data, function (d) {
