@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-16 01:03:54
+ * @ Modified time: 2024-06-16 01:19:53
  * @ Description:
  * 
  * The main component that houses the app.
@@ -117,20 +117,22 @@ const _DataviserHeader = function() {
       _state.files = result;
 
       // Send data to Python so we can manipulate it there
+      ClientPython.loadLibrary('df_utils');
       ClientPython.sendData({ files: _state.files });
 
       // Run the script to convert the file data to dataframes
       // ! put this script elsewhere, make it more systematic
       ClientPython.runScript(`
-        import numpy as np
         import pandas as pd
 
         dfs = {}
         dicts = {}
-        files_py = files.to_py()
+        #files_py = files.to_py()
+
+        print(files)
           
-        for file in files_py:
-          d = files_py[file]
+        for file in files:
+          d = files[file]
           dfs[file] = pd.DataFrame(d)
           dicts[file] = dfs[file].to_dict()
 

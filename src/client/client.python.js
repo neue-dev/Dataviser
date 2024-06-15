@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-16 00:20:58
+ * @ Modified time: 2024-06-16 01:19:19
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -72,6 +72,17 @@ export const ClientPython = (function() {
       return dfs
   `;
 
+  // Utilities for parsing 'CSV' (here it's just a 2d array)
+  const _df_utils = `
+    import pandas as pd
+
+    def df_from_arr2d(arr2d):
+      return pd.DataFrame(arr2d)
+      
+    def df_to_dict(df):
+      return df.to_dict()
+  `;
+
   /**
    * Includes one of the sets of library functions we have here.
    * By include, we mean we load it into the currently running Pyodide context.
@@ -80,7 +91,7 @@ export const ClientPython = (function() {
    * 
    * @param   { string }  library   The name of the library we want. 
    */
-  _.includeLibrary = function(library) {
+  _.loadLibrary = function(library) {
 
     // Always import the dependencies first
     ClientPyodide.processRun(_dependencies, {}, d=>d);
@@ -91,6 +102,11 @@ export const ClientPython = (function() {
       // A library for deserializing data
       case 'depickler':
         ClientPyodide.processRun(_depickler, {}, d=>d);
+        break;
+
+      // A library for dealing with dataframes 
+      case 'df_utils':
+        ClientPyodide.processRun(_df_utils, {}, d=>d);
         break;
       
       // The name the user entered doesn't match any lib

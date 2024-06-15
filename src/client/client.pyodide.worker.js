@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-06-15 21:38:20
+ * @ Modified time: 2024-06-16 01:20:40
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -46,10 +46,19 @@ if('function' == typeof importScripts) {
 
     // Parse the keys of the provided context
     let globals = Object.keys(context);
+    let string = '';
     
     // Provide the context of the script through the globals
     for(let i = 0; i < globals.length; i++)
       self.pyodide.globals.set(globals[i], context[globals[i]]);
+
+    // Create a script to convert globals into Python objects
+    // By default the globals are JS proxy objects
+    for(let i = 0; i < globals.length; i++)
+      string += `${globals[i]} = ${globals[i]}.to_py()\n`;
+
+    // Run the script
+    pythonRun(string);
   }
 
   /**
