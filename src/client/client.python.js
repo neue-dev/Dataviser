@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-06-15 18:47:54
+ * @ Modified time: 2024-06-17 01:16:00
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -138,7 +138,8 @@ export const ClientPython = (function() {
     `;
 
     // Return a promise for the requested data
-    return _.runScript(script);
+    // Convert the final data into a JS-readable object
+    return _.runScript(script, data => JSON.parse(data));
   }
 
   /**

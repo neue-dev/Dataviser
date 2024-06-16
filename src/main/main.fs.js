@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-16 01:01:09
+ * @ Modified time: 2024-06-17 01:22:01
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -50,6 +50,7 @@ export const FS = (function() {
 
     // The encoding we pass to the filereader
     const fileCodec = encoding == 'csv' ? 'utf-8' : encoding;
+    const filename = filepath.split('\\')[filepath.split('\\').length - 1];
 
     // Read the file
     // This part is asynchronous
@@ -96,6 +97,7 @@ export const FS = (function() {
     // Allocate a slot for the file
     _cache[id] = {
       filepath: filepath,
+      filename: filename,
       loaded: false,
       data: [],
     }
@@ -174,13 +176,16 @@ export const FS = (function() {
       // Invalid id
       if(!_cache[id])
         return console.error('Invalid Id.', id);
+      
+      // Grab the filename
+      const filename = _cache[id].filename;
 
       // Inform the client that that file is pending
       if(!_cache[id].loaded)
-        return result[id] = 'pending...'
+        return result[filename] = 'pending...'
 
       // Give back the file data
-      return result[id] = _cache[id].data;
+      return result[filename] = _cache[id].data;
     });
 
     return result;

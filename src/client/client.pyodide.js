@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-15 18:48:16
+ * @ Modified time: 2024-06-17 01:15:22
  * @ Description:
  */
 
@@ -131,8 +131,7 @@ export const ClientPyodide = (function() {
 
         // We got something back
         if (results) {
-          callback(results); 
-          onResolve(results);
+          onResolve(callback(results)); 
           
         // The script encountered an error
         } else if (error) {

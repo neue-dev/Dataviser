@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-15 18:48:30
+ * @ Modified time: 2024-06-17 01:17:40
  * @ Description:
  * 
  * The main component that houses the app.
@@ -157,14 +157,15 @@ const _DataviserHeader = function() {
 
   /**
    * This function displays the files loaded into memory as a modal.
-   * 
-   * ! to implement
    */
   function viewDataframes() {
+
+    // Promise fpr the request for data
     const promise = ClientPython.requestData(['dicts'])
     
     promise.then(out => {
-      console.log(out)
+      console.log(typeof out)
+      console.log(out);
     });
 
     // Creates a toast that gives feedback on what happened
@@ -178,13 +179,12 @@ const _DataviserHeader = function() {
     });
   }
   
-  // ! todo: change this to viewLoadedFiles instead of convertFilesToDataframes; convert should be automatic after loading files
   return (
     <Stack spacing="0">
       <_DataviserHeaderTitle />
       <Flex spacing="0" ml="2.8rem">
         <_DataviserHeaderButton action={ chooseThenLoadDirectories } text="open folder" />
-        <_DataviserHeaderButton action={ convertFilesToDataframes } text="generate dfs !remove"/>
+        <_DataviserHeaderButton action={ convertFilesToDataframes } text="generate dfs !remove (only for debug)"/>
         <_DataviserHeaderButton action={ viewDataframes } text="view dataframes"/>
         <_DataviserHeaderButton action={ () => {} } text="add visual"/>
       </Flex>
