@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-17 01:17:40
+ * @ Modified time: 2024-06-17 02:24:09
  * @ Description:
  * 
  * The main component that houses the app.
@@ -60,6 +60,24 @@ const _DataviserHeader = function() {
   const _toast = useToast();
   const _state = useContext(DataviserContext);
 
+  // Call to parse the filename from the filepath
+  function filenameCallback(filepath) {
+    return filepath.split('\\')[filepath.split('\\').length - 1];
+  }
+
+  // Call to parse information about the file in the filepath
+  function fileheadCallback(filepath) {
+    const filename = filepath.split('\\')[filepath.split('\\').length - 1];
+    const name = filename.split('.').slice(0, -1).join('.');
+    const extension = filename.split('.')[filename.split('.').length - 1];
+
+    return {
+      region: name.split('_')[2],
+      month: name.split('_')[3].slice(0, 3),
+      day: parseInt(name.split('_')[3].slice(3)),
+    }
+  }
+
   /**
    * This function communicates with the main thread.
    * It asks to create a prompt for the user to select a folder.
@@ -68,7 +86,11 @@ const _DataviserHeader = function() {
   function chooseThenLoadDirectories() {
 
     // This promise resolves and returns handles to all the loaded files
-    const promise = ClientFS.chooseDirectories({ encoding: 'csv' });
+    const promise = ClientFS.chooseDirectories({ 
+      encoding: 'csv',
+      filenameCallback: filenameCallback.toString(),
+      fileheadCallback: fileheadCallback.toString(),
+    });
 
     // Creates a toast that gives feedback on what happened
     ClientToast.createToast(_toast, {
@@ -125,12 +147,23 @@ const _DataviserHeader = function() {
 
         dfs = {}
         dicts = {}
-        #files_py = files.to_py()
           
         for file in files:
-          d = files[file]
-          dfs[file] = pd.DataFrame(d)
-          dicts[file] = dfs[file].to_dict()
+          h = files[file]['head']
+          d = files[file]['data']
+
+          print(h['region'])
+          print(h['month'] + str(h['day']))
+
+          # Save the dataframe with the head
+          dfs[file] = dict()
+          dfs[file]['data'] = pd.DataFrame(d)
+          dfs[file]['head'] = h
+
+          # Save the dict version of the dataframe with the head
+          dicts[file] = dict()
+          dicts[file]['data'] = dfs[file]['data'].to_dict()
+          dicts[file]['head'] = h
       `)
 
       // If error occurred, reject promise

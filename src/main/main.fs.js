@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-17 01:22:01
+ * @ Modified time: 2024-06-17 02:20:47
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -44,13 +44,22 @@ export const FS = (function() {
    * 
    * @param   { string }    id        A unique id for the file.
    * @param   { string }    filepath  The filepath of the file.
-   * @param   { function }  callback  A callback to execute after each file cache.
-   */
-  _.cacheFile = function(id, filepath, encoding, callback=d=>d) {
+   * @param   { object }    options   The options for caching the file.
+  */
+  _.cacheFile = function(id, filepath, options={}) {
+
+    // Parse the options
+    const encoding = options.encoding ?? 'utf-8';
+    const cacheCallback = options.cacheCallback ?? (d => d);
+    const filenameCallback = options.filenameCallback ? 
+      new Function('return ' + options.filenameCallback)() : (d => d);
+    const fileheadCallback = options.fileheadCallback ? 
+      new Function('return ' + options.fileheadCallback)() : (d => d);
 
     // The encoding we pass to the filereader
     const fileCodec = encoding == 'csv' ? 'utf-8' : encoding;
-    const filename = filepath.split('\\')[filepath.split('\\').length - 1];
+    const filename = filenameCallback(filepath);
+    const filehead = fileheadCallback(filepath);
 
     // Read the file
     // This part is asynchronous
@@ -91,13 +100,14 @@ export const FS = (function() {
       _cache[id].loaded = true;
 
       // Execute the callback
-      callback();
+      cacheCallback(_cache[id].data);
     });
 
     // Allocate a slot for the file
     _cache[id] = {
       filepath: filepath,
       filename: filename,
+      filehead: filehead,
       loaded: false,
       data: [],
     }
@@ -117,6 +127,8 @@ export const FS = (function() {
     // The options
     // Note that we have to check whether or not the encoding is in the options ('null' means binary encoding)
     const encoding = 'encoding' in options ? options.encoding : 'utf-8';
+    const filenameCallback = options.filenameCallback ?? (d => d).toString();
+    const fileheadCallback = options.fileheadCallback ?? (d => d).toString();
 
     // Creates a new promise which we return
     let onResolve;
@@ -142,9 +154,16 @@ export const FS = (function() {
         const filepath = `${dirpath}\\${filename}`;
 
         // We cache the file and pass a callback to it
-        _.cacheFile(id, filepath, encoding, () => {
-          if(_.checkCacheLoadState())
-            onResolve(_cache);
+        _.cacheFile(id, filepath, {
+          encoding: encoding, 
+          filenameCallback: filenameCallback,
+          fileheadCallback: fileheadCallback,
+
+          // Checks whether or not all files are loaded each time
+          cacheCallback: () => {
+            if(_.checkCacheLoadState())
+              onResolve(_cache);
+          }
         });
       });
     })
@@ -185,7 +204,10 @@ export const FS = (function() {
         return result[filename] = 'pending...'
 
       // Give back the file data
-      return result[filename] = _cache[id].data;
+      return result[filename] = {
+        head: _cache[id].filehead,
+        data: _cache[id].data,
+      };
     });
 
     return result;
