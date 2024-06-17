@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-17 02:37:55
+ * @ Modified time: 2024-06-17 17:02:43
  * @ Description:
  * 
  * The main component that houses the app.
@@ -40,7 +40,13 @@ export function Dataviser() {
   // Wrap the app in a context provider
   return (
     <DataviserContext.Provider value={ _state }>
-      <div className="dataviser">
+      <div 
+        className="dataviser" 
+        style={{
+          paddingLeft: '2.8rem',
+          paddingTop: '2.8rem',
+        }}>
+        
         <_DataviserHeader />
         <Grid>
           <DVisual />
@@ -215,7 +221,7 @@ const _DataviserHeader = function() {
   return (
     <Stack spacing="0">
       <_DataviserHeaderTitle />
-      <Flex spacing="0" ml="2.8rem">
+      <Flex spacing="0">
         <_DataviserHeaderButton action={ chooseThenLoadDirectories } text="open folder" />
         <_DataviserHeaderButton action={ convertFilesToDataframes } text="generate dfs !remove (only for debug)"/>
         <_DataviserHeaderButton action={ viewDataframes } text="view dataframes"/>
@@ -231,7 +237,7 @@ const _DataviserHeader = function() {
  */
 const _DataviserHeaderTitle = function() {
   return (
-    <Box px="2.8rem" pt="2.1rem">
+    <Box>
       <Heading fontSize="3.2rem">
         Dataviser
       </Heading>
