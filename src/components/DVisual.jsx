@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useState } from 'react'
+import { useRef } from 'react'
 import { useEffect } from 'react'
 
 import * as d3 from 'd3'
@@ -30,85 +31,117 @@ export function DVisual(props={}) {
  */
 function _DVisualD3(props={}) {
   const [ data, setData ] = useState([
-
     {
-      name: "A",
-      value: 50,
+      date: new Date('1995-12-17T03:24:00'),
+      value: 10,
     },
     {
-      name: "B",
-      value: 20,
+      date: new Date('1996-12-17T03:24:00'),
+      value: 100,
     },
     {
-      name: "C",
-      value: 40,
+      date: new Date('1997-12-17T03:24:00'),
+      value: 500,
     },
     {
-      name: "D",
-      value: 70,
+      date: new Date('1998-12-17T03:24:00'),
+      value: 1250,
     },
   ]);
 
   // Properties of the visual
-  const width = props.width ?? 960;
-  const height = props.height ?? 480;
-  const margin = {
+  const _width = props.width ?? 960;
+  const _height = props.height ?? 480;
+  const _margin = {
     top: props.m ?? props.mt ?? 40,
     left: props.m ?? props.ml ?? 40,
     right: props.m ?? props.mr ?? 40,
     bottom: props.m ?? props.mb ?? 40,
   };
 
-  const x = d3.scaleBand().range([0, width]).padding(0.1);
-  const y = d3.scaleLinear().range([height, 0]);
+  // Creates ths scales
+  const _scale = {
+    x: d3.scaleBand().range([0, _width]).padding(0.1),
+    y: d3.scaleLinear().range([_height, 0]),
+  }
 
-  useEffect(() => {
+  // Create a ref to the svg 
+  const _svg = useRef(null);
+
+  /**
+   * Initializes the visual.
+   */
+  function _visualSetup() {
 
     // Create the svg and the container for the graphics
-    const svg = d3
-      .select(".dvisual")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    _svg.current = d3
+      .select('.dvisual')
+      .append('svg')
+      .attr('width', _width + _margin.left + _margin.right)
+      .attr('height', _height + _margin.top + _margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${_margin.left}, ${_margin.top})`)
+  }
 
-    x.domain(
+  /**
+   * Defines the scales for the data.
+   * 
+   * @param   { object }  data  The data to define scales for. 
+   */
+  function _visualScales(data) {
+
+    // Define the x-axis
+    _scale.x.domain(
       data.map(function (d) {
-        return d.name;
+        return d.date;
       })
     );
 
-    y.domain([
+    // Define the y-axis
+    _scale.y.domain([
       0,
       d3.max(data, function (d) {
         return d.value;
       }),
     ]);
 
-    svg
-      .selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", function (d) {
-        return x(d.name);
-      })
-      .attr("width", x.bandwidth())
-      .attr("y", function (d) {
-        return y(d.value);
-      })
-      .attr("height", function (d) {
-        return height - y(d.value);
-      });
+    // Append the x-axis to the visual
+    _svg.current
+      .append('g')
+      .attr('transform', `translate(0, ${_height})`)
+      .call(d3.axisBottom(_scale.x));
 
-    svg
-      .append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
+    // Append the y-axis to the visual
+    _svg.current
+      .append('g')
+      .call(d3.axisLeft(_scale.y));
+  }
 
-    svg.append("g").call(d3.axisLeft(y));
+  /**
+   * Generates the data-driven portion of the visual.
+   * 
+   * @param   { object }  data  The data to visualize. 
+   */
+  function _visualRender(data) {
+
+    // Add the line
+    _svg.current.append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("d", d3.line()
+        .x(function(d) { return _scale.x(d.date) })
+        .y(function(d) { return _scale.y(d.value) })
+        )
+
+  }
+
+  useEffect(() => {
+
+    _visualSetup();
+    _visualScales(data);
+    _visualRender(data);
   }, [data])
 
   return (

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-17 01:15:22
+ * @ Modified time: 2024-06-17 02:37:43
  * @ Description:
  */
 
@@ -135,7 +135,11 @@ export const ClientPyodide = (function() {
           
         // The script encountered an error
         } else if (error) {
+          
+          // Logs the script that erred
           console.error("Python script error: ", error, script);
+
+          // Reject the returned promise
           onReject(error);
           
         // Results was probably undefined
