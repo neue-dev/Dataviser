@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-17 17:02:43
+ * @ Modified time: 2024-06-17 20:20:54
  * @ Description:
  * 
  * The main component that houses the app.
@@ -35,6 +35,7 @@ export function Dataviser() {
   const _state = {
     showTitle: true,
     files: [], 
+    data: {},   // Stores aggregates of data derived from the raws in Pyodide
   };
 
   // Wrap the app in a context provider
@@ -76,10 +77,12 @@ const _DataviserHeader = function() {
     const filename = filepath.split('\\')[filepath.split('\\').length - 1];
     const name = filename.split('.').slice(0, -1).join('.');
     const extension = filename.split('.')[filename.split('.').length - 1];
+    const months = [ 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec' ];
 
     return {
       region: name.split('_')[2],
-      month: name.split('_')[3].slice(0, 3),
+      year: 2024,
+      month: months.indexOf(name.split('_')[3].slice(0, 3).toLowerCase()) + 1,
       day: parseInt(name.split('_')[3].slice(3)),
     }
   }
@@ -150,6 +153,7 @@ const _DataviserHeader = function() {
       // ! put this script elsewhere, make it more systematic
       ClientPython.runScript(`
         import pandas as pd
+        from datetime import datetime
 
         dfs = {}
         dicts = {}
@@ -157,19 +161,18 @@ const _DataviserHeader = function() {
         for file in files:
           h = files[file]['head']
           d = files[file]['data']
-
-          print(h['region'])
-          print(h['month'] + str(h['day']))
-
+          
           # Save the dataframe with the head
           dfs[file] = dict()
-          dfs[file]['data'] = pd.DataFrame(d)
-          dfs[file]['head'] = h
+          dfs[file]['data'] = pd.DataFrame([row[1:] for row in d[1:]], index=d[0][1:], columns=d[0][1:])
+          dfs[file]['head'] = { 'date': datetime.timestamp(datetime(h['year'], h['month'], h['day'])) }
+          
+          print(dfs[file]['data'])
 
           # Save the dict version of the dataframe with the head
           dicts[file] = dict()
           dicts[file]['data'] = dfs[file]['data'].to_dict()
-          dicts[file]['head'] = h
+          dicts[file]['head'] = { 'date': datetime.timestamp(datetime(h['year'], h['month'], h['day'])) }
       `)
 
       // If error occurred, reject promise
@@ -217,6 +220,46 @@ const _DataviserHeader = function() {
       position: 'bottom-left'
     });
   }
+
+  /**
+   * ! remove this eventually
+   * ! the main goal is to have all these scripts in a separate file
+   * ! whenever we want to generate a specific data vis, we request for a data summary by executing our py script that generates that summary
+   * ! we then save that summary in the dataviser context object and render it using the appropriate type of data vis
+   */
+  function generateLineGraph() {
+    ClientPython.runScript(`
+      # filter dataframes by name
+      dicts = {}
+      region = 'Chanthaburi'
+
+      for df in dfs:
+        print(dfs[df]['data'].columns)
+        col = dfs[df]['data'].columns.get_loc(region)
+
+        dicts[df] = dict()
+        dicts[df]['date'] = dfs[df]['head']['date']
+        dicts[df]['col'] = int(dfs[df]['data'][region].sum())
+        dicts[df]['row'] = int(dfs[df]['data'].iloc[col].sum(axis=0))
+        
+      json.dumps(dicts)
+    `).then(result => {
+      const out = [];
+      const json_res = JSON.parse(result)
+      const keys = Object.keys(json_res)
+
+      for(let i = 0; i < keys.length; i++)
+        out.push(json_res[keys[i]])
+
+      console.log(out)
+
+      _state.data = {
+        ..._state.data,
+        
+        lineGraphData: out
+      } 
+    })
+  }
   
   return (
     <Stack spacing="0">
@@ -225,6 +268,7 @@ const _DataviserHeader = function() {
         <_DataviserHeaderButton action={ chooseThenLoadDirectories } text="open folder" />
         <_DataviserHeaderButton action={ convertFilesToDataframes } text="generate dfs !remove (only for debug)"/>
         <_DataviserHeaderButton action={ viewDataframes } text="view dataframes"/>
+        <_DataviserHeaderButton action={ generateLineGraph } text="generate line graph !remove (only for debug)"/>
         <_DataviserHeaderButton action={ () => {} } text="add visual"/>
       </Flex>
     </Stack>)

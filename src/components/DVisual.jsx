@@ -182,9 +182,18 @@ const _DVisualD3 = function(props={}) {
    * @param   { object }  styles  The styles to apply.
    */
   function _visualStyle(styles) {
+    
+    // Style the text components
     _svg.current
       .selectAll('text')  
-      .style('font-size', '0.5rem');
+      .style('font-size', '0.5rem')
+
+    _svg.current  
+      .selectAll('.x-axis')
+      .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-45)");
   }
 
   /**
@@ -211,14 +220,16 @@ const _DVisualD3 = function(props={}) {
 
     // Append the x-axis to the visual
     _svg.current
+      .attr('class', 'x-axis')
       .append('g')
       .attr('transform', `translate(0, ${_height})`)
       .call(d3.axisBottom(_scale.x))
-
+      
     // Append the y-axis to the visual
     _svg.current
+      .attr('class', 'y-axis')
       .append('g')
-      .call(d3.axisLeft(_scale.y));
+      .call(d3.axisLeft(_scale.y))
   }
 
   /**
