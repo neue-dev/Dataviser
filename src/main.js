@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 09:11:39
- * @ Modified time: 2024-06-29 06:23:21
+ * @ Modified time: 2024-06-29 06:44:50
  * @ Description:
  * 
  * This file contains the main process of the app.
@@ -12,6 +12,7 @@ const { app, BrowserWindow } = require('electron');
 
 // Main subprocesses
 const { IPC } = require('./main/main.ipc');
+const { EVENTS } = require('./main/main.events');
 
 /**
  * The main process code.
@@ -46,16 +47,6 @@ const MAIN = (function() {
     // Load the index.html of the app.
     _mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
     _mainWindow.maximize();
-
-    // Setup the IPC
-    const ipc = IPC.get()
-      .map(IPC.IPCInitter(_mainWindow))
-      .map(IPC.eventRegister('test'))
-      .map(IPC.eventSubscribe('test', data => console.log(data)));
-
-    IPC.set(ipc);
-
-    console.log(IPC.get().config())
   };
 
   /**
@@ -66,6 +57,15 @@ const MAIN = (function() {
     
     // Create the window
     _.createWindow();
+
+    // Init the ipc
+    const ipc = IPC.get().map(IPC.IPCInitter(_mainWindow));
+
+    // Save the initted ipc
+    IPC.set(ipc);
+
+    // Set up the event registry
+    EVENTS.init();
 
     // This is OSX behavior.
     app.on('activate', () => {

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-29 06:31:46
+ * @ Modified time: 2024-06-29 06:32:57
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -23,13 +23,6 @@ export const IPC = (function() {
   // The IPC Monad
   const _IPC = (config) => {
     return {
-
-      /**
-       *  ! remove, this should only be visible to the ipc
-       */
-      config: () => {
-        return config;
-      },
       
       /**
        * Calls the given function on the IPC.
