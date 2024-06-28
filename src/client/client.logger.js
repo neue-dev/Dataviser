@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-28 19:40:17
- * @ Modified time: 2024-06-28 20:07:19
+ * @ Modified time: 2024-06-28 20:30:47
  * @ Description:
  * 
  * Uses the toast api in a much more maintainable way.
@@ -33,7 +33,6 @@ export const ClientLogger = (function() {
 
 const test = ClientLogger.create(console.log);
 
-test('hello world')
 
 export default {
   ClientLogger

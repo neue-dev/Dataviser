@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-28 20:06:36
+ * @ Modified time: 2024-06-28 20:29:24
  * @ Description:
  * 
  * The main component that houses the app.
@@ -18,7 +18,7 @@ import { Toast, useToast } from '@chakra-ui/react'
 
 // Custom
 import { DataviserContext } from './Dataviser.ctx.jsx'
-import { DVisual } from './DVisual.jsx';
+import { DVisualManager } from './DVisualManager.jsx';
 
 import { ClientFS } from '../client/client.fs.js'
 import { ClientToast } from '../client/client.toast.js'
@@ -51,9 +51,7 @@ export function Dataviser() {
         }}>
         
         <_DataviserHeader />
-        <Grid>
-          <DVisual />
-        </Grid>
+        <DVisualManager />
       </div>      
     </DataviserContext.Provider>)
 }

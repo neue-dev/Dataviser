@@ -19,6 +19,9 @@ import { Divider, HStack, VStack } from '@chakra-ui/react'
  */
 export function DVisual(props={}) {
 
+  // Each visualization should have a unique id
+  const _id = crypto.randomUUID();
+
   // The dimensions of the visual
   const _width = props.width ?? 480;
   const _height = props.height ?? 360;
@@ -39,6 +42,7 @@ export function DVisual(props={}) {
         subtitle={ _subtitle }/>
       
       <_DVisualD3 
+        id={ _id }
         width={ _width } 
         height={ _height }
         margin={ _padding }/>
@@ -122,6 +126,11 @@ const _DVisualGizmo = function(props={}) {
  * @component 
  */
 const _DVisualD3 = function(props={}) {
+  
+  // Id of the visual
+  const _id = props.id ?? crypto.randomUUID();
+
+  // State variables
   const [ styles, setStyles ] = useState({});
   const [ data, setData ] = useState([
     {
@@ -168,7 +177,7 @@ const _DVisualD3 = function(props={}) {
 
     // Create the svg and the container for the graphics
     _svg.current = d3
-      .select('.dvisual')
+      .select('.dvisual' + _id)
       .append('svg')
       .attr('width', _width + _margin.left + _margin.right)
       .attr('height', _height + _margin.top + _margin.bottom)
@@ -269,6 +278,6 @@ const _DVisualD3 = function(props={}) {
   }, [ data, styles ])
 
   return (
-    <div className='dvisual'/>
+    <div className={'dvisual' + _id}/>
   )
 }
