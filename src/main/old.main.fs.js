@@ -131,11 +131,11 @@ export const FS = (function() {
     const fileheadCallback = options.fileheadCallback ?? (d => d).toString();
 
     // Creates a new promise which we return
-    let onResolve;
-    let onReject;
+    let resolveHandle;
+    let rejectHandle;
     const outPromise = new Promise((resolve, reject) => {
-      onResolve = resolve;
-      onReject = reject;
+      resolveHandle = resolve;
+      rejectHandle = reject;
     })
 
     // Load the file contents
@@ -162,7 +162,7 @@ export const FS = (function() {
           // Checks whether or not all files are loaded each time
           cacheCallback: () => {
             if(_.checkCacheLoadState())
-              onResolve(_cache);
+              resolveHandle(_cache);
           }
         });
       });

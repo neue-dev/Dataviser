@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-17 02:37:43
+ * @ Modified time: 2024-06-29 07:40:51
  * @ Description:
  */
 
@@ -38,14 +38,14 @@ export const ClientPyodide = (function() {
       return;
 
     // Get the callbacks
-    const { onResolve, onReject } = _processes[id];
+    const { resolveHandle, rejectHandle } = _processes[id];
     
     // The process id done, so remove it
     delete _processes[id];
 
     // Resolve or reject the promise
-    if(e.error) return onReject(e.error);
-    if(e.data) return onResolve(e.data);
+    if(e.error) return rejectHandle(e.error);
+    if(e.data) return resolveHandle(e.data);
   };
 
   /**
@@ -75,8 +75,8 @@ export const ClientPyodide = (function() {
       // The function to call when the process finishes
       // Basically, we resolve the promise we return so the caller can know it's done
       _processes[id] = {
-        onResolve: resolve,
-        onReject: reject,
+        resolveHandle: resolve,
+        rejectHandle: reject,
       };
     });
 
@@ -110,11 +110,11 @@ export const ClientPyodide = (function() {
   _.processRun = async(script, context, callback=d=>d) => {
 
     // The output promise
-    let onResolve;
-    let onReject;
+    let resolveHandle;
+    let rejectHandle;
     const outPromise = new Promise((resolve, reject) => {
-      onResolve = resolve;
-      onReject = reject;
+      resolveHandle = resolve;
+      rejectHandle = reject;
     });
 
     // Try the script
@@ -131,7 +131,7 @@ export const ClientPyodide = (function() {
 
         // We got something back
         if (results) {
-          onResolve(callback(results)); 
+          resolveHandle(callback(results)); 
           
         // The script encountered an error
         } else if (error) {
@@ -140,12 +140,12 @@ export const ClientPyodide = (function() {
           console.error("Python script error: ", error, script);
 
           // Reject the returned promise
-          onReject(error);
+          rejectHandle(error);
           
         // Results was probably undefined
         } else if(!results) {
           console.log('Python script executed and returned nothing.');
-          onResolve();
+          resolveHandle();
         }
       })
         
@@ -154,7 +154,7 @@ export const ClientPyodide = (function() {
       console.error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`);
 
       // Reject the returned promise
-      onReject(e);
+      rejectHandle(e);
     }
 
     // Return the promise

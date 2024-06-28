@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 05:10:47
- * @ Modified time: 2024-06-29 07:33:23
+ * @ Modified time: 2024-06-29 07:41:14
  * @ Description:
  * 
  * This file provides utility functions to help us deal with the client-side implementation of the IPC.

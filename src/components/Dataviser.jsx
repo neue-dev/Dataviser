@@ -132,11 +132,11 @@ const _DataviserHeader = function() {
   function convertFilesToDataframes() {
 
     // Promise for the conversion of the data frames
-    let onResolve;
-    let onReject;
+    let resolveHandle;
+    let rejectHandle;
     const promise = new Promise((resolve, reject) => { 
-      onResolve = resolve;
-      onReject = reject;
+      resolveHandle = resolve;
+      rejectHandle = reject;
     });
 
     // Request for files first
@@ -177,12 +177,12 @@ const _DataviserHeader = function() {
 
       // If error occurred, reject promise
       .catch(error => {
-        onReject(error);
+        rejectHandle(error);
       })
       
       // If successful, resolve promise
       .then(result => {
-        onResolve(result);
+        resolveHandle(result);
       });
     })
 
