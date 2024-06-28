@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-17 20:20:54
+ * @ Modified time: 2024-06-28 20:06:36
  * @ Description:
  * 
  * The main component that houses the app.
@@ -23,6 +23,8 @@ import { DVisual } from './DVisual.jsx';
 import { ClientFS } from '../client/client.fs.js'
 import { ClientToast } from '../client/client.toast.js'
 import { ClientPython } from '../client/client.python.js';
+
+import { ClientLogger } from '../client/client.logger.js'
 
 /**
  * Dataviser component class.
