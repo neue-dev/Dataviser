@@ -60,3 +60,7 @@ const PRELOADER = (function() {
     ..._,
   }
 })();
+
+// ! remove
+ipcRenderer.invoke('test')
+  .then(result => console.log(result));

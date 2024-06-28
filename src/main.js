@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 09:11:39
- * @ Modified time: 2024-06-06 16:51:22
+ * @ Modified time: 2024-06-29 06:23:21
  * @ Description:
  * 
  * This file contains the main process of the app.
@@ -48,7 +48,14 @@ const MAIN = (function() {
     _mainWindow.maximize();
 
     // Setup the IPC
-    IPC.setup(_mainWindow);
+    const ipc = IPC.get()
+      .map(IPC.IPCInitter(_mainWindow))
+      .map(IPC.eventRegister('test'))
+      .map(IPC.eventSubscribe('test', data => console.log(data)));
+
+    IPC.set(ipc);
+
+    console.log(IPC.get().config())
   };
 
   /**

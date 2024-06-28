@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-14 21:11:37
+ * @ Modified time: 2024-06-29 06:31:46
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -11,7 +11,6 @@
 const { dialog, ipcMain, ipcRenderer } = require('electron'); 
 
 // Main subprocesses
-// ! remove this import, don't couple the two together
 const { FS } = require('./main.fs');
 
 /**
@@ -21,120 +20,118 @@ export const IPC = (function() {
 
   const _ = {};
 
+  // The IPC Monad
+  const _IPC = (config) => {
+    return {
+
+      /**
+       *  ! remove, this should only be visible to the ipc
+       */
+      config: () => {
+        return config;
+      },
+      
+      /**
+       * Calls the given function on the IPC.
+       * 
+       * @param   { function }  f   The function to call on the IPC. 
+       */
+      map: (f) => {
+        
+        // Otherwise, proceed to execute the function
+        return _IPC(f(config));
+      }  
+    }
+  }
+
+  // The current IPC object we're using
+  let _ipc = _IPC({ mainWindow: null, isInitted: false, callbacks: {} });
+
   /**
-   * The setup function.
-   * Sets up the IPC with the given arguments.
+   * Returns the current IPC.
    * 
-   * @param   { Window }  mainWindow  The window object to use for the IPC. 
+   * @return  { _IPC }  The current instance of the ipc object.
    */
-  _.setup = function(mainWindow) {
-    _.mainWindow = mainWindow;
-    _.isInitted = true;
+  _.get = function() {
+    return _ipc;
+  }
+
+  /**
+   * Sets the current IPC to the one provided.
+   * 
+   * @param   { _IPC }  ipc   The new ipc to use.
+   * @return  { _IPC }        The new value of the ipc.
+   */
+  _.set = function(ipc) {
+    return _ipc = ipc;
+  }
+
+  /**
+   * Creates a function that initializes the IPC with the given window.
+   * 
+   * @param     { Window }  mainWindow  The window to provide to the IPC. 
+   * @returns   { _IPC }                The initted _IPC object.
+   */
+  _.IPCInitter = function(mainWindow) {
+    return function(config) {
+
+      // If it's been initted, return the config as is
+      if(config.isInitted)
+        return config;
+      
+      // Initialize the config first
+      config.mainWindow = mainWindow;
+      config.isInitted = true;
+
+      // Return it
+      return config;
+    }
   }
   
   /**
-   * Listens for when the user decides to open a folder.
-   * The folder picking is done within the main process.
+   * Registers an event listener we need the main process to listen to.
+   * 
+   * @param   { string }    event   The event we want to listen to.
+   * @return  { function }          A function we call on the IPC object to implement the listener.
    */
-  ipcMain.handle('fs:choose-directories', async(e, ...args) => {
-    
-    // Wait for IPC to be initted before handling anything
-    if(!_.isInitted)
-      return;
+  _.eventRegister = function(event) {
+    return function(config) {
 
-    // Prompt to select a directory
-    const result = await dialog.showOpenDialog(
-      _.mainWindow, { properties: [ 'openDirectory' ] }
-    );
+      // Create a slot for the callbacks of that event
+      config.callbacks[event] = [];
+      
+      // Create the event listener
+      ipcMain.handle(event, (e, ...args) => {
 
-    // Get the array of selected filepaths
-    const dirpaths = result.filePaths;
-
-    // Return the output to the renderer
-    return dirpaths;
-  });
+        // Execute each of the saved callbacks
+        config.callbacks[event].forEach(callback => {
+          callback(e, ...args);
+        })
+      });  
+      
+      // Return the config object
+      return config;
+    }
+  }
 
   /**
-   * Listens for when the user decides to open a file.
-   * The file picking is done within the main process.
+   * Subscribes the given function to the given listener.
+   * 
+   * @param   { string }    event     The event we want to subscribe to.
+   * @param   { function }  callback  The callback we want to execute during this event.
+   * @return  { function }            A function that registers the callback.  
    */
-  ipcMain.handle('fs:choose-files', async(e, ...args) => {
-    
-    // Wait for IPC to be initted before handling anything
-    if(!_.isInitted)
-      return;
+  _.eventSubscribe = function(event, callback) {
+    return function(config) {
+      
+      // Register the callback
+      config.callbacks[event].push(callback);
 
-    // Prompt to select a directory
-    const result = await dialog.showOpenDialog(
-      _.mainWindow, { properties: [ 'openFile' ] }
-    );
-
-    // Get the array of selected filepaths
-    const filepaths = result.filePaths;
-
-    // Return the output to the renderer
-    return filepaths;
-  });
-
-  /**
-   * Listens for when the user decides to load a folder's contents into memory.
-   * The result of this process is saved in memory.
-   */
-  ipcMain.handle('fs:load-directories', async(e, ...args) => {
+      // Return the config object
+      return config;
+    }
+  }
   
-    // Wait for IPC to be initted before handling anything
-    if(!_.isInitted)
-      return;
-
-    // Get the args
-    const dirpaths = args[0];
-    const options = args[1];
-
-    // Load the files in the directory to memory
-    return FS.loadDirectories(dirpaths, options);
-  });
-
-  /**
-   * Listens for when the user decides to load a bunch of file contents into memory.
-   * The result of this process is saved in memory.
-   */
-  ipcMain.handle('fs:load-files', async(e, ...args) => {
-  
-    // Wait for IPC to be initted before handling anything
-    if(!_.isInitted)
-      return;
-
-    // Get the args
-    const filepaths = args[0];
-    const options = args[1];
-
-    // Load the files into memory
-    return FS.loadFile(filepaths, options);
-  });
-
-  /**
-   * Listens for when the user decides to request the data for loaded files.
-   * The result of this process sent back to the client.
-   */
-  ipcMain.handle('fs:request-files', async(e, ...args) => {
-  
-    // Wait for IPC to be initted before handling anything
-    if(!_.isInitted)
-      return;
-
-    // Get the args
-    const ids = args[0];
-    const options = args[1];
-
-    // Load the files into memory
-    return FS.requestFiles(ids, options);
-  });
-
-  /**
-   * Fallback for erroneous invocations.
-   */
-  ipcMain.handle('-', (e, ...args) => {})
-
   return {
     ..._,
   }

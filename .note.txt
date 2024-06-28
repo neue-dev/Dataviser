@@ -8,3 +8,5 @@ d3 in depth                                     https://www.d3indepth.com/axes/
 pyodide!                                        https://pyodide.org/en/stable/
 another cors problem                            https://stackoverflow.com/questions/70132291/electron-content-security-policy-error-when-connecting-to-my-api
 importScripts not defined                       https://stackoverflow.com/questions/14500091/uncaught-referenceerror-importscripts-is-not-defined
+redux in electron                               https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
+hot reload main process in electron?            https://github.com/electron/forge/issues/682
