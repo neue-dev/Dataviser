@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-06-15 18:45:23
+ * @ Modified time: 2024-06-29 07:18:27
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -86,7 +86,7 @@ if('function' == typeof importScripts) {
    * 
    * @param   { event }   e   The event object. 
    */
-  self.onmessage = async e => {
+  self.onmessage = async function(e) {
     
     // Wait for config if it's not done
     await configPyodidePromise;

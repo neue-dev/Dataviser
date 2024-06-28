@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-29 05:34:43
+ * @ Modified time: 2024-06-29 07:16:44
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -17,6 +17,9 @@ const { parse } = require('csv-parse/sync');
  * It stores their contents here too, and manages some of their states.
  */
 export const FS = (function() {
+
+  // The default function we use to create a new _FS object
+  const _identity = (value) => value;
   
   /**
    * This monad helps us chain IO operations in a much more readable way.
@@ -52,12 +55,21 @@ export const FS = (function() {
   const _ = {};
 
   /**
+   * Creates a new FS object.
+   * 
+   * @return  { _FS }   A new FS object to append operations on.
+   */
+  _.create = function() {
+    return _FS(_identity);
+  }
+
+  /**
    * Creates a file reader for the given filepath.
    * 
    * @param     { object }    options   The options for the file reader. 
    * @returns   { function }            A file reader that reads a given file when called.
    */
-  _.fileCreateReader = (options={}) => {
+  _.fileCreateReader = function(options={}) {
     return function(filepath) {
       return function(data=[]) {
 
@@ -71,7 +83,7 @@ export const FS = (function() {
     }
   }
 
-  _.dirCreateReader = (dirpath) => {
+  _.dirCreateReader = function(dirpath) {
     return function(options={}) {
       
     }

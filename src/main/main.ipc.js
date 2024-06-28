@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-29 06:32:57
+ * @ Modified time: 2024-06-29 07:23:31
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -87,7 +87,7 @@ export const IPC = (function() {
    * @param   { string }    event   The event we want to listen to.
    * @return  { function }          A function we call on the IPC object to implement the listener.
    */
-  _.eventRegister = function(event) {
+  _.eventRegisterer = function(event) {
     return function(config) {
 
       // Create a slot for the callbacks of that event
@@ -114,7 +114,7 @@ export const IPC = (function() {
    * @param   { function }  callback  The callback we want to execute during this event.
    * @return  { function }            A function that registers the callback.  
    */
-  _.eventSubscribe = function(event, callback) {
+  _.eventSubscriber = function(event, callback) {
     return function(config) {
       
       // Register the callback

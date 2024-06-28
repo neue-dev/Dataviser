@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 17:58:25
- * @ Modified time: 2024-06-15 20:40:43
+ * @ Modified time: 2024-06-29 07:09:20
  * @ Description:
  * 
  * Handles our references to files and the data they store.
@@ -14,7 +14,7 @@ export const ClientFS = (function() {
 
   const _ = {};
   const _refs = {};
-  const _HOST = 'fs';
+  const _SOURCE = 'fs';
 
   /**
    * This function requests a select-folder prompt from the current system.
@@ -27,7 +27,7 @@ export const ClientFS = (function() {
 
     // Some constants
     const message = 'fs:choose-directories';
-    const promise = ClientIPC.call(_HOST, message);
+    const promise = ClientIPC.call(_SOURCE, message);
     
     // The output promise for the files to load
     let outResolve;
@@ -56,7 +56,7 @@ export const ClientFS = (function() {
 
     // Some constants
     const message = 'fs:choose-files';
-    const promise = ClientIPC.call(_HOST, message);
+    const promise = ClientIPC.call(_SOURCE, message);
     
     // The output promise for the files to load
     let outResolve;
@@ -86,7 +86,7 @@ export const ClientFS = (function() {
     // Some constants
     const message = 'fs:load-directories';
     const args = [ dirpaths, options ];
-    const outPromise = ClientIPC.call(_HOST, message, args);
+    const outPromise = ClientIPC.call(_SOURCE, message, args);
 
     // Return the promise so we can wait for it elsewhere
     return outPromise;
@@ -103,7 +103,7 @@ export const ClientFS = (function() {
     // Some constants
     const message = 'fs:load-files';
     const args = [ filepaths, options ];
-    const outPromise = ClientIPC.call(_HOST, message, args);
+    const outPromise = ClientIPC.call(_SOURCE, message, args);
 
     // When the result has been returned, store the file references
     outPromise.then(result => result.forEach(entry => {
@@ -127,7 +127,7 @@ export const ClientFS = (function() {
     // Some constants
     const message = 'fs:request-files';
     const args = [ ids, options ];
-    const outPromise = ClientIPC.call(_HOST, message, args);
+    const outPromise = ClientIPC.call(_SOURCE, message, args);
 
     // Return the promise
     return outPromise;

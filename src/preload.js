@@ -7,52 +7,58 @@ const PRELOADER = (function() {
   /**
    * Resolves a IPC invocation to the caller.
    * 
-   * @param   { string }  host      The name of the host.
+   * @param   { string }  source    The name of the host.
    * @param   { object }  message   The type of message.
-   * @param   { result }  result    The result of the invocation.
    */
-  _.respond = function(host, message, result) {
-
-    // Send it back to the host
-    window.postMessage({
-      host: 'preloader',    // So we don't have the preloader respond to its own event
-      target: host,         // So the host can listen for the event
-      message: message,     // The actual response
-      result: result,
-    });
+  _.responseSender = function(source, message) {
+    return function(result) {
+      
+      // Send it back to the host
+      window.postMessage({
+        source: 'preloader',  // So we don't have the preloader respond to its own event
+        target: source,       // So the host can listen for the event
+        message: message,     // The actual response
+        result: result,
+      });
+    }
   }
 
   /**
    * Create the event listeners once the preloader has loaded.
+   * The event listener here listen for requests from the client.
+   * It then relays those requests to the main process, which it wait for.
+   * The resulting response is forwarded back to the client.
    */
   process.once('loaded', () => {
-
-    // When a window message is sent
-    // Relays the same message to the main process
-    // The host is the caller and receives the response of the invocation
     window.addEventListener('message', e => {
 
       // Parse the message contents
-      const message = e.data?.message ?? '-';
-      const args = e.data?.args ?? [];
-      const source = e.data?.source ?? '';
-      const host = e.data?.host ?? ''; 
+      const data = e.data;
+      const { source, target, message, args } = data;
 
       // Invalid event
-      if(message == '-')
+      if(!message)
         return console.error('Invalid message.');
 
       // The IPC won't know who to give the result to
-      if(host == '')
+      if(!source)
         return console.error('No return host provided.');
 
       // So we don't listen to our own events
-      if(host == 'preloader')
+      if(source == 'preloader')
         return;
 
-      // Send a message to invoke the main process
-      ipcRenderer.invoke(message, ...args)
-        .then(result => _.respond(host, message, result));
+      // It's not intended for us
+      if(target != 'preloader')
+        return;
+
+      // Args must not be undefined
+      if(!args)
+        args = [];
+
+      // Wrap the invocation around a promise to make sure it's always thenable
+      Promise.resolve(ipcRenderer.invoke(message, ...args))
+        .then(_.responseSender(source, message));
     })
   })
 
@@ -60,7 +66,3 @@ const PRELOADER = (function() {
     ..._,
   }
 })();
-
-// ! remove
-ipcRenderer.invoke('test')
-  .then(result => console.log(result));
