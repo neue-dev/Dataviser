@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 09:11:39
- * @ Modified time: 2024-06-29 23:43:04
+ * @ Modified time: 2024-06-30 00:05:20
  * @ Description:
  * 
  * This file contains the main process of the app.
@@ -11,6 +11,7 @@
 const { app, BrowserWindow } = require('electron');
 
 // Main subprocesses
+const { FS } = require('./main/main.fs');
 const { IPC } = require('./main/main.ipc');
 const { Events } = require('./main/main.events');
 
@@ -59,10 +60,10 @@ const MAIN = (function() {
     _.createWindow();
 
     // Init the ipc
-    const ipc = IPC.get().map(IPC.IPCInitter(_mainWindow));
+    IPC.init(_mainWindow);
 
-    // Save the initted ipc
-    IPC.set(ipc);
+    // Init the fs object
+    FS.init(_mainWindow);
 
     // Set up the event registry
     Events.init();

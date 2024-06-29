@@ -1,13 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 06:35:28
- * @ Modified time: 2024-06-29 23:43:48
+ * @ Modified time: 2024-06-29 23:57:44
  * @ Description:
  * 
  * This file defines all the events the app will be listening to.
  */
 
 import { IPC } from './main.ipc'
+import { FS } from './main.fs'
 
 /**
  * This encloses all our variables in their own scope.

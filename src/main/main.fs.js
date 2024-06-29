@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-29 23:56:27
+ * @ Modified time: 2024-06-30 00:01:23
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -18,6 +18,9 @@ const { dialog, } = require('electron');
  * It stores their contents here too, and manages some of their states.
  */
 export const FS = (function() {
+
+  // The main window used by the FS object
+  let _mainWindow = null;
 
   // The default function we use to create a new _FS object
   const _identity = (value) => value;
@@ -56,23 +59,32 @@ export const FS = (function() {
   const _ = {};
 
   /**
+   * Initializes the fs object.
+   * 
+   * @param   { Window }  mainWindow  The main window to use.
+   */
+  _.init = function(mainWindow) {
+    _mainWindow = mainWindow;
+  }
+
+  /**
    * Creates a new FS object.
+   * Creates a pipe of fs operations.
    * 
    * @return  { _FS }   A new FS object to append operations on.
    */
-  _.create = function() {
+  _.createPipe = function() {
     return _FS(_identity);
   }
 
   /**
    * Creates a file picker with the given options.
    * 
-   * @param   { Window }    mainWindow  The window to open a dialog with.
-   * @return  { function }              A function that opens a sync file picker dialog.
+   * @return  { function }  A function that opens a sync file picker dialog.
    */
-  _.fileCreatePicker = function(mainWindow) {
+  _.fileCreatePicker = function() {
     return function() {
-      dialog.showOpenDialogSync(mainWindow, {
+      dialog.showOpenDialogSync(_mainWindow, {
         properties: [ 'openFile' ]
       });
     }
@@ -81,12 +93,11 @@ export const FS = (function() {
   /**
    * Creates a directory picker with the given options.
    * 
-   * @param   { Window }    mainWindow  The window to open a dialog with.
-   * @return  { function }              A function that opens a sync file picker dialog.
+   * @return  { function }  A function that opens a sync file picker dialog.
    */
-    _.directoryCreatePicker = function(mainWindow) {
+    _.directoryCreatePicker = function() {
       return function() {
-        dialog.showOpenDialogSync(mainWindow, {
+        dialog.showOpenDialogSync(_mainWindow, {
           properties: [ 'openDirectory' ]
         });
       }

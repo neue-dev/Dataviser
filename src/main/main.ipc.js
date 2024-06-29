@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-29 07:47:40
+ * @ Modified time: 2024-06-30 00:03:48
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -34,6 +34,10 @@ export const IPC = (function() {
         // Invalid config object
         if(!config)
           return _IPC(null);
+
+        // It's not yet initted
+        if(!config.isInitted)
+          return;
         
         // Otherwise, proceed to execute the function
         return _IPC(f(config));
@@ -43,6 +47,16 @@ export const IPC = (function() {
 
   // The current IPC object we're using
   let _ipc = _IPC({ mainWindow: null, isInitted: false, callbacks: {} });
+
+  /**
+   * Creates a function that initializes the IPC with the given window.
+   * 
+   * @param     { Window }  mainWindow  The window to provide to the IPC. 
+   * @returns   { _IPC }                The initted _IPC object.
+   */
+  _.init = function(mainWindow) {
+    _ipc = _IPC({ mainWindow, isInitted: true, callbacks: {} });
+  }
 
   /**
    * Returns the current IPC.
@@ -61,28 +75,6 @@ export const IPC = (function() {
    */
   _.set = function(ipc) {
     return _ipc = ipc;
-  }
-
-  /**
-   * Creates a function that initializes the IPC with the given window.
-   * 
-   * @param     { Window }  mainWindow  The window to provide to the IPC. 
-   * @returns   { _IPC }                The initted _IPC object.
-   */
-  _.IPCInitter = function(mainWindow) {
-    return function(config) {
-
-      // If it's been initted, return the config as is
-      if(config.isInitted)
-        return config;
-      
-      // Initialize the config first
-      config.mainWindow = mainWindow;
-      config.isInitted = true;
-
-      // Return it
-      return config;
-    }
   }
   
   /**
