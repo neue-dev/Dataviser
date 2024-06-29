@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 07:41:58
- * @ Modified time: 2024-06-30 01:48:58
+ * @ Modified time: 2024-06-30 02:13:13
  * @ Description:
  * 
  * This file links our store with the ipc.
@@ -32,7 +32,7 @@ export const ClientStore = (function() {
    * @return  { state }               A portion of the state.
    */
   _.select = function(callback) {
-    return callback(store.getState);
+    return callback(store.getState());
   }
 
   /**

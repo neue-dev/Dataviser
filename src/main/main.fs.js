@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-30 01:34:23
+ * @ Modified time: 2024-06-30 02:33:10
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -39,7 +39,7 @@ export const FS = (function() {
    * @return  { function }  A function that opens a sync file picker dialog.
    */
   _.fileCreatePicker = function() {
-    return function() {
+    return function(e) {
 
       // Get the result of the open file dialog
       const filepaths = dialog.showOpenDialogSync(_mainWindow, {
@@ -56,7 +56,7 @@ export const FS = (function() {
    * @return  { function }  A function that opens a sync file picker dialog.
    */
   _.directoryCreatePicker = function() {
-    return function() {
+    return function(e) {
 
       // Get the result of the open file dialog
       const dirpaths = dialog.showOpenDialogSync(_mainWindow, {
@@ -83,13 +83,23 @@ export const FS = (function() {
    * @returns   { function }            A file reader that reads a given file when called.
    */
   _.fileCreateReader = function(options={}) {
-    return function(filepath) {
+    return function(e, filepaths) {
+
+      // Append the file contents and stuff here
+      const result = [];
 
       // Read the data
-      const content = fs.readFileSync(filepath, options);
+      filepaths.forEach(filepath => {
+
+        // The file contents
+        const data = fs.readFileSync(filepath, options);
+        
+        // Append the result
+        result.push({ filepath, data })
+      })
 
       // Return the data
-      return content;
+      return result;
     }
   }
 

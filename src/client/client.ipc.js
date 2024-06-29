@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 05:10:47
- * @ Modified time: 2024-06-30 01:00:24
+ * @ Modified time: 2024-06-30 02:29:05
  * @ Description:
  * 
  * This file provides utility functions to help us deal with the client-side implementation of the IPC.
@@ -27,7 +27,7 @@ export const ClientIPC = (function() {
    * @returns   { function }            A caller that creates requests with the given source and message.
    */
   _.requestSender = function(source, action) {
-    return function(args=[]) {
+    return function(...args) {
       
       // We need a unique id for each request
       const id = crypto.randomUUID();

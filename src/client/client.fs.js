@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-30 00:11:35
- * @ Modified time: 2024-06-30 02:04:32
+ * @ Modified time: 2024-06-30 02:29:21
  * @ Description:
  * 
  * Links the store and the fs management together.
@@ -25,16 +25,12 @@ export const FS = (function() {
    * @param   { array }   filepaths   The array of filenames to save.
    */
   const _storeFileCreate = function(filepaths) {
+    
+    // Create a dispatch function for that action
+    const dispatch = ClientStore.storeDispatcher('fs/fsFileCreate');
 
-    // For each filename
-    filepaths.forEach(filepath => {
-
-      // Create a dispatch function for that action
-      const dispatch = ClientStore.storeDispatcher('fs/fsFileCreate');
-      
-      // Dispatch the payload for that action
-      dispatch({ filepath });
-    })
+    // For each filepath
+    filepaths.forEach(filepath => dispatch({ filepath }))
   }
 
   /**
@@ -42,8 +38,13 @@ export const FS = (function() {
    * 
    *  
    */
-  const _storeFileSave = function(filenames) {
+  const _storeFileSave = function(files) {
     
+    // Make a request to load the filepaths
+    const dispatch = ClientStore.storeDispatcher('fs/fsLoadFile');
+
+    // Save the data for each filepath
+    files.forEach(filedata => dispatch(filedata))
   }
 
   /**
@@ -94,9 +95,11 @@ export const FS = (function() {
   _.loadFiles = function() {
     
     // Grab the filepaths we have in the store
-    const filepaths = ClientStore.select(state => state.fs.filenames);
+    const filepaths = ClientStore.select(state => Object.keys(state.fs.filenames));
 
-    console.log(filepaths);
+    const promise = ClientIPC.requestSender('fs', 'fs/load-files')(filepaths);
+
+    promise.then(r => console.log(r));
   }
 
   return {
