@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 17:58:25
- * @ Modified time: 2024-06-29 07:09:20
+ * @ Modified time: 2024-06-29 08:31:56
  * @ Description:
  * 
  * Handles our references to files and the data they store.
@@ -26,8 +26,8 @@ export const ClientFS = (function() {
   _.chooseDirectories = function(options={}) {
 
     // Some constants
-    const message = 'fs:choose-directories';
-    const promise = ClientIPC.call(_SOURCE, message);
+    const action = 'fs:choose-directories';
+    const promise = ClientIPC.call(_SOURCE, action);
     
     // The output promise for the files to load
     let outResolve;
@@ -55,8 +55,8 @@ export const ClientFS = (function() {
   _.chooseFiles = function(options={}) {
 
     // Some constants
-    const message = 'fs:choose-files';
-    const promise = ClientIPC.call(_SOURCE, message);
+    const action = 'fs:choose-files';
+    const promise = ClientIPC.call(_SOURCE, action);
     
     // The output promise for the files to load
     let outResolve;
@@ -84,9 +84,9 @@ export const ClientFS = (function() {
   _.loadDirectories = function(dirpaths, options={}) {
 
     // Some constants
-    const message = 'fs:load-directories';
+    const action = 'fs:load-directories';
     const args = [ dirpaths, options ];
-    const outPromise = ClientIPC.call(_SOURCE, message, args);
+    const outPromise = ClientIPC.call(_SOURCE, action, args);
 
     // Return the promise so we can wait for it elsewhere
     return outPromise;
@@ -101,9 +101,9 @@ export const ClientFS = (function() {
   _.loadFiles = function(filepaths, options={}) {
 
     // Some constants
-    const message = 'fs:load-files';
+    const action = 'fs:load-files';
     const args = [ filepaths, options ];
-    const outPromise = ClientIPC.call(_SOURCE, message, args);
+    const outPromise = ClientIPC.call(_SOURCE, action, args);
 
     // When the result has been returned, store the file references
     outPromise.then(result => result.forEach(entry => {
@@ -125,9 +125,9 @@ export const ClientFS = (function() {
   _.requestFiles = function(ids=[], options={}) {
 
     // Some constants
-    const message = 'fs:request-files';
+    const action = 'fs:request-files';
     const args = [ ids, options ];
-    const outPromise = ClientIPC.call(_SOURCE, message, args);
+    const outPromise = ClientIPC.call(_SOURCE, action, args);
 
     // Return the promise
     return outPromise;

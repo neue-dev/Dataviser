@@ -8,16 +8,16 @@ const PRELOADER = (function() {
    * Resolves a IPC invocation to the caller.
    * 
    * @param   { string }  source    The name of the host.
-   * @param   { object }  message   The type of message.
+   * @param   { object }  action    The type of action.
    */
-  _.responseSender = function(source, message) {
+  _.responseSender = function(source, action) {
     return function(result) {
       
       // Send it back to the host
       window.postMessage({
         source: 'preloader',  // So we don't have the preloader respond to its own event
         target: source,       // So the host can listen for the event
-        message: message,     // The actual response
+        action: action,       // The actual response
         result: result,
       });
     }
@@ -34,11 +34,11 @@ const PRELOADER = (function() {
 
       // Parse the message contents
       const data = e.data;
-      const { source, target, message, args } = data;
+      const { source, target, action, args } = data;
 
       // Invalid event
-      if(!message)
-        return console.error('Invalid message.');
+      if(!action)
+        return console.error('Invalid action.');
 
       // The IPC won't know who to give the result to
       if(!source)
@@ -57,8 +57,8 @@ const PRELOADER = (function() {
         args = [];
 
       // Wrap the invocation around a promise to make sure it's always thenable
-      Promise.resolve(ipcRenderer.invoke(message, ...args))
-        .then(_.responseSender(source, message));
+      Promise.resolve(ipcRenderer.invoke(action, ...args))
+        .then(_.responseSender(source, action));
     })
   })
 

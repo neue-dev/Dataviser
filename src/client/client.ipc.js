@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 05:10:47
- * @ Modified time: 2024-06-29 07:41:14
+ * @ Modified time: 2024-06-29 22:52:20
  * @ Description:
  * 
  * This file provides utility functions to help us deal with the client-side implementation of the IPC.
@@ -15,6 +15,7 @@
 export const ClientIPC = (function() {
   
   const _ = {};
+  const _callbacks = {};  // The callbacks we have saved
   const _responses = {};  // Stores the pending responses of the invocations
 
   /**
@@ -22,10 +23,10 @@ export const ClientIPC = (function() {
    * Makes our code more reusable.
    * 
    * @param     { string }    source    The source of the caller.
-   * @param     { string }    message   The message the caller will send.
+   * @param     { string }    action    The action the caller wants to perform.
    * @returns   { function }            A caller that creates requests with the given source and message.
    */
-  _.requestSender = function(source, message) {
+  _.requestSender = function(source, action) {
     return function(args=[]) {
       
       // We need a unique id for each request
@@ -51,11 +52,32 @@ export const ClientIPC = (function() {
       }
 
       // Relays the message to the preloader
-      window.postMessage({ source, target, message, args });
+      window.postMessage({ source, target, action, args });
 
       // Return the promise
       return _responses[id].promise;
     }
+  }
+
+  /**
+   * Creates a function that registers a callback to listen for the particular set of events.
+   * By having this feature, we have two ways of resolving events:
+   *    (1) through the promise returned by request sender or
+   *    (2) through the callbacks provided to this utility
+   * 
+   * @param   { string }    target  The target to listen for.
+   * @return  { function }          A function that registers callbacks with the given target.
+   */
+  _.responseSubscriber = function(target) {
+    return function(callback) {
+      
+      // Create a slot for those callbacks
+      if(!_callbacks[target])
+        _callbacks[target] = [];
+
+      // Register the callbacks
+      _callbacks[target].push(callback);
+    }    
   }
 
   /**
@@ -77,7 +99,10 @@ export const ClientIPC = (function() {
     if(!_responses[id])
       return;
 
-    // Resolve the promise if it's a valid message
+    // Execute all the callbacks associated with that target
+    _callbacks[target].forEach(callback => callback(result));
+
+    // Resolve the promise 
     _responses[id].resolve(result);
   })
 
