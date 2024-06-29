@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-29 23:39:12
+ * @ Modified time: 2024-06-29 23:40:39
  * @ Description:
  * 
  * The main component that houses the app.
@@ -49,7 +49,7 @@ function DraftHeader() {
 
     dispatch({ type: 'fs/fsCreate', payload: { id: crypto.randomUUID(), data: 'hello world', filename: 'smth.txt' }});
 
-    // ClientIPC.requestSender('me', 'fs/load-files')('smth');
+    ClientIPC.requestSender('me', 'fs/load-files')('smth', 'haha');
   }
 
   function viewFiles() {

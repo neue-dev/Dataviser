@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 09:11:39
- * @ Modified time: 2024-06-29 06:44:50
+ * @ Modified time: 2024-06-29 23:43:04
  * @ Description:
  * 
  * This file contains the main process of the app.
@@ -12,7 +12,7 @@ const { app, BrowserWindow } = require('electron');
 
 // Main subprocesses
 const { IPC } = require('./main/main.ipc');
-const { EVENTS } = require('./main/main.events');
+const { Events } = require('./main/main.events');
 
 /**
  * The main process code.
@@ -65,7 +65,7 @@ const MAIN = (function() {
     IPC.set(ipc);
 
     // Set up the event registry
-    EVENTS.init();
+    Events.init();
 
     // This is OSX behavior.
     app.on('activate', () => {
