@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-30 00:03:48
+ * @ Modified time: 2024-06-30 00:56:51
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -90,12 +90,17 @@ export const IPC = (function() {
       config.callbacks[event] = [];
       
       // Create the event listener
-      ipcMain.handle(event, (e, ...args) => {
+      ipcMain.handle(event, async (e, ...args) => {
+
+        // The result to output
+        const results = [];
 
         // Execute each of the saved callbacks
         config.callbacks[event].forEach(callback => {
-          callback(e, ...args);
+          results.push(callback(e, ...args));
         })
+
+        return results;
       });  
       
       // Return the config object

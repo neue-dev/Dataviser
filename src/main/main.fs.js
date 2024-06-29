@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-30 00:01:23
+ * @ Modified time: 2024-06-30 01:21:30
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -22,40 +22,6 @@ export const FS = (function() {
   // The main window used by the FS object
   let _mainWindow = null;
 
-  // The default function we use to create a new _FS object
-  const _identity = (value) => value;
-  
-  /**
-   * This monad helps us chain IO operations in a much more readable way.
-   * 
-   * @param     { function }  operation   The operation we want to add to the chain. 
-   * @returns   { _FS }                   A wrapper around the chain of operations.
-   */
-  const _FS = (operation) => {
-    return {
-
-      /**
-       * This chains an operation unto the existing ones.
-       * It doesn't run the operations yet.
-       * 
-       * @param     { function }  f   The function to chain with the current effects.
-       * @returns   { _FS }           A composed monad of the two operations.
-       */
-      chain: (f) => {
-        return _FS(() => f(operation()))
-      },
-
-      /**
-       * Executes the chain of operations we currently have.
-       * 
-       * @returns   { object }  The output of all the operations.
-       */
-      run: () => {
-        return operation();
-      }
-    }
-  }
-
   const _ = {};
 
   /**
@@ -68,25 +34,19 @@ export const FS = (function() {
   }
 
   /**
-   * Creates a new FS object.
-   * Creates a pipe of fs operations.
-   * 
-   * @return  { _FS }   A new FS object to append operations on.
-   */
-  _.createPipe = function() {
-    return _FS(_identity);
-  }
-
-  /**
    * Creates a file picker with the given options.
    * 
    * @return  { function }  A function that opens a sync file picker dialog.
    */
   _.fileCreatePicker = function() {
     return function() {
-      dialog.showOpenDialogSync(_mainWindow, {
-        properties: [ 'openFile' ]
+
+      // Get the result of the open file dialog
+      const filepaths = dialog.showOpenDialogSync(_mainWindow, {
+        properties: [ 'openFile', 'multiSelections' ]
       });
+
+      return filepaths;
     }
   }
 
@@ -95,13 +55,26 @@ export const FS = (function() {
    * 
    * @return  { function }  A function that opens a sync file picker dialog.
    */
-    _.directoryCreatePicker = function() {
-      return function() {
-        dialog.showOpenDialogSync(_mainWindow, {
-          properties: [ 'openDirectory' ]
-        });
-      }
+  _.directoryCreatePicker = function() {
+    return function() {
+
+      // Get the result of the open file dialog
+      const dirpaths = dialog.showOpenDialogSync(_mainWindow, {
+        properties: [ 'openDirectory', 'multiSelections' ]
+      });
+
+      // Save the filepaths here
+      const filepaths = [];
+      
+      // Grab all the files in the directory
+      dirpaths.forEach(dirpath => 
+        fs.readdirSync(dirpath).forEach(filepath =>
+          filepaths.push(`${dirpath}\\${filepath}`)));
+          
+      // Return the filepaths
+      return filepaths;
     }
+  }
 
   /**
    * Creates a file reader for the given filepath.
@@ -123,7 +96,7 @@ export const FS = (function() {
     }
   }
 
-  _.dirCreateReader = function(dirpath) {
+  _.directoryCreateReader = function(dirpath) {
     return function(options={}) {
       
     }

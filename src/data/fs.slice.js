@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 23:17:37
- * @ Modified time: 2024-06-29 23:30:39
+ * @ Modified time: 2024-06-30 00:35:41
  * @ Description:
  * 
  * Stores the raw file data we gather from the files we add.
@@ -36,19 +36,43 @@ export const fsSlice = createSlice({
      * @param { state }   state   The value of the current state. 
      * @param { action }  action  The details of the action.
      */
-    fsCreate: (state, action) => {
+    fsFileCreate: (state, action) => {
 
       // Parse the action details
       const id = action?.payload?.id ?? null;
-      const data = action?.payload?.data ?? null;
       const filename = action?.payload?.filename ?? null;
 
       // If any of the parameters were missing
-      if(id == null || data == null || filename == null)
+      if(id == null || filename == null)
         return state;
 
       // Otherwise, save the entry to the state
       state.filenames[id] = filename;
+    },
+
+    /**
+     * Saves a file's data into the store.
+     * A file can only be saved if its filename has already been index.
+     * In other words, fsFileCreate must first be called before fsFileSave.
+     * 
+     * @param { state }   state   The value of the current state. 
+     * @param { action }  action  The details of the action.
+     */
+    fsFileLoad: (state, action) => {
+      
+      // Parse the action details
+      const id = action?.payload?.id ?? null;
+      const data = action?.payload?.data ?? null;
+
+      // If any of the parameters were missing
+      if(id == null || data == null)
+        return state;
+
+      // If the filename doesn't exist yet
+      if(!state.filenames[id])
+        return state;
+
+      // Otherwise, save the data for that file
       state.filedata[id] = data;
     },
 
@@ -58,7 +82,7 @@ export const fsSlice = createSlice({
      * @param { state }   state   The value of the current state. 
      * @param { action }  action  The details of the action.
      */
-    fsRemove: (state, action) => {
+    fsFileRemove: (state, action) => {
 
       // Parse the action details
       const id = action?.payload.id ?? null;
@@ -82,7 +106,7 @@ export const fsSlice = createSlice({
      * @param { state }   state   The value of the current state. 
      * @param { action }  action  The details of the action.
      */
-    fsSetStateLoading: (state, action) => {
+    fsStateSetLoading: (state, action) => {
       state.state = 'loading';
     },
 
@@ -92,7 +116,7 @@ export const fsSlice = createSlice({
      * @param { state }   state   The value of the current state. 
      * @param { action }  action  The details of the action.
      */
-    fsSetStateLoaded: (state, action) => {
+    fsStateSetLoaded: (state, action) => {
       state.state = 'loaded';
     }
   }

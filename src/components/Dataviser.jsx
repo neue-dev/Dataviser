@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-29 23:40:39
+ * @ Modified time: 2024-06-30 01:14:59
  * @ Description:
  * 
  * The main component that houses the app.
@@ -18,7 +18,7 @@ import { Button, Flex, HStack, Text } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Client stuff
-import { ClientIPC } from '../client/client.ipc'
+import { FS } from '../client/client.fs'
 
 
 /**
@@ -47,9 +47,7 @@ function DraftHeader() {
   function addFiles() {
     console.log('added files');
 
-    dispatch({ type: 'fs/fsCreate', payload: { id: crypto.randomUUID(), data: 'hello world', filename: 'smth.txt' }});
-
-    ClientIPC.requestSender('me', 'fs/load-files')('smth', 'haha');
+    FS.chooseDirectories();
   }
 
   function viewFiles() {

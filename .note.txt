@@ -11,3 +11,4 @@ importScripts not defined                             https://stackoverflow.com/
 redux in electron                                     https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
 hot reload main process in electron?                  https://github.com/electron/forge/issues/682
 is it good practice to resolve promises externally?   https://stackoverflow.com/questions/26150232/how-can-i-access-promise-resolution-callbacks-outside-the-promise-constructor-ca
+electron dialog api                                   https://www.electronjs.org/docs/latest/api/dialog 

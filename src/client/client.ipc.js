@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 05:10:47
- * @ Modified time: 2024-06-29 22:52:20
+ * @ Modified time: 2024-06-30 01:00:24
  * @ Description:
  * 
  * This file provides utility functions to help us deal with the client-side implementation of the IPC.
@@ -52,7 +52,7 @@ export const ClientIPC = (function() {
       }
 
       // Relays the message to the preloader
-      window.postMessage({ source, target, action, args });
+      window.postMessage({ id, source, target, action, args });
 
       // Return the promise
       return _responses[id].promise;
@@ -100,7 +100,8 @@ export const ClientIPC = (function() {
       return;
 
     // Execute all the callbacks associated with that target
-    _callbacks[target].forEach(callback => callback(result));
+    if(_callbacks[target])
+      _callbacks[target].forEach(callback => callback(result));
 
     // Resolve the promise 
     _responses[id].resolve(result);
