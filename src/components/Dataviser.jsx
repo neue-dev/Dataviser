@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-29 23:27:56
+ * @ Modified time: 2024-06-29 23:39:12
  * @ Description:
  * 
  * The main component that houses the app.
@@ -13,8 +13,13 @@ import * as React from 'react';
 // Chakra
 import { Button, Flex, HStack, Text } from '@chakra-ui/react';
 
+// Redux
+// ! remoe ?
+import { useDispatch, useSelector } from 'react-redux';
+
 // Client stuff
 import { ClientIPC } from '../client/client.ipc'
+
 
 /**
  * Dataviser component class.
@@ -36,13 +41,19 @@ export function Dataviser() {
  */
 function DraftHeader() {
 
+  const filenames = useSelector(state => Object.values(state.fs.filenames));
+  const dispatch = useDispatch();
+
   function addFiles() {
     console.log('added files');
 
-    ClientIPC.requestSender('me', 'add-files');
+    dispatch({ type: 'fs/fsCreate', payload: { id: crypto.randomUUID(), data: 'hello world', filename: 'smth.txt' }});
+
+    // ClientIPC.requestSender('me', 'fs/load-files')('smth');
   }
 
   function viewFiles() {
+    console.log(filenames);
   }
 
   function addCharts() {

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-28 21:12:24
- * @ Modified time: 2024-06-29 23:29:01
+ * @ Modified time: 2024-06-29 23:34:42
  * @ Description:
  * 
  * This portion of redux manages our dataframe data.
