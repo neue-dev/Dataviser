@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-29 07:23:31
+ * @ Modified time: 2024-06-29 07:47:40
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
@@ -30,6 +30,10 @@ export const IPC = (function() {
        * @param   { function }  f   The function to call on the IPC. 
        */
       map: (f) => {
+
+        // Invalid config object
+        if(!config)
+          return _IPC(null);
         
         // Otherwise, proceed to execute the function
         return _IPC(f(config));
