@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 18:30:08
- * @ Modified time: 2024-06-30 01:58:02
+ * @ Modified time: 2024-06-30 03:22:28
  * @ Description:
  * 
  * This file deals with all the toasts the application might create.
@@ -56,6 +56,9 @@ export const ClientToast = (function() {
         loading: { title: _loadingTitle, description: loadingMessage, ..._style },
         error: { title: _failureTitle, description: failureMessage, ..._style },
       });
+
+      // Just so we can chain our own thenables after
+      return promise;
     } 
   }
 

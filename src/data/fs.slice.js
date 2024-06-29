@@ -1,11 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 23:17:37
- * @ Modified time: 2024-06-30 01:41:56
+ * @ Modified time: 2024-06-30 03:56:03
  * @ Description:
  * 
  * Stores the raw file data we gather from the files we add.
  */
+
+// Parser
+import Papa from 'papaparse'
 
 // Redux
 import { createSlice } from "@reduxjs/toolkit";
@@ -64,16 +67,32 @@ export const fsSlice = createSlice({
       // Parse the action details
       const filepath = action?.payload?.filepath ?? null;
       const data = action?.payload?.data ?? null;
+      const extension = action?.payload?.extension ?? 'default';
 
       // If any of the parameters were missing
       if(filepath == null || data == null)
         return state;
 
+      // It doesn't exist yet
       if(!state.filenames[filepath])
         return state;
 
+      // The parsed data
+      let parsed = data;
+      
+      // Parse the data according to the given parser
+      switch(extension) {
+        
+        // Csv parsing
+        case 'csv': parsed = Papa.parse(data).data; break;
+        
+        // Basic text parsing
+        case 'text':
+        case 'default': parsed = data; break;
+      };
+
       // Otherwise, save the data for that file
-      state.filedata[filepath] = data;
+      state.filedata[filepath] = parsed;
     },
 
     /**

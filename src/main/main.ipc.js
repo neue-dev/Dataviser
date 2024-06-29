@@ -1,17 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:07:28
- * @ Modified time: 2024-06-30 00:56:51
+ * @ Modified time: 2024-06-30 03:11:13
  * @ Description:
  * 
  * This file contains the IPC handlers for the main process.
  */
 
 // Modules
-const { dialog, ipcMain, ipcRenderer } = require('electron'); 
-
-// Main subprocesses
-const { FS } = require('./main.fs');
+const { ipcMain } = require('electron'); 
 
 /**
  * The IPC object helps us modularize all the functionality dealing with IPC.

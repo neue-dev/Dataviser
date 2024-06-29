@@ -1,16 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-30 02:33:10
+ * @ Modified time: 2024-06-30 03:55:02
  * @ Description:
  * 
  * This module has some file system handling utilities.
  */
 
 // Modules
-const path = require('node:path');
 const fs = require('node:fs');
-const { parse } = require('csv-parse/sync');
 const { dialog, } = require('electron'); 
 
 /**
@@ -79,11 +77,10 @@ export const FS = (function() {
   /**
    * Creates a file reader for the given filepath.
    * 
-   * @param     { object }    options   The options for the file reader. 
    * @returns   { function }            A file reader that reads a given file when called.
    */
-  _.fileCreateReader = function(options={}) {
-    return function(e, filepaths) {
+  _.fileCreateReader = function() {
+    return function(e, filepaths, options={}) {
 
       // Append the file contents and stuff here
       const result = [];
@@ -93,9 +90,10 @@ export const FS = (function() {
 
         // The file contents
         const data = fs.readFileSync(filepath, options);
-        
+        const extension = filepath.split('.').slice(-1)[0];
+
         // Append the result
-        result.push({ filepath, data })
+        result.push({ filepath, data, extension })
       })
 
       // Return the data

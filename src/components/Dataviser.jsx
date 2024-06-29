@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-30 02:11:30
+ * @ Modified time: 2024-06-30 03:23:33
  * @ Description:
  * 
  * The main component that houses the app.
@@ -42,19 +42,17 @@ export function Dataviser() {
  */
 function DraftHeader() {
 
-  const filenames = useSelector(state => Object.values(state.fs.filenames));
+  const filenames = useSelector(state => Object.values(state.fs));
   const dispatch = useDispatch();
   const toast = useToast();
 
   function addFiles() {
-    FS.chooseDirectories()(toast);
+    FS.chooseFiles({ type: 'directory' })(toast)
+      .then(() => FS.loadFiles({ encoding: 'utf-8' })(toast));
   }
 
   function viewFiles() {
     console.log(filenames);
-
-    // ! remove this, chain it after chooseDirectories
-    FS.loadFiles();
   }
 
   function addCharts() {
