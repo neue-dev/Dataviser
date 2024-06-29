@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 06:35:28
- * @ Modified time: 2024-06-29 07:23:58
+ * @ Modified time: 2024-06-29 23:17:20
  * @ Description:
  * 
  * This file defines all the events the app will be listening to.
@@ -24,17 +24,17 @@ export const Events = (function() {
     const ipc = IPC.get()
 
       // All the file IO
-      .map(IPC.eventRegisterer('fs:choose-files'))
-      .map(IPC.eventRegisterer('fs:choose-directories'))
-      .map(IPC.eventRegisterer('fs:load-files'))
-      .map(IPC.eventRegisterer('fs:load-directories'))
+      .map(IPC.eventRegisterer('fs/choose-files'))
+      .map(IPC.eventRegisterer('fs/choose-directories'))
+      .map(IPC.eventRegisterer('fs/load-files'))
+      .map(IPC.eventRegisterer('fs/load-directories'))
       
       // ! change these later
       // ! actually register their callbacks
-      .map(IPC.eventSubscriber('fs:choose-files', e => console.log(e)))
-      .map(IPC.eventSubscriber('fs:choose-directories', e => console.log(e)))
-      .map(IPC.eventSubscriber('fs:load-files', e => console.log(e)))
-      .map(IPC.eventSubscriber('fs:load-directories', e => console.log(e)))
+      .map(IPC.eventSubscriber('fs/choose-files', e => console.log(e)))
+      .map(IPC.eventSubscriber('fs/choose-directories', e => console.log(e)))
+      .map(IPC.eventSubscriber('fs/load-files', e => console.log(e)))
+      .map(IPC.eventSubscriber('fs/load-directories', e => console.log(e)))
 
     // Finally, set the modified ipc to the existing one
     IPC.set(ipc);

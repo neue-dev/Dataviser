@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-28 21:12:24
- * @ Modified time: 2024-06-28 21:41:45
+ * @ Modified time: 2024-06-29 23:29:01
  * @ Description:
  * 
  * This portion of redux manages our dataframe data.
@@ -46,7 +46,7 @@ export const dfSlice = createSlice({
       // They must be provided, otherwise nothing happens
       // Also, we can't save nullish data
       if(id == null || data == null)
-        return;
+        return state;
 
       // Save the data
       state.dfs[id] = data;
@@ -66,11 +66,11 @@ export const dfSlice = createSlice({
 
       // Missing id
       if(id == null)
-        return;
+        return state;
       
       // Invalid id
       if(!state.dfs[id])
-        return;
+        return state;
 
       // Delete entry
       delete state.dfs[id];
