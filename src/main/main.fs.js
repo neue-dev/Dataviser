@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-29 07:16:44
+ * @ Modified time: 2024-06-29 23:56:27
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -11,6 +11,7 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const { parse } = require('csv-parse/sync');
+const { dialog, } = require('electron'); 
 
 /**
  * The file system object provides us with utilities to manage files opened by the user.
@@ -62,6 +63,34 @@ export const FS = (function() {
   _.create = function() {
     return _FS(_identity);
   }
+
+  /**
+   * Creates a file picker with the given options.
+   * 
+   * @param   { Window }    mainWindow  The window to open a dialog with.
+   * @return  { function }              A function that opens a sync file picker dialog.
+   */
+  _.fileCreatePicker = function(mainWindow) {
+    return function() {
+      dialog.showOpenDialogSync(mainWindow, {
+        properties: [ 'openFile' ]
+      });
+    }
+  }
+
+  /**
+   * Creates a directory picker with the given options.
+   * 
+   * @param   { Window }    mainWindow  The window to open a dialog with.
+   * @return  { function }              A function that opens a sync file picker dialog.
+   */
+    _.directoryCreatePicker = function(mainWindow) {
+      return function() {
+        dialog.showOpenDialogSync(mainWindow, {
+          properties: [ 'openDirectory' ]
+        });
+      }
+    }
 
   /**
    * Creates a file reader for the given filepath.
