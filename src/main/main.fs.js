@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-30 01:21:30
+ * @ Modified time: 2024-06-30 01:34:23
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -84,21 +84,12 @@ export const FS = (function() {
    */
   _.fileCreateReader = function(options={}) {
     return function(filepath) {
-      return function(data=[]) {
 
-        // Read the data
-        const filename = filepath;
-        const content = fs.readFileSync(filepath, options);
+      // Read the data
+      const content = fs.readFileSync(filepath, options);
 
-        // Return the data
-        return [ ...data, { filename, content } ];
-      }
-    }
-  }
-
-  _.directoryCreateReader = function(dirpath) {
-    return function(options={}) {
-      
+      // Return the data
+      return content;
     }
   }
 

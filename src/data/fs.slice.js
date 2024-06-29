@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 23:17:37
- * @ Modified time: 2024-06-30 00:35:41
+ * @ Modified time: 2024-06-30 01:41:56
  * @ Description:
  * 
  * Stores the raw file data we gather from the files we add.
@@ -32,6 +32,7 @@ export const fsSlice = createSlice({
     
     /**
      * Creates a new file entry and saves its data to the store.
+     * All files are indexed by their absolute filepaths.
      * 
      * @param { state }   state   The value of the current state. 
      * @param { action }  action  The details of the action.
@@ -39,20 +40,20 @@ export const fsSlice = createSlice({
     fsFileCreate: (state, action) => {
 
       // Parse the action details
-      const id = action?.payload?.id ?? null;
-      const filename = action?.payload?.filename ?? null;
+      const filepath = action?.payload?.filepath ?? null;
 
-      // If any of the parameters were missing
-      if(id == null || filename == null)
+      // If the filepath was missing
+      if(filepath == null)
         return state;
 
       // Otherwise, save the entry to the state
-      state.filenames[id] = filename;
+      state.filenames[filepath] = filepath.split('\\').slice(-1)[0];
+      state.filedata[filepath] = '';
     },
 
     /**
      * Saves a file's data into the store.
-     * A file can only be saved if its filename has already been index.
+     * A file can only be saved if its filepath has already been indexed.
      * In other words, fsFileCreate must first be called before fsFileSave.
      * 
      * @param { state }   state   The value of the current state. 
@@ -61,19 +62,18 @@ export const fsSlice = createSlice({
     fsFileLoad: (state, action) => {
       
       // Parse the action details
-      const id = action?.payload?.id ?? null;
+      const filepath = action?.payload?.filepath ?? null;
       const data = action?.payload?.data ?? null;
 
       // If any of the parameters were missing
-      if(id == null || data == null)
+      if(filepath == null || data == null)
         return state;
 
-      // If the filename doesn't exist yet
-      if(!state.filenames[id])
+      if(!state.filenames[filepath])
         return state;
 
       // Otherwise, save the data for that file
-      state.filedata[id] = data;
+      state.filedata[filepath] = data;
     },
 
     /**
@@ -85,19 +85,19 @@ export const fsSlice = createSlice({
     fsFileRemove: (state, action) => {
 
       // Parse the action details
-      const id = action?.payload.id ?? null;
+      const filepath = action?.payload.filepath ?? null;
 
-      // Missing id
-      if(id == null)
+      // Missing filepath
+      if(filepath == null)
         return state;
       
-      // Invalid id
-      if(!state.filenames[id] && !state.filedata[id])
+      // Filepath doesn't exist
+      if(!state.filenames[filepaths] && !state.filedata[filepaths])
         return state;
 
       // Delete entries
-      if(state.filenames[id]) delete state.filenames[id];
-      if(state.filedata[id]) delete state.filedata[id];
+      if(state.filenames[filepath]) delete state.filenames[filepath];
+      if(state.filedata[filepath]) delete state.filedata[filepath];
     },
 
     /**

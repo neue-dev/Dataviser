@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-30 01:14:59
+ * @ Modified time: 2024-06-30 02:03:34
  * @ Description:
  * 
  * The main component that houses the app.
@@ -12,6 +12,7 @@ import * as React from 'react';
 
 // Chakra
 import { Button, Flex, HStack, Text } from '@chakra-ui/react';
+import { useToast } from '@chakra-ui/react';
 
 // Redux
 // ! remoe ?
@@ -43,11 +44,10 @@ function DraftHeader() {
 
   const filenames = useSelector(state => Object.values(state.fs.filenames));
   const dispatch = useDispatch();
+  const toast = useToast();
 
   function addFiles() {
-    console.log('added files');
-
-    FS.chooseDirectories();
+    FS.chooseDirectories()(toast);
   }
 
   function viewFiles() {

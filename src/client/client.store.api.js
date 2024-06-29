@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 07:41:58
- * @ Modified time: 2024-06-29 22:58:04
+ * @ Modified time: 2024-06-30 01:48:58
  * @ Description:
  * 
  * This file links our store with the ipc.
@@ -13,6 +13,27 @@ import { ClientIPC } from './client.ipc'
 export const ClientStore = (function() {
 
   const _ = {};
+
+  /**
+   * Subscribes a function to the store.
+   * This is kept here so we don't have to reference the store directly.
+   * 
+   * @param   { function }  callback  The callback to execute when responding to store events. 
+   */
+  _.subscribe = function(callback) {
+    store.subscribe(callback);
+  }
+
+  /**
+   * Returns a portion of the state according to the callback given.
+   * Again, this is kept here so we don't have to reference the store directly.
+   * 
+   * @param   { function }  callback  A callback that selects a portion of the state. 
+   * @return  { state }               A portion of the state.
+   */
+  _.select = function(callback) {
+    return callback(store.getState);
+  }
 
   /**
    * Creates a function that creates store dispatches with the given action.
@@ -42,19 +63,6 @@ export const ClientStore = (function() {
         
         // Then save the result to the store or smth else
         .then(result => store.dispatch({ type: action, payload: result }));
-    }
-  }
-
-  /**
-   * Creates a function that subscribes callbacks to the store.
-   * This may be a bit unnecessary in that it wraps a function for no reason;
-   * however, to keep our function signatures similar, we keep it as is. 
-   * 
-   * @returns   { function }  A function that subscribes callbacks to the store. 
-   */
-  _.storeSubscriber = function() {
-    return function(callback) {
-      store.subscribe(callback);
     }
   }
 
