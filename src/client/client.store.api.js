@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 07:41:58
- * @ Modified time: 2024-06-29 08:39:47
+ * @ Modified time: 2024-06-29 22:58:04
  * @ Description:
  * 
  * This file links our store with the ipc.
@@ -45,17 +45,16 @@ export const ClientStore = (function() {
     }
   }
 
-  // ! todo
+  /**
+   * Creates a function that subscribes callbacks to the store.
+   * This may be a bit unnecessary in that it wraps a function for no reason;
+   * however, to keep our function signatures similar, we keep it as is. 
+   * 
+   * @returns   { function }  A function that subscribes callbacks to the store. 
+   */
   _.storeSubscriber = function() {
-    return function() {
-      
-    }
-  }
-
-  // ! todo 
-  _.storeIPCSubscriber = function() {
-    return function() {
-      
+    return function(callback) {
+      store.subscribe(callback);
     }
   }
 
