@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-06-30 03:55:02
+ * @ Modified time: 2024-07-01 02:43:01
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -9,7 +9,7 @@
 
 // Modules
 const fs = require('node:fs');
-const { dialog, } = require('electron'); 
+const { dialog } = require('electron'); 
 
 /**
  * The file system object provides us with utilities to manage files opened by the user.

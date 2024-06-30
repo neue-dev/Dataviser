@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-06-30 03:23:33
+ * @ Modified time: 2024-07-01 02:29:27
  * @ Description:
  * 
  * The main component that houses the app.
@@ -19,7 +19,8 @@ import { useToast } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Client stuff
-import { FS } from '../client/client.fs'
+import { ClientFS } from '../client/client.fs'
+import { ClientDF } from '../client/client.df'
 
 
 /**
@@ -47,8 +48,8 @@ function DraftHeader() {
   const toast = useToast();
 
   function addFiles() {
-    FS.chooseFiles({ type: 'directory' })(toast)
-      .then(() => FS.loadFiles({ encoding: 'utf-8' })(toast));
+    ClientFS.fileChoose({ type: 'directory' })(toast)
+      .then(() => ClientFS.fileLoad({ encoding: 'utf-8' })(toast));
   }
 
   function viewFiles() {

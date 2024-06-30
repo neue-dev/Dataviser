@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-30 00:11:35
- * @ Modified time: 2024-06-30 03:40:18
+ * @ Modified time: 2024-07-01 02:51:29
  * @ Description:
  * 
  * Links the store and the fs management together.
@@ -15,7 +15,7 @@ import { ClientStore } from './client.store.api'
 // Toaster
 import { ClientToast } from './client.toast'
 
-export const FS = (function() {
+export const ClientFS = (function() {
   
   const _ = {};
 
@@ -53,7 +53,7 @@ export const FS = (function() {
    * 
    * @param   { object }  options   Specifies whether or not to open files or directories.
    */
-  _.chooseFiles = function(options={}) {
+  _.fileChoose = function(options={}) {
 
     // Whether we're picking folders or files
     const type = options.type ?? 'directories';
@@ -81,7 +81,7 @@ export const FS = (function() {
    * 
    * @param   { object }  options   Options for loading the files, such as encoding, etc..
    */
-  _.loadFiles = function(options={}) {
+  _.fileLoad = function(options={}) {
     
     // Grab the filepaths we have in the store
     const filepaths = ClientStore.select(state => Object.keys(state.fs.filenames));
@@ -107,5 +107,5 @@ export const FS = (function() {
 })();
 
 export default {
-  FS,
+  FS: ClientFS,
 }

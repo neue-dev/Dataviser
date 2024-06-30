@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 09:11:39
- * @ Modified time: 2024-06-30 00:05:20
+ * @ Modified time: 2024-07-01 02:46:55
  * @ Description:
  * 
  * This file contains the main process of the app.
@@ -13,6 +13,7 @@ const { app, BrowserWindow } = require('electron');
 // Main subprocesses
 const { FS } = require('./main/main.fs');
 const { IPC } = require('./main/main.ipc');
+const { Python } = require('./main/main.python');
 const { Events } = require('./main/main.events');
 
 /**
@@ -51,13 +52,9 @@ const MAIN = (function() {
   };
 
   /**
-   * Gets called when Electron has finished initializing.
-   * Creates a new browser window after the init.
+   * Initializes the different app components.
    */
-  app.whenReady().then(() => {
-    
-    // Create the window
-    _.createWindow();
+  _.init = function() {
 
     // Init the ipc
     IPC.init(_mainWindow);
@@ -67,6 +64,22 @@ const MAIN = (function() {
 
     // Set up the event registry
     Events.init();
+
+    // Load the Python scripts
+    Python.init();
+  }
+
+  /**
+   * Gets called when Electron has finished initializing.
+   * Creates a new browser window after the init.
+   */
+  app.whenReady().then(() => {
+    
+    // Create the window
+    _.createWindow();
+
+    // Init the app components
+    _.init();
 
     // This is OSX behavior.
     app.on('activate', () => {

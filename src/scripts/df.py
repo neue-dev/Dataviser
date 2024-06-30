@@ -4,7 +4,8 @@
  # @ Modified time: 2024-06-28 17:58:22
  # @ Description:
 
- This file tests our implementation of the df monad.
+ This file has our implementation of the df monad.
+ This allows us to wrap our data in a type that allows some easier manips.
  '''
 
 class DF:
@@ -78,26 +79,26 @@ class DF:
     return DF(dataframe, [], None)
 
 
-'''
-All code below this comment are not meant to be used in the app.
-They are here for debugging purposes.
-'''
-if __name__ == '__main__':
+# '''
+# All code below this comment are not meant to be used in the app.
+# They are here for debugging purposes.
+# '''
+# if __name__ == '__main__':
   
-  import pandas as pd
+#   import pandas as pd
 
-  def test(dataframe):
-    return dataframe.transpose(), 'transposed dataframe'
+#   def test(dataframe):
+#     return dataframe.transpose(), 'transposed dataframe'
 
-  dataframe = pd.read_csv('../.debug/data/OD_matrix_province_Apr19.csv');
+#   dataframe = pd.read_csv('../.debug/data/OD_matrix_province_Apr19.csv');
 
-  df = DF.of(dataframe)
+#   df = DF.of(dataframe)
 
-  print(df.getDf().to_string)
-  df = df \
-    .map(test) \
-    .map(test) \
-    .map(test);
+#   print(df.getDf().to_string)
+#   df = df \
+#     .map(test) \
+#     .map(test) \
+#     .map(test);
 
-  print(df.getDf().to_string)
-  print(df.getLogs())
+#   print(df.getDf().to_string)
+#   print(df.getLogs())
