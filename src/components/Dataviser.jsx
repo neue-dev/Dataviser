@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-01 18:33:08
+ * @ Modified time: 2024-07-01 23:04:42
  * @ Description:
  * 
  * The main component that houses the app.
@@ -10,9 +10,10 @@
 
 import * as React from 'react';
 
-// Chakra
+// Chakra and others
 import { Button, Flex, HStack, Text } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
+import GridLayout from 'react-grid-layout';
 
 // Redux
 // ! remoe ?
@@ -22,18 +23,37 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ClientFS } from '../client/client.fs'
 import { ClientDF } from '../client/client.df'
 
-
 /**
  * Dataviser component class.
  * 
  * @class
  */
 export function Dataviser() {
+  const handles = ["s", "w", "e", "n", "sw", "nw", "se", "ne"];
+  const layout = [
+    { i: "a", x: 0, y: 0, w: 1, h: 2, static: true,  resizeHandles: handles },
+    { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4, resizeHandles: handles },
+    { i: "c", x: 4, y: 0, w: 1, h: 2, resizeHandles: handles }
+  ];
   return (
-    <Flex p="2em" placeItems="left">
-      <DraftHeader />  
-    </Flex>
-  )
+    <GridLayout
+      className="layout"
+      layout={layout}
+      cols={12}
+      rowHeight={30}
+      width={1200}
+    >
+      <div style={{ background: 'red' }} key="a">a</div>
+      <div style={{ background: 'red' }} key="b">b</div>
+      <div style={{ background: 'red' }} key="c">c</div>
+    </GridLayout>
+  );
+  
+  // return (
+  //   <Flex p="2em" placeItems="left">
+  //     <DraftHeader />  
+  //   </Flex>
+  // )
 }
 
 /**
