@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-01 23:11:37
+ * @ Modified time: 2024-07-01 23:58:28
  * @ Description:
  * 
  * The main component that houses the app.
@@ -31,8 +31,14 @@ import { DLayout } from './DLayout.jsx';
  * @class
  */
 export function Dataviser() {
+
   return (
-    <DLayout />
+    <DLayout> 
+      <DraftHeader i="ha"/>  
+      <DraftHeader i="ha1"/>  
+      <div i="hmm" >hellooo</div>
+      <div i="smth" >hii</div>
+    </DLayout>
     // <Flex p="2em" placeItems="left">
     //   <DraftHeader />  
     // </Flex>

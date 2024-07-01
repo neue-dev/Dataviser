@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-01 23:28:30
+ * @ Modified time: 2024-07-01 23:58:16
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -20,24 +20,45 @@ import { useWindow } from '../hooks/useWindow'
  * 
  * @component
  */
-export function DLayout() {
-  const _handles = ["s", "w", "e", "n", "sw", "nw", "se", "ne"];
-  const _layout = [
-    { i: "a", x: 0, y: 0, w: 1, h: 2, static: true,  resizeHandles: _handles },
-    { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4, resizeHandles: _handles },
-    { i: "c", x: 4, y: 0, w: 1, h: 2, resizeHandles: _handles }
-  ];
+export function DLayout(props={}) {
+
+  // Get window dimensions and row-col properties from that
   const { innerWidth: _width, innerHeight: _height } = useWindow();
+  const _rowCount = 7, _colCount = 9;
+  const _rowHeight = _height / _rowCount;
+  const _colWidth = _width / _colCount;
+
+  // The resize handles we're using
+  const _handles = [ 's', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne' ];
+  
+  // Define the elements in the layout
+  const _layout = [];
+  
+  props.children.map(child => {
+
+    // Get the props of the child
+    const childProps = child.props ?? {};
+
+    // Add a cell to the layout
+    _layout.push({
+      i: childProps.i ?? '',
+      x: childProps.x ?? 1,
+      y: childProps.y ?? 1,
+      w: childProps.w ?? 1,
+      h: childProps.h ?? 1,
+
+      elem: child,
+      resizeHandles: _handles,
+    })
+  })
 
   return (
     <GridLayout
-      className="layout"
-      layout={ _layout }
-      cols={8}
-      rowHeight={32}
-      width={ _width }
-    >
-      { _layout.map(cell => (<div key={ cell.i }/>)) }
+      className="layout" layout={ _layout }
+      cols={ _colCount } rowHeight={ _rowHeight }
+      width={ _width }>
+
+      { _layout.map(child => (<div key={ child.i }>{ props.children[props.children.indexOf(child.elem)] }</div>)) }
     </GridLayout>
   );
 }
