@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-07-02 04:50:53
+ * @ Modified time: 2024-07-02 06:47:49
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -46,7 +46,7 @@ if('function' == typeof importScripts) {
 
     // Parse the keys of the provided context
     let globals = Object.keys(context);
-    let string = '';
+    let script = `import pyodide\n`;
     
     // Provide the context of the script through the globals
     for(let i = 0; i < globals.length; i++)
@@ -54,11 +54,13 @@ if('function' == typeof importScripts) {
 
     // Create a script to convert globals into Python objects
     // By default the globals are JS proxy objects
-    for(let i = 0; i < globals.length; i++)
-      string += `${globals[i]} = ${globals[i]}.to_py()\n`;
+    for(let i = 0; i < globals.length; i++) {
+      let g = globals[i];
+      script += `${g} = ${g}.to_py() if isinstance(${g}, pyodide.ffi.JsProxy) else ${g}\n`;
+    }
 
     // Run the script
-    pythonRun(string, null);
+    pythonRun(script, null);
   }
 
   /**
@@ -91,14 +93,14 @@ if('function' == typeof importScripts) {
     const { id, action, script, context } = e.data;
     
     // What we're going to return
-    let results = {};
+    let result = {};
 
     // We actually try to run the script
     try {
 
       switch(action) {
         case 'process-dispatch':
-          results = await pythonRun(script);
+          result = await pythonRun(script);
           break;
 
         case 'context-set':
@@ -107,7 +109,7 @@ if('function' == typeof importScripts) {
       }
 
       // Send to the results to the renderer thread
-      self.postMessage({ results, id });
+      self.postMessage({ result, id });
 
     // Something happened
     } catch (error) {

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-07-02 04:53:11
+ * @ Modified time: 2024-07-02 06:21:03
  * @ Description:
  */
 
@@ -115,11 +115,14 @@ export const ClientPyodide = (function() {
       _.processDispatch(script).then(output => {
         
         // Grab the details of the output
-        const { results, error } = output;
+        const { result, error } = output;
+
+        console.log('output', output)
+        console.log('result', result)
 
         // We got something back
-        if (results) {
-          resolveHandle(results); 
+        if (result) {
+          resolveHandle(result); 
           
         // The script encountered an error
         } else if (error) {
@@ -131,7 +134,7 @@ export const ClientPyodide = (function() {
           rejectHandle(error);
           
         // Results was probably undefined
-        } else if(!results) {
+        } else if(!result) {
 
           // Log that it returned nothing
           console.log('Python script executed and returned nothing.');
@@ -155,10 +158,11 @@ export const ClientPyodide = (function() {
 
   // Ensures pyodide runs faster on subsequent calls
   _.processRun(`
+    import pyodide
     import pandas as pd
     print('Warm-up script...')
     print('Pyodide configured.')
-  `, { }, e => e);
+  `);
   
   return {
     ..._,

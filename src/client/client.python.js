@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-07-02 04:55:38
+ * @ Modified time: 2024-07-02 06:47:32
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -38,14 +38,16 @@ export const ClientPython = (function() {
    * Requests for particular data from Pyodide.
    * Note that we do this by specifying the variable names of the data we want within Pyodide.
    * 
-   * @param   { object }    data  The names of the data we want from Pyodide. 
-   * @return  { Promise }         A promise for the requested data.
+   * @param   { ...string }   variables   The names of the data we want from Pyodide. 
+   * @return  { Promise }                 A promise for the requested data.
    */
-  _.dataRequest = function(data=[]) {
+  _.dataRequest = function(...variables) {
 
     // Create a script to return the data
-    const string = data.map(key => `'${key}': ${key}`).join(',\n');
+    const string = variables.map(v => `'${v}': ${v}`).join(', ');
     const script = `
+      import json
+
       out = {
         ${string}
       }
@@ -73,14 +75,24 @@ export const ClientPython = (function() {
   /**
    * Runs a custom Python script.
    * 
-   * @param   { string }    scriptName  The name of the script to run. 
+   * @param   { string }    script  The script we want to execute.
+   * @return  { Promise }           A promise for the execution of the script.
+   */
+  _.scriptRun = function(script) {
+    return ClientPyodide.processRun(script);
+  }
+
+  /**
+   * Runs a particular file from the ones we have.
+   * 
+   * @param   { string }    filename    The name of the file to run. 
    * @return  { Promise }               A promise for the execution of the script. 
    */
-  _.scriptRun = function(scriptName) {
+  _.fileRun = function(filename) {
 
     // Get the scripts from the store and run the 
     const scripts = ClientStore.select(state => state.py.scripts);
-    const script = scripts[scriptName];
+    const script = scripts[filename];
 
     // Execute the script
     return ClientPyodide.processRun(script);
@@ -88,7 +100,7 @@ export const ClientPython = (function() {
 
   // Load all the script files
   _scriptInit()
-    .then(result => _.scriptRun('df'))
+    .then(result => _.fileRun('df'))
     .then(result => console.log(result));
 
   return {
