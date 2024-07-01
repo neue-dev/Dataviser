@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-02 01:54:55
+ * @ Modified time: 2024-07-02 04:15:31
  * @ Description:
  * 
  * This represents the header of the application.
@@ -24,6 +24,7 @@ import { useSelector } from 'react-redux';
 import { ClientFS } from '../../client/client.fs'
 import { ClientDF } from '../../client/client.df'
 import { ClientOps } from '../../client/client.ops'
+import { ClientPython } from '../../client/client.python';
 
 /**
  * The header component 
@@ -40,6 +41,7 @@ export function DHeader() {
   function addFiles() {
     ClientFS.fileChoose({ type: 'directory' })(toast)
       .then(() => ClientFS.fileLoad({ encoding: 'utf-8' })(toast))
+      .then(() => ClientDF.dfLoad())
       .catch((e) => console.error(e))
   }
 

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-06-29 07:18:27
+ * @ Modified time: 2024-07-02 04:50:53
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -64,20 +64,16 @@ if('function' == typeof importScripts) {
   /**
    * Runs a python script using Pyodide.
    * 
-   * @param   { string }  python  A string contaning Python code.
+   * @param   { string }  script  A string contaning Python code.
    * @return  { object }          The results of the script.
    */
-  async function pythonRun(python, context={}) {
+  async function pythonRun(script) {
     
     // Load packages and libraries based on the script imports
-    await self.pyodide.loadPackagesFromImports(python);
-
-    // Set the context of the script first
-    if(context)
-      pythonSetContext(context);
+    await self.pyodide.loadPackagesFromImports(script);
 
     // Save the results of the script
-    return self.pyodide.runPython(python);
+    return self.pyodide.runPython(script);
   }
 
   /**
@@ -92,7 +88,7 @@ if('function' == typeof importScripts) {
     await configPyodidePromise;
 
     // Retrieve the data and the script code
-    const { id, message, python, context } = e.data;
+    const { id, action, script, context } = e.data;
     
     // What we're going to return
     let results = {};
@@ -100,9 +96,9 @@ if('function' == typeof importScripts) {
     // We actually try to run the script
     try {
 
-      switch(message) {
+      switch(action) {
         case 'process-dispatch':
-          results = await pythonRun(python, context);
+          results = await pythonRun(script);
           break;
 
         case 'context-set':

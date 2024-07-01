@@ -4,3 +4,7 @@ TODO
    Create a separate class that the first one uses to refernce data stored by redux.
 
 2. DF loader
+
+3. Put a loading screen when initializing the app
+
+4. Move the app exit button to the upper right of the screen?

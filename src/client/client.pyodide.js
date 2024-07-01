@@ -1,9 +1,11 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-06-29 07:40:51
+ * @ Modified time: 2024-07-02 04:53:11
  * @ Description:
  */
+
+import { ClientPromise } from "./client.promise";
 
 /**
  * Our own API for interacting with the Pyodide worker.
@@ -20,8 +22,6 @@ export const ClientPyodide = (function() {
   const _ = {};
   let _processId = 0;
   let _processes = {};
-  let _workerURL = _pyodideWorkerURL;
-  let _worker = _pyodideWorker;
 
   /**
    * This primarily responds to the messages sent by the worker after executing a script.
@@ -49,89 +49,77 @@ export const ClientPyodide = (function() {
   };
 
   /**
-   * We create a method for dispatching processes to the worker.
-   * These processes run Python scripts for us. 
+   * Initiates a process.
    * 
-   * @param   { string }    script    The Python script to run in the process.
-   * @param   { object }    context   The variables and data we want to pass to the script.
-   * @return  { Promise }             A promise for a complete execution of the script.
+   * @param   { string }  action  What type of process we're starting.
+   * @param   { object }  args    The arguments we're passing to the process. 
    */
-  _._processDispatch = (script, context) => {
-    
+  const _processCreate = (action, args) => {
+
     // Increment the id each time
     const id = _processId++;
 
     // We send a message to the worker to tell it to run the script.
     _pyodideWorker.postMessage({
-      message: 'process-dispatch',
-      python: script,
-      context: context,
-      id: id,
+      action, id,
+      ...args,
     });
     
     // Return a promise for the resolution of the process
-    const promise = new Promise((resolve, reject) => {
-      
-      // The function to call when the process finishes
-      // Basically, we resolve the promise we return so the caller can know it's done
-      _processes[id] = {
-        resolveHandle: resolve,
-        rejectHandle: reject,
-      };
-    });
+    const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
+
+    // The function to call when the process finishes
+    // Basically, we resolve the promise we return so the caller can know it's done
+    _processes[id] = { resolveHandle, rejectHandle };
 
     return promise;
+  }
+
+  /**
+   * We create a method for dispatching processes to the worker.
+   * These processes run Python scripts for us. 
+   * 
+   * @param   { string }    script    The Python script to run in the process.
+   * @return  { Promise }             A promise for a complete execution of the script.
+   */
+  _.processDispatch = (script) => {
+    return _processCreate('process-dispatch', { script });
   }
 
   /**
    * Defines variables (context) within the Pyodide environment that hold our data.
    * 
    * @param   { object }  context   The data and their associated names. 
+   * @return  { Promise }           A promise for a complete execution of the script.
    */
   _.processSetContext = function(context={}) {
-
-    // Sets the context of the environment
-    _pyodideWorker.postMessage({
-      message: 'context-set',
-      context, 
-    });
+    return _processCreate('context-set', { context });
   }
   
   /**
    * Wraps dispatch process around a try catch statement.
    * Also allows the user to do something after the process exits.
    * 
-   * @param   { string }    script          The string literal representing the script. 
-   * @param   { object }    context         The data we want to pass to the script.
-   * @param   { function }  callback        The function we want to execute upon the end of the script.
-   *                                            Note that we pass the result of the script to the callback.
-   * @param   { function }  errorCallback   An optional parameter for handling errors.
+   * @param   { string }    script  The string literal representing the python script. 
+   * @return  { Promise }           A promise for the execution of the script.
    */
-  _.processRun = async(script, context, callback=d=>d) => {
+  _.processRun = (script) => {
 
     // The output promise
-    let resolveHandle;
-    let rejectHandle;
-    const outPromise = new Promise((resolve, reject) => {
-      resolveHandle = resolve;
-      rejectHandle = reject;
-    });
+    const { promise: outPromise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
 
     // Try the script
     try {
 
       // Create the promise
-      const promise = _._processDispatch(script, context);
-
-      // Wait for the promise
-      promise.then(output => {
+      _.processDispatch(script).then(output => {
         
         // Grab the details of the output
         const { results, error } = output;
 
         // We got something back
         if (results) {
-          resolveHandle(callback(results)); 
+          resolveHandle(results); 
           
         // The script encountered an error
         } else if (error) {
@@ -144,17 +132,21 @@ export const ClientPyodide = (function() {
           
         // Results was probably undefined
         } else if(!results) {
+
+          // Log that it returned nothing
           console.log('Python script executed and returned nothing.');
-          resolveHandle();
+          resolveHandle('');
         }
       })
         
     // Something wrong happened with the JS
     } catch (e) {
+      
+      // Log the error
       console.error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`);
 
       // Reject the returned promise
-      rejectHandle(e);
+      rejectHandle(e.message);
     }
 
     // Return the promise

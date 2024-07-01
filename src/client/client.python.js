@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-07-01 18:40:54
+ * @ Modified time: 2024-07-02 04:55:38
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -57,43 +57,39 @@ export const ClientPython = (function() {
 
     // Return a promise for the requested data
     // Convert the final data into a JS-readable object
-    return _.scriptRun(script, data => JSON.parse(data));
+    return _.scriptRun(script).then(data => JSON.parse(data));
   }
 
   /**
    * Defines the given variables in the Python namespace.
    * 
    * @param   { object }  data  The variables to define within the namespace.
+   * @return  { Promise }       A promise for the completion of the action.
    */
   _.dataSend = function(data={}) {
-    ClientPyodide.processSetContext(data);
+    return ClientPyodide.processSetContext(data);
   }
 
   /**
    * Runs a custom Python script.
    * 
    * @param   { string }    scriptName  The name of the script to run. 
-   * @param   { function }  callback    An optional callback to deal with the data.
    * @return  { Promise }               A promise for the execution of the script. 
    */
-  _.scriptRun = function(scriptName, callback=d=>d) {
+  _.scriptRun = function(scriptName) {
 
     // Get the scripts from the store and run the 
     const scripts = ClientStore.select(state => state.py.scripts);
     const script = scripts[scriptName];
 
     // Execute the script
-    return ClientPyodide.processRun(script, {}, callback)
+    return ClientPyodide.processRun(script);
   }
 
   // Load all the script files
-  _scriptInit().then(results => {
-    
-    // Run the scripts which initialize our data structs and utils
-    // For each script, we log the output too so we know what it did
-    _.scriptRun('df', result => console.log(result));
-  })
-
+  _scriptInit()
+    .then(result => _.scriptRun('df'))
+    .then(result => console.log(result));
 
   return {
     ..._,
