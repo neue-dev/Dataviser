@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-02 00:10:21
+ * @ Modified time: 2024-07-02 01:37:07
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -13,7 +13,7 @@ import * as React from 'react';
 import GridLayout from 'react-grid-layout';
 
 // Custom hooks
-import { useWindow } from '../hooks/useWindow'
+import { useWindow } from '../../hooks/useWindow'
 
 /**
  * This acts as the grid that holds all our components together.
@@ -34,6 +34,7 @@ export function DLayout(props={}) {
   // Define the elements in the layout
   const _layout = [];
   
+  // For each child in the layout
   props.children.map(child => {
 
     // Get the props of the child
@@ -53,13 +54,16 @@ export function DLayout(props={}) {
     })
   })
 
+  // Create the grid layout
   return (
-    <GridLayout
-      className="layout" layout={ _layout }
-      cols={ _colCount } rowHeight={ _rowHeight }
-      width={ _width }>
-
-      { _layout.map(child => (<div key={ child.i }>{ props.children[props.children.indexOf(child.elem)] }</div>)) }
+    <GridLayout className="layout" layout={ _layout } width={ _width } height={ _height } 
+      cols={ _colCount } rowHeight={ _rowHeight }>
+      
+      { _layout.map(child => (
+        <div key={ child.i }>
+          { props.children[props.children.indexOf(child.elem)] }
+        </div>
+      ))}
     </GridLayout>
   );
 }
