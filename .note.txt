@@ -11,5 +11,6 @@ make sure to show cancel operation when cancelling folder select
 [ hot reload main process in electron? ]                  https://github.com/electron/forge/issues/682
 [ importScripts not defined ]                             https://stackoverflow.com/questions/14500091/uncaught-referenceerror-importscripts-is-not-defined
 [ is it good practice to resolve promises externally? ]   https://stackoverflow.com/questions/26150232/how-can-i-access-promise-resolution-callbacks-outside-the-promise-constructor-ca
+[ isinstance() in Python ]                                https://stackoverflow.com/questions/152580/whats-the-canonical-way-to-check-for-type-in-python
 [ pyodide! ]                                              https://pyodide.org/en/stable/
 [ redux in electron ]                                     https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
