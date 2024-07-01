@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-02 07:00:06
+ * @ Modified time: 2024-07-02 07:05:48
  * @ Description:
  * 
  * This represents the header of the application.
@@ -41,7 +41,7 @@ export function DHeader() {
   function addFiles() {
     ClientFS.fileChoose({ type: 'directory' })(toast)
       .then(() => ClientFS.fileLoad({ encoding: 'utf-8' })(toast))
-      .then(() => ClientDF.dfLoad())
+      .then(() => ClientDF.dfLoad()(toast))
       .catch((e) => console.error(e))
   }
 

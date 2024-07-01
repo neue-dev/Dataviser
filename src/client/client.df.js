@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-02 07:03:05
+ * @ Modified time: 2024-07-02 07:06:08
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -10,6 +10,7 @@
 import { ClientPromise } from './client.promise';
 import { ClientPython } from './client.python';
 import { ClientStore } from './client.store.api'; 
+import { ClientToast } from './client.toast';
 
 export const ClientDF = (function() {
 
@@ -57,7 +58,12 @@ export const ClientDF = (function() {
       .catch((e) => rejectHandle(e));
 
     // Return the promise
-    return promise;
+    return ClientToast.createToaster({ 
+      promise,
+      success: 'Files were converted into Pandas dataframes.',
+      loading: 'Creating dataframes...',
+      failure: 'Could not create dataframes.'
+    });
   }
 
   return {
