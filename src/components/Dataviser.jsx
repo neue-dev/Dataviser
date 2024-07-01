@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-01 23:58:28
+ * @ Modified time: 2024-07-02 00:01:54
  * @ Description:
  * 
  * The main component that houses the app.
@@ -34,7 +34,7 @@ export function Dataviser() {
 
   return (
     <DLayout> 
-      <DraftHeader i="ha"/>  
+      <DraftHeader i="ha" static="true" w="max"/>  
       <DraftHeader i="ha1"/>  
       <div i="hmm" >hellooo</div>
       <div i="smth" >hii</div>

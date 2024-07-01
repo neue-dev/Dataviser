@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-01 23:58:16
+ * @ Modified time: 2024-07-02 00:01:24
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -41,11 +41,12 @@ export function DLayout(props={}) {
 
     // Add a cell to the layout
     _layout.push({
+      ...childProps,
       i: childProps.i ?? '',
-      x: childProps.x ?? 1,
-      y: childProps.y ?? 1,
-      w: childProps.w ?? 1,
-      h: childProps.h ?? 1,
+      x: childProps.x ?? 0,
+      y: childProps.y ?? 0,
+      w: childProps.w ?? childProps.w == 'max' ? _colCount : 1,
+      h: childProps.h ?? childProps.h == 'max' ? _rowCount : 1,
 
       elem: child,
       resizeHandles: _handles,
