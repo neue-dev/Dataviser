@@ -64,6 +64,11 @@
   overflow: hidden;
 }
 
+.title {
+  font-size: 3.2rem !important;
+  font-family: var(--header-font) !important;
+}
+
 .chakra-heading {
   font-family: var(--header-font) !important;
   /* font-size: 4em !important; */

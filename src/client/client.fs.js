@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-30 00:11:35
- * @ Modified time: 2024-07-01 02:51:29
+ * @ Modified time: 2024-07-02 00:45:16
  * @ Description:
  * 
  * Links the store and the fs management together.
@@ -12,7 +12,8 @@
 import { ClientIPC } from './client.ipc'
 import { ClientStore } from './client.store.api'
 
-// Toaster
+// Toaster and promise
+import { ClientPromise } from './client.promise'
 import { ClientToast } from './client.toast'
 
 export const ClientFS = (function() {
@@ -61,11 +62,26 @@ export const ClientFS = (function() {
       'fs/choose-files' : 
       'fs/choose-directories';
 
-    // Make a request to select files
-    const promise = ClientIPC.requestSender('fs', action)([])
+    // The toast promise
+    const { 
+      promise, 
+      resolveHandle, 
+      rejectHandle 
+    } = ClientPromise.createPromise();
 
     // Grab the filepaths returnd, which is in results[0]
-    promise.then(results => _storeFileCreate(results[0]))
+    ClientIPC.requestSender('fs', action)([]).then(results => {
+
+      // Reject the promise
+      if(!results[0].length) {
+        rejectHandle('No files were chosen');
+
+      // Resolve the promise
+      } else { 
+        resolveHandle();
+        _storeFileCreate(results[0])
+      } 
+    })
 
     // Return a toaster
     return ClientToast.createToaster({ 
@@ -86,11 +102,26 @@ export const ClientFS = (function() {
     // Grab the filepaths we have in the store
     const filepaths = ClientStore.select(state => Object.keys(state.fs.filenames));
 
-    // Request to load the files
-    const promise = ClientIPC.requestSender('fs', 'fs/load-files')(filepaths, options);
+    // The toast promise
+    const { 
+      promise, 
+      resolveHandle, 
+      rejectHandle 
+    } = ClientPromise.createPromise();
 
     // Save to the store after
-    promise.then(results => _storeFileSave(results[0]));
+    ClientIPC.requestSender('fs', 'fs/load-files')(filepaths, options).then(results => {
+      
+      // Reject the promise
+      if(!results[0].length) {
+        rejectHandle('Files could not be loaded.');
+
+      // Resolve the promise
+      } else { 
+        resolveHandle();
+        _storeFileSave(results[0])
+      }
+    });
 
     // Return a toaster
     return ClientToast.createToaster({ 

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-07-01 02:43:01
+ * @ Modified time: 2024-07-02 00:20:59
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -44,6 +44,10 @@ export const FS = (function() {
         properties: [ 'openFile', 'multiSelections' ]
       });
 
+      // The user cancelled the picking
+      if(!dirpaths)
+        return [];
+
       return filepaths;
     }
   }
@@ -63,6 +67,10 @@ export const FS = (function() {
 
       // Save the filepaths here
       const filepaths = [];
+
+      // The user cancelled the picking
+      if(!dirpaths)
+        return [];
       
       // Grab all the files in the directory
       dirpaths.forEach(dirpath => 

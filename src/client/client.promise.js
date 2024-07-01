@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 00:26:47
- * @ Modified time: 2024-07-02 00:31:13
+ * @ Modified time: 2024-07-02 00:36:20
  * @ Description:
  * 
  * Utilities for promise handling.
@@ -27,6 +27,9 @@ export const ClientPromise = (function() {
       resolveHandle = resolve;
       rejectHandle = reject;
     });
+
+    // Error logging
+    promise.catch(e => console.error(e));
 
     // Return everything
     return { promise, resolveHandle, rejectHandle };

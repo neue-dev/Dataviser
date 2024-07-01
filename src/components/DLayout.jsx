@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-02 00:01:24
+ * @ Modified time: 2024-07-02 00:10:21
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -24,7 +24,7 @@ export function DLayout(props={}) {
 
   // Get window dimensions and row-col properties from that
   const { innerWidth: _width, innerHeight: _height } = useWindow();
-  const _rowCount = 7, _colCount = 9;
+  const _rowCount = 15, _colCount = 21;
   const _rowHeight = _height / _rowCount;
   const _colWidth = _width / _colCount;
 
@@ -43,10 +43,10 @@ export function DLayout(props={}) {
     _layout.push({
       ...childProps,
       i: childProps.i ?? '',
-      x: childProps.x ?? 0,
-      y: childProps.y ?? 0,
-      w: childProps.w ?? childProps.w == 'max' ? _colCount : 1,
-      h: childProps.h ?? childProps.h == 'max' ? _rowCount : 1,
+      x: parseInt(childProps.x) || 0,
+      y: parseInt(childProps.y) || 0,
+      w: parseInt(childProps.w) || (childProps.w == 'max' ? _colCount : 1),
+      h: parseInt(childProps.h) || (childProps.h == 'max' ? _rowCount : 1),
 
       elem: child,
       resizeHandles: _handles,

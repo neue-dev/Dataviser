@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-02 00:01:54
+ * @ Modified time: 2024-07-02 00:41:08
  * @ Description:
  * 
  * The main component that houses the app.
@@ -11,7 +11,7 @@
 import * as React from 'react';
 
 // Chakra and others
-import { Button, Flex, HStack, Text } from '@chakra-ui/react';
+import { Button, Heading, HStack, Text } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
 
 // Redux
@@ -34,14 +34,11 @@ export function Dataviser() {
 
   return (
     <DLayout> 
-      <DraftHeader i="ha" static="true" w="max"/>  
-      <DraftHeader i="ha1"/>  
+      <Header i="ha" static="true" w="max" h="2" />  
+      <Header i="ha1"/>  
       <div i="hmm" >hellooo</div>
       <div i="smth" >hii</div>
     </DLayout>
-    // <Flex p="2em" placeItems="left">
-    //   <DraftHeader />  
-    // </Flex>
   )
 }
 
@@ -50,7 +47,7 @@ export function Dataviser() {
  * 
  * @returns 
  */
-function DraftHeader() {
+function Header() {
 
   const filenames = useSelector(state => state);
   const dispatch = useDispatch();
@@ -58,7 +55,8 @@ function DraftHeader() {
 
   function addFiles() {
     ClientFS.fileChoose({ type: 'directory' })(toast)
-      .then(() => ClientFS.fileLoad({ encoding: 'utf-8' })(toast));
+      .then(() => ClientFS.fileLoad({ encoding: 'utf-8' })(toast))
+      .catch((e) => console.error(e))
   }
 
   function viewFiles() {
@@ -70,7 +68,8 @@ function DraftHeader() {
   }
 
   return (
-    <HStack>
+    <HStack pt="0.8em" pl="1em">
+      <Heading className="title">dataviser</Heading>
       <DraftButton text="add files" action={ addFiles } />
       <DraftButton text="view files" action={ viewFiles } />
       <DraftButton text="add charts" action={ addCharts } />
@@ -91,11 +90,11 @@ function DraftButton(props={}) {
 
   return (
     <Button 
-      w="10em" h="5em" 
-      fontSize="0.8rem" 
+      w="10em" h="5em"  
+      fontSize="0.6rem"
       onClick={ action }>
       
-      <Text>        
+      <Text fontSize="1.25em">        
         { text }
       </Text>
     </Button>
