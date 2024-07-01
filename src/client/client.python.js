@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-07-01 17:46:06
+ * @ Modified time: 2024-07-01 18:40:54
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -12,7 +12,7 @@ import { ClientPyodide } from "./client.pyodide";
 import { ClientStore } from './client.store.api';
 
 export const ClientPython = (function() {
-  
+
   const _ = {};
 
   /**
@@ -28,7 +28,7 @@ export const ClientPython = (function() {
     const dispatch = ClientStore.storeDispatcher('py/pyScriptSave');
 
     // Dispatch the action to the store afterwards
-    promise.then(scripts => dispatch(scripts))
+    promise.then(scripts => dispatch({ scripts }))
 
     // Return 
     return promise;
@@ -86,7 +86,14 @@ export const ClientPython = (function() {
     return ClientPyodide.processRun(script, {}, callback)
   }
 
-  _scriptInit();
+  // Load all the script files
+  _scriptInit().then(results => {
+    
+    // Run the scripts which initialize our data structs and utils
+    // For each script, we log the output too so we know what it did
+    _.scriptRun('df', result => console.log(result));
+  })
+
 
   return {
     ..._,

@@ -78,27 +78,5 @@ class DF:
     '''
     return DF(dataframe, [], None)
 
-
-# '''
-# All code below this comment are not meant to be used in the app.
-# They are here for debugging purposes.
-# '''
-# if __name__ == '__main__':
-  
-#   import pandas as pd
-
-#   def test(dataframe):
-#     return dataframe.transpose(), 'transposed dataframe'
-
-#   dataframe = pd.read_csv('../.debug/data/OD_matrix_province_Apr19.csv');
-
-#   df = DF.of(dataframe)
-
-#   print(df.getDf().to_string)
-#   df = df \
-#     .map(test) \
-#     .map(test) \
-#     .map(test);
-
-#   print(df.getDf().to_string)
-#   print(df.getLogs())
+# Progress log
+print('Loaded df.py.')

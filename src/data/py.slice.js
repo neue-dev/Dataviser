@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 16:59:51
- * @ Modified time: 2024-07-01 17:37:12
+ * @ Modified time: 2024-07-01 18:37:33
  * @ Description:
  * 
  * This slice stores the python scripts and stuff we'll be using for the app.
@@ -30,7 +30,7 @@ export const pySlice = createSlice({
      * @param { state }   state   The value of the current state. 
      * @param { action }  action  The details of the action.
      */
-    fsScriptSave: (state, action) => {
+    pyScriptSave: (state, action) => {
       
       // Parse the action data
       const scripts = action?.payload?.scripts;
