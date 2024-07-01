@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-02 01:38:59
+ * @ Modified time: 2024-07-02 01:54:55
  * @ Description:
  * 
  * This represents the header of the application.
@@ -15,7 +15,7 @@ import { Button, Divider, Heading, HStack, Text, VStack } from '@chakra-ui/react
 import { useToast } from '@chakra-ui/react';
 
 // Icons
-import { BiFolderPlus, BiFolderOpen, BiLayerPlus } from "react-icons/bi";
+import { BiFolderPlus, BiFolderOpen, BiLayerPlus, BiWindowClose } from "react-icons/bi";
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -23,6 +23,7 @@ import { useSelector } from 'react-redux';
 // Client stuff
 import { ClientFS } from '../../client/client.fs'
 import { ClientDF } from '../../client/client.df'
+import { ClientOps } from '../../client/client.ops'
 
 /**
  * The header component 
@@ -52,12 +53,18 @@ export function DHeader() {
     console.log('added chart');
   }
 
+  // Closes the app
+  function appExit() {
+    ClientOps.appExit();
+  }
+
   return (
     <VStack align="left" pb="1.5em">
       <HStack spacing={ 3 } pt="1.5em" pl="2.4em">
         <DHeaderButton text="add files" action={ addFiles } Icon={ BiFolderPlus } />
         <DHeaderButton text="view files" action={ viewFiles } Icon={ BiFolderOpen } />
         <DHeaderButton text="add chart" action={ addChart } Icon={ BiLayerPlus } />
+        <DHeaderButton text="exit app" action={ appExit } Icon={ BiWindowClose } />
         <Heading className="title" mt="0.01em" ml="0.5em" opacity="0.7">dataviser</Heading>
       </HStack>
       <Divider orientation="horizontal"/>
