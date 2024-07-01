@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:41:45
- * @ Modified time: 2024-07-01 16:57:03
+ * @ Modified time: 2024-07-01 23:25:06
  * @ Description:
  * 
  * This file reads all the python scripts and forwards them to the renderer process.

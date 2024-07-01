@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-01 23:16:05
+ * @ Modified time: 2024-07-01 23:28:30
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -11,6 +11,9 @@ import * as React from 'react';
 
 // React grid layout
 import GridLayout from 'react-grid-layout';
+
+// Custom hooks
+import { useWindow } from '../hooks/useWindow'
 
 /**
  * This acts as the grid that holds all our components together.
@@ -24,7 +27,7 @@ export function DLayout() {
     { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4, resizeHandles: _handles },
     { i: "c", x: 4, y: 0, w: 1, h: 2, resizeHandles: _handles }
   ];
-  const _width = 1920;
+  const { innerWidth: _width, innerHeight: _height } = useWindow();
 
   return (
     <GridLayout

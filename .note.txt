@@ -1,14 +1,15 @@
 D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\dataviser\.debug\data
 make sure to show cancel operation when cancelling folder select
 
-amazing: how to properly do ipc in electron           https://jaketrent.com/post/select-directory-in-electron/
-d3                                                    https://d3js.org/
-d3 guide                                              https://d3-graph-gallery.com/graph/chord_basic.html
-d3 in depth                                           https://www.d3indepth.com/axes/
-pyodide!                                              https://pyodide.org/en/stable/
-another cors problem                                  https://stackoverflow.com/questions/70132291/electron-content-security-policy-error-when-connecting-to-my-api
-importScripts not defined                             https://stackoverflow.com/questions/14500091/uncaught-referenceerror-importscripts-is-not-defined
-redux in electron                                     https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
-hot reload main process in electron?                  https://github.com/electron/forge/issues/682
-is it good practice to resolve promises externally?   https://stackoverflow.com/questions/26150232/how-can-i-access-promise-resolution-callbacks-outside-the-promise-constructor-ca
-electron dialog api                                   https://www.electronjs.org/docs/latest/api/dialog 
+[ amazing: how to properly do ipc in electron ]           https://jaketrent.com/post/select-directory-in-electron/
+[ another cors problem ]                                  https://stackoverflow.com/questions/70132291/electron-content-security-policy-error-when-connecting-to-my-api
+[ d3 ]                                                    https://d3js.org/
+[ d3 guide ]                                              https://d3-graph-gallery.com/graph/chord_basic.html
+[ d3 in depth ]                                           https://www.d3indepth.com/axes/
+[ electron dialog api ]                                   https://www.electronjs.org/docs/latest/api/dialog 
+[ getting window dimensions in react ]                    https://stackoverflow.com/questions/36862334/get-viewport-window-height-in-reactjs
+[ hot reload main process in electron? ]                  https://github.com/electron/forge/issues/682
+[ importScripts not defined ]                             https://stackoverflow.com/questions/14500091/uncaught-referenceerror-importscripts-is-not-defined
+[ is it good practice to resolve promises externally? ]   https://stackoverflow.com/questions/26150232/how-can-i-access-promise-resolution-callbacks-outside-the-promise-constructor-ca
+[ pyodide! ]                                              https://pyodide.org/en/stable/
+[ redux in electron ]                                     https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
