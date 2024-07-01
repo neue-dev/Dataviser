@@ -1,10 +1,6 @@
 TODO
 
-1. Instead of loading the file data unto the cache object of the main.fs.js file, load them unto the redux store.
-   Check whether this is possible (since the store exists in the renderer thread iirc).
-
-2. Create a composbale class that represents a visualization
+1. Create a composbale class that represents a visualization
    Create a separate class that the first one uses to refernce data stored by redux.
 
-3. Make logic of doing toasts cleaner
-   instead of a chain of raw promises, create a class for handling that 
+2. DF loader
