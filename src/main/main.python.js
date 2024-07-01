@@ -1,13 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:41:45
- * @ Modified time: 2024-07-01 03:04:48
+ * @ Modified time: 2024-07-01 16:57:03
  * @ Description:
  * 
  * This file reads all the python scripts and forwards them to the renderer process.
  */
 
 const fs = require('node:fs');
+import { ipcMain } from 'electron';
 
 export const Python = (function() {
   
@@ -23,7 +24,7 @@ export const Python = (function() {
    * @param   { string }  filepath  The path to the script.
    * @return  { string }            The text content of the script.
    */
-  _scriptLoad = function(filepath) {
+  const _scriptLoad = function(filepath) {
     return fs.readFileSync(filepath, { encoding: 'utf-8' });
   }
 
@@ -31,7 +32,7 @@ export const Python = (function() {
    * Loads all the Python scripts into memory.
    * Forwards them to the renderer process.
    */
-  _scriptLoadAll = function() {
+  const _scriptLoadAll = function() {
 
     // Script keys
     const scriptNames = Object.keys(_scripts);
