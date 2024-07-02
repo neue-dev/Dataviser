@@ -23,25 +23,24 @@ import { useParentDimensions } from '../hooks/useParentDimensions'
 export function DVisual(props={}) {
 
   // A reference to the current element
-  const ref = useRef(null);
-
-  // Each visualization should have a unique id
+  // Each visualization also has a unique id
+  const _ref = useRef(null);
   const _id = '_' + crypto.randomUUID();
 
-  // The dimensions of the visual
+  // The dimensions of the visual,
   const [ _width, _setWidth ] = useState(0);
   const [ _height, _setHeight ] = useState(0);
   const _padding = props.padding ?? 32;
-
-  // Use the parent dimensions
-  useParentDimensions(ref, _setWidth, _setHeight);
 
   // Grab some of the props
   const _title = props.title ?? 'Graph';
   const _subtitle = props.subtitle ?? 'This is a graph about the thing in the thing.';
 
+  // Use the parent dimensions
+  useParentDimensions(_ref, _setWidth, _setHeight);
+  
   return (
-    <Card className={ _id } ref={ ref } boxShadow="lg" style={{
+    <Card className={ _id } ref={ _ref } boxShadow="lg" style={{
       width: _width,
       height: _height,
       padding: _padding,

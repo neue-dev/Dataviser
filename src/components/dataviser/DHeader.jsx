@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-02 18:18:47
+ * @ Modified time: 2024-07-02 20:55:47
  * @ Description:
  * 
  * This represents the header of the application.
@@ -24,12 +24,14 @@ import { useSelector } from 'react-redux';
 import { ClientFS } from '../../client/client.fs'
 import { ClientDF } from '../../client/client.df'
 import { ClientOps } from '../../client/client.ops'
-import { ClientPython } from '../../client/client.python';
+
+// Our logic
+import { ourMetaParser } from '../../our/our'
 
 /**
  * The header component 
  * 
- * @returns 
+ * @component
  */
 export function DHeader() {
 
@@ -37,30 +39,12 @@ export function DHeader() {
   const filenames = useSelector(state => state);
   const toast = useToast();
 
-  // A function that parses file metadata
-  // A callback we pass to fileLoad()
-  function _ourMetaParser(filename) {
-
-    // Define some other params abt the file
-    const dateString = filename.split('_').slice(-1)[0].split('.')[0];
-    const months = [ 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec' ];
-    
-    // Define the date params
-    const day = parseInt(dateString.slice(-2))
-    const month = months.indexOf(dateString.slice(0, 3).toLowerCase())
-    const year = 2024;
-    const date = (new Date(year, month, day)).getTime();
-
-    // Return the metadata
-    return { day, month, year, date };
-  }
-
   // The action of the add files button
   function addFiles() {
 
     // Callback options
     const chooseOptions = { type: 'directory' };
-    const loadOptions = { encoding: 'utf-8', metaParser: _ourMetaParser };
+    const loadOptions = { encoding: 'utf-8', metaParser: ourMetaParser };
 
     // Select the files, save them, then load them as dfs
     ClientFS.fileChoose(chooseOptions)(toast)
