@@ -1,19 +1,21 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-03 05:12:12
+ * @ Modified time: 2024-07-03 05:34:05
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
  */
 
 import * as React from 'react';
+import { useContext } from 'react';
 
 // React grid layout
 import GridLayout from 'react-grid-layout';
 
-// Custom hooks
+// Custom hooks and contexts
 import { useWindowDimensions } from '../../hooks/useWIndowDimensions'
+import { DataviserContext } from '../Dataviser.ctx';
 
 /**
  * This acts as the grid that holds all our components together.
@@ -22,17 +24,17 @@ import { useWindowDimensions } from '../../hooks/useWIndowDimensions'
  */
 export function DLayout(props={}) {
 
+  // Get the state
+  const _state = useContext(DataviserContext);
+
   // Get window dimensions and row-col properties from that
   const { width: _width, height: _height } = useWindowDimensions();
   const _rowCount = 18, _colCount = 32;
-  const _rowHeight = _height / _rowCount;
-  const _colWidth = _width / _colCount;
-
-  // The resize handles we're using
-  const _handles = [ 'sw', 'nw', 'se', 'ne' ];
+  const _rowHeight = _height / _rowCount;       // The size of each row
+  const _colWidth = _width / _colCount;         // The size of each column
   
-  // Define the elements in the layout
-  const _layout = [];
+  const _handles = [ 'sw', 'nw', 'se', 'ne' ];  // The resize handles we're using 
+  const _layout = [];                           // Define the elements in the layout
   
   // For each child in the layout
   props.children.map(child => {
@@ -64,8 +66,8 @@ export function DLayout(props={}) {
       { _layout.map(child => (
         <div key={ child.i }>
           { props.children[props.children.indexOf(child.elem)] }
-        </div>
-      ))}
+        </div>))
+      }
     </GridLayout>
   );
 }

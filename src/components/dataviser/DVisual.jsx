@@ -28,7 +28,7 @@ export function DVisual(props={}) {
   // Each visualization also has a unique id
   const [ _state, _setState ] = useState(DVisualContextInitial);
   const _ref = useRef(null);
-  const _id = '_' + crypto.randomUUID();
+  const _id = props.id ?? '';
 
   // The dimensions of the visual,
   const [ _width, _setWidth ] = useState(0);

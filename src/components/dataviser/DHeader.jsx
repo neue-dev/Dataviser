@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-03 04:02:32
+ * @ Modified time: 2024-07-03 05:42:21
  * @ Description:
  * 
  * This represents the header of the application.
@@ -9,13 +9,18 @@
  */
 
 import * as React from 'react'
+import { useContext } from 'react';
 
 // Chakra components
-import { Button, Divider, Heading, HStack, Text, VStack } from '@chakra-ui/react'
+import { Heading, Text } from '@chakra-ui/react'
+import { Button, Divider, HStack, VStack } from '@chakra-ui/react'
 import { useToast } from '@chakra-ui/react';
 
 // Icons
-import { BiFolderPlus, BiFolderOpen, BiLayerPlus, BiWindowClose } from "react-icons/bi";
+import { BiFolderPlus } from "react-icons/bi";
+import { BiFolderOpen } from "react-icons/bi";
+import { BiLayerPlus } from "react-icons/bi";
+import { BiWindowClose } from "react-icons/bi";
 
 // Redux
 import { useSelector } from 'react-redux';
@@ -28,6 +33,9 @@ import { ClientOps } from '../../client/client.ops'
 // Our logic
 import { ourMetaParser } from '../../our/our'
 
+// Comps and contexts
+import { DataviserContext } from '../Dataviser.ctx';
+
 /**
  * The header component 
  * 
@@ -36,10 +44,14 @@ import { ourMetaParser } from '../../our/our'
 export function DHeader() {
 
   // Grab the filenames for display, toast for toasting
-  const filenames = useSelector(state => state);
-  const toast = useToast();
+  const _filenames = useSelector(state => state);
+  const _toast = useToast();
+  const _state = useContext(DataviserContext);
 
-  // The action of the add files button
+  /**
+   * Prompts the user to select files from their device.
+   * Adds the files to the store.
+   */
   function addFiles() {
 
     // Callback options
@@ -47,23 +59,45 @@ export function DHeader() {
     const loadOptions = { encoding: 'utf-8', metaParser: ourMetaParser };
 
     // Select the files, save them, then load them as dfs
-    ClientFS.fileChoose(chooseOptions)(toast)
-      .then(() => ClientFS.fileLoad(loadOptions)(toast))
-      .then(() => ClientDF.dfLoad()(toast))
+    ClientFS.fileChoose(chooseOptions)(_toast)
+      .then(() => ClientFS.fileLoad(loadOptions)(_toast))
+      .then(() => ClientDF.dfLoad()(_toast))
       .catch((e) => console.error(e))
   }
 
-  // The action of the view files button
+  /**
+   * Evokes a popup that displays the files saved in the store.
+   * //! todo
+   */
   function viewFiles() {
-    console.log(Object.values(filenames));
+    console.log(Object.values(_filenames));
   }
 
-  // The action of the add chart button
+  /**
+   * Adds a new visualization to our state. 
+   * // ! todo
+   */
   function addChart() {
-    console.log('added chart');
+
+    // Create a new vis
+    const dvisuals = _state.dvisuals;
+    const dvisual = {
+      id: '_' + crypto.randomUUID(),
+      title: 'New Graph', 
+      subtitle: 'click the edit icon on the upper right to change this chart', 
+      x: 0, y: 0, w: 10, h: 6
+    };
+
+    // Push the dvisual
+    dvisuals.push(dvisual);
+
+    // Push the visual
+    _state.set({ dvisuals })
   }
 
-  // Closes the app
+  /**
+   * Closes the app.
+   */
   function appExit() {
     ClientOps.appExit();
   }
