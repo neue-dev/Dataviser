@@ -1,6 +1,8 @@
 TODO
 
-BEFORE SAVING THE DFS INTO THE STORE, MAKE SURE TO CONVERT THEM INTO PANDAS DATAFRAMES IN PYODIDE
+0.1 BEFORE SAVING THE DFS INTO THE STORE, MAKE SURE TO CONVERT THEM INTO PANDAS DATAFRAMES IN PYODIDE
+0.2 grab metadata THEN save it in the store (the parsing of the metadata should be done outside, in FS module)
+0.3 
 
 1. Create a composbale class that represents a visualization
    Create a separate class that the first one uses to refernce data stored by redux.

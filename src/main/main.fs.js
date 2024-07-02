@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-07-02 00:20:59
+ * @ Modified time: 2024-07-02 15:26:57
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -10,6 +10,9 @@
 // Modules
 const fs = require('node:fs');
 const { dialog } = require('electron'); 
+
+// Utils
+import { Utils } from './main.utils'
 
 /**
  * The file system object provides us with utilities to manage files opened by the user.
@@ -21,6 +24,27 @@ export const FS = (function() {
   let _mainWindow = null;
 
   const _ = {};
+
+  /**
+   * Just a small helper function.
+   * 
+   * @param   { string }  filepath  The filepath to parse.
+   * @return  { string }            The filename. 
+   */
+  const _getFilename = function(filepath) {
+    return filepath.split('\\').slice(-1)[0].split('/').slice(-1)[0];
+  }
+
+  /**
+   * Another small helper function.
+   * 
+   * @param   { string }  dirpath   The directory path of the file. 
+   * @param   { string }  filename  The name of the file.
+   * @return  { string }            The complete filepath of the file.
+   */
+  const _getFilepath = function(dirpath, filename) {
+    return `${dirpath}\\${filename}`;
+  }
 
   /**
    * Initializes the fs object.
@@ -44,11 +68,17 @@ export const FS = (function() {
         properties: [ 'openFile', 'multiSelections' ]
       });
 
-      // The user cancelled the picking
-      if(!dirpaths)
+      // If the user cancelled the action
+      if(!filepaths)
         return [];
 
-      return filepaths;
+      // The actual data to send back
+      // Contains filepaths and filenames
+      const result = filepaths.map(filepath => {
+        return { filepath, filename: _getFilename(filepath) }
+      })
+
+      return result;
     }
   }
 
@@ -65,30 +95,38 @@ export const FS = (function() {
         properties: [ 'openDirectory', 'multiSelections' ]
       });
 
-      // Save the filepaths here
-      const filepaths = [];
-
       // The user cancelled the picking
       if(!dirpaths)
         return [];
       
+      // Save the filepaths here
+      const result = [];
+      
       // Grab all the files in the directory
       dirpaths.forEach(dirpath => 
-        fs.readdirSync(dirpath).forEach(filepath =>
-          filepaths.push(`${dirpath}\\${filepath}`)));
+        fs.readdirSync(dirpath).forEach(filename =>
+          result.push({
+            filepath: _getFilepath(dirpath, filename),
+            filename: filename,
+          })));
           
       // Return the filepaths
-      return filepaths;
+      return result;
     }
   }
 
   /**
    * Creates a file reader for the given filepath.
+   * Note that the filename includes the extension.
    * 
    * @returns   { function }            A file reader that reads a given file when called.
    */
   _.fileCreateReader = function() {
     return function(e, filepaths, options={}) {
+
+      // Parses metadata of the file
+      const metaParser = options.metaParser ? 
+        Utils.deserializeFunction(options.metaParser) : (d => {{}});
 
       // Append the file contents and stuff here
       const result = [];
@@ -98,10 +136,12 @@ export const FS = (function() {
 
         // The file contents
         const data = fs.readFileSync(filepath, options);
+        const filename = filepath.split('/').slice(-1)[0].split('\\').slice(-1)[0];
         const extension = filepath.split('.').slice(-1)[0];
+        const metadata = metaParser(filename);
 
         // Append the result
-        result.push({ filepath, data, extension })
+        result.push({ filepath, filename, metadata, data, extension })
       })
 
       // Return the data

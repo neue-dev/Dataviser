@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 23:17:37
- * @ Modified time: 2024-06-30 03:56:03
+ * @ Modified time: 2024-07-02 14:36:36
  * @ Description:
  * 
  * Stores the raw file data we gather from the files we add.
@@ -29,6 +29,9 @@ export const fsSlice = createSlice({
 
     // All the data of each of our files, INDEXED BY ID
     filedata: {},
+
+    // All the metadata of the files
+    filemeta: {},
   },
 
   reducers: {
@@ -44,14 +47,53 @@ export const fsSlice = createSlice({
 
       // Parse the action details
       const filepath = action?.payload?.filepath ?? null;
+      const filename = action?.payload?.filename ?? null;
 
       // If the filepath was missing
-      if(filepath == null)
+      if(filepath == null || filename == null)
         return state;
 
       // Otherwise, save the entry to the state
-      state.filenames[filepath] = filepath.split('\\').slice(-1)[0];
-      state.filedata[filepath] = '';
+      state.filenames[filepath] = filename;
+      state.filedata[filepath] = {};
+    },
+
+    /**
+     * Saves the provided meta data of the file in the store.
+     * 
+     * @param { state }   state   The value of the current state. 
+     * @param { action }  action  The details of the action.
+     */
+    fsFileMeta: (state, action) => {
+      
+      // Parse the action details
+      const filepath = action?.payload?.filepath ?? null;
+      const filename = action?.payload?.filename ?? null;
+      const metadata = action?.payload?.metadata ?? null;
+
+      // If the filepath and filename was missing, we can't index anything
+      if(filepath == null && filename == null)
+        return state;
+
+      // If metadata is missing, there's nothing to save
+      if(metadata == null)
+        return state;
+
+      // Otherwise, save the entry to the state
+      // If the filepath is defined, we choose this method
+      if(filepath) {
+        state.filemeta[filepath] = metadata;
+
+      // If the filename is defined and the filepath isn't, we use this
+      } else if(filename) {
+
+        // Look for the key
+        const keys = Object.keys(state.filenames);
+        const key = keys.find(key => state.filenames[key] == filename);
+
+        // Save the metadata
+        state.filemeta[key] = metadata;        
+      }
     },
 
     /**

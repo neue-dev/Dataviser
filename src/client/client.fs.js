@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-30 00:11:35
- * @ Modified time: 2024-07-02 00:45:16
+ * @ Modified time: 2024-07-02 15:14:11
  * @ Description:
  * 
  * Links the store and the fs management together.
@@ -23,15 +23,15 @@ export const ClientFS = (function() {
   /**
    * Creates the filenames within the store.
    * 
-   * @param   { array }   filepaths   The array of filenames to save.
+   * @param   { array }   files   The array of filenames and filepaths to save.
    */
-  const _storeFileCreate = function(filepaths) {
+  const _storeFileCreate = function(files) {
     
     // Create a dispatch function for that action
     const dispatch = ClientStore.storeDispatcher('fs/fsFileCreate');
 
     // For each filepath
-    filepaths.forEach(filepath => dispatch({ filepath }))
+    files.forEach(file => dispatch(file))
   }
 
   /**
@@ -42,10 +42,12 @@ export const ClientFS = (function() {
   const _storeFileSave = function(files) {
     
     // Make a request to load the filepaths
-    const dispatch = ClientStore.storeDispatcher('fs/fsFileLoad');
+    const dispatchLoad = ClientStore.storeDispatcher('fs/fsFileLoad');
+    const dispatchMeta = ClientStore.storeDispatcher('fs/fsFileMeta');
 
     // Save the data for each filepath
-    files.forEach(filedata => dispatch(filedata))
+    files.forEach(file => dispatchLoad(file))
+    files.forEach(file => dispatchMeta(file))
   }
 
   /**
@@ -63,11 +65,7 @@ export const ClientFS = (function() {
       'fs/choose-directories';
 
     // The toast promise
-    const { 
-      promise, 
-      resolveHandle, 
-      rejectHandle 
-    } = ClientPromise.createPromise();
+    const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
 
     // Grab the filepaths returnd, which is in results[0]
     ClientIPC.requestSender('fs', action)([]).then(results => {
@@ -94,6 +92,7 @@ export const ClientFS = (function() {
 
   /**
    * Loads all the files we currently have in the store.
+   * Also accepts a callback within the options for parsing metadata.
    * 
    * @param   { object }  options   Options for loading the files, such as encoding, etc..
    */
@@ -103,11 +102,7 @@ export const ClientFS = (function() {
     const filepaths = ClientStore.select(state => Object.keys(state.fs.filenames));
 
     // The toast promise
-    const { 
-      promise, 
-      resolveHandle, 
-      rejectHandle 
-    } = ClientPromise.createPromise();
+    const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
 
     // Save to the store after
     ClientIPC.requestSender('fs', 'fs/load-files')(filepaths, options).then(results => {

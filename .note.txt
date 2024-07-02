@@ -1,5 +1,4 @@
 D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\dataviser\.debug\data
-make sure to show cancel operation when cancelling folder select
 
 [ amazing: how to properly do ipc in electron ]           https://jaketrent.com/post/select-directory-in-electron/
 [ another cors problem ]                                  https://stackoverflow.com/questions/70132291/electron-content-security-policy-error-when-connecting-to-my-api
@@ -14,3 +13,4 @@ make sure to show cancel operation when cancelling folder select
 [ isinstance() in Python ]                                https://stackoverflow.com/questions/152580/whats-the-canonical-way-to-check-for-type-in-python
 [ pyodide! ]                                              https://pyodide.org/en/stable/
 [ redux in electron ]                                     https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
+[ serializing functions in JS ]                           https://stackoverflow.com/questions/7395686/how-can-i-serialize-a-function-in-javascript

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-02 07:05:48
+ * @ Modified time: 2024-07-02 15:28:00
  * @ Description:
  * 
  * This represents the header of the application.
@@ -37,10 +37,28 @@ export function DHeader() {
   const filenames = useSelector(state => state);
   const toast = useToast();
 
+  // A function that parses file metadata
+  // A callback we pass to fileLoad()
+  function _ourMetaParser(filename) {
+
+    // Define some other params abt the file
+    const dateString = filename.split('_').slice(-1)[0].split('.')[0];
+    const months = [ 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec' ];
+    
+    // Define the date params
+    const day = parseInt(dateString.slice(-2))
+    const month = months.indexOf(dateString.slice(0, 3).toLowerCase())
+    const year = 2024;
+    const date = (new Date(year, month, day)).getTime();
+
+    // Return the metadata
+    return { day, month, year, date };
+  }
+
   // The action of the add files button
   function addFiles() {
     ClientFS.fileChoose({ type: 'directory' })(toast)
-      .then(() => ClientFS.fileLoad({ encoding: 'utf-8' })(toast))
+      .then(() => ClientFS.fileLoad({ encoding: 'utf-8', metaParser: _ourMetaParser })(toast))
       .then(() => ClientDF.dfLoad()(toast))
       .catch((e) => console.error(e))
   }
