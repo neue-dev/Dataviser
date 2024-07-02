@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-07 05:10:47
- * @ Modified time: 2024-06-30 02:29:05
+ * @ Modified time: 2024-07-02 15:21:34
  * @ Description:
  * 
  * This file provides utility functions to help us deal with the client-side implementation of the IPC.
@@ -17,6 +17,43 @@ export const ClientIPC = (function() {
   const _ = {};
   const _callbacks = {};  // The callbacks we have saved
   const _responses = {};  // Stores the pending responses of the invocations
+
+  /**
+   * Serializes a given function.
+   * 
+   * @param   { function }  functionObject  The function to serialize.
+   * @return  { string }                    The serialized function.
+   */
+  const _serializeFunction = function(functionObject) {
+    return functionObject.toString();
+  }
+
+  /**
+   * Serializes our args properly.
+   * We assume that args is an array of objects with depth at most 1.
+   * ! add ability to recurse deeper 
+   * 
+   * @param   { array }   args  An array of arguments.
+   * @return  { array }         The args but serialized. 
+   */
+  const _serializeArgs = function(args) {
+    
+    // Create the new serialized args
+    return args.map(arg => {
+
+      // Get the different args
+      const keys = Object.keys(arg);
+
+      // Serialize each of the callbacks in args
+      keys.forEach(key => {
+        if(typeof arg[key] == 'function')
+          arg[key] = _serializeFunction(arg[key])
+      });
+
+      // Return new arg
+      return arg;
+    })
+  }
 
   /**
    * Creates a new function that calls the given service with a set source and message.
@@ -36,6 +73,9 @@ export const ClientIPC = (function() {
       // Create a new promise for that
       let resolveHandle;
       let rejectHandle;
+
+      // Serialize the callbacks in args
+      args = _serializeArgs(args)
 
       // Create a response promise
       _responses[id] = {
