@@ -1,22 +1,19 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 03:49:19
- * @ Modified time: 2024-07-03 03:51:18
+ * @ Modified time: 2024-07-03 07:08:47
  * @ Description:
  * 
  * This stores the state of a given chart or visualization.
  */
 
-import { createContext } from "react";
+import { UtilsContext } from "../utils/utils.context"
 
-export const DVisualContextInitial = {
+export const DVisualCtx = UtilsContext({
   isMuted: false,   // When we mute a vis, we prevent it from consuming resources by not rendering it live
   data: [],         // The actual data the vis is rendering
-};
-
-export const DVisualContext = createContext(DVisualContextInitial);
+});
 
 export default {
-  DVisualContextInitial,
-  DVisualContext,
+  DVisualCtx,
 }

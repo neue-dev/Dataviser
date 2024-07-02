@@ -1,21 +1,20 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-03 05:34:05
+ * @ Modified time: 2024-07-03 06:49:06
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
  */
 
 import * as React from 'react';
-import { useContext } from 'react';
 
 // React grid layout
 import GridLayout from 'react-grid-layout';
 
 // Custom hooks and contexts
 import { useWindowDimensions } from '../../hooks/useWIndowDimensions'
-import { DataviserContext } from '../Dataviser.ctx';
+import { DataviserCtx } from '../Dataviser.ctx';
 
 /**
  * This acts as the grid that holds all our components together.
@@ -25,7 +24,7 @@ import { DataviserContext } from '../Dataviser.ctx';
 export function DLayout(props={}) {
 
   // Get the state
-  const _state = useContext(DataviserContext);
+  const _dataviserState = DataviserCtx.useCtx();
 
   // Get window dimensions and row-col properties from that
   const { width: _width, height: _height } = useWindowDimensions();

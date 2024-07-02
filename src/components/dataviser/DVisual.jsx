@@ -13,7 +13,7 @@ import { Button, Text } from '@chakra-ui/react'
 import { Divider, HStack, VStack } from '@chakra-ui/react'
 
 // Custom components, hooks and, contexts
-import { DVisualContext, DVisualContextInitial } from './DVisual.ctx'
+import { DVisualCtx } from './DVisual.ctx'
 import { useParentDimensions } from '../../hooks/useParentDimensions'
 
 /**
@@ -26,7 +26,8 @@ export function DVisual(props={}) {
   // The initial state of the context and
   // A reference to the current element
   // Each visualization also has a unique id
-  const [ _state, _setState ] = useState(DVisualContextInitial);
+  const _dvisualState = DVisualCtx.newCtx();
+  const _dvisualContext = DVisualCtx.getCtx();
   const _ref = useRef(null);
   const _id = props.id ?? '';
 
@@ -46,7 +47,7 @@ export function DVisual(props={}) {
   useParentDimensions(_ref, _setWidth, _setHeight);
   
   return (
-    <DVisualContext.Provider value={ _state }>
+    <_dvisualContext.Provider value={ _dvisualState }>
       <Card className={ _id } ref={ _ref } boxShadow="lg" style={{
 
         // Dimensions
@@ -69,7 +70,7 @@ export function DVisual(props={}) {
           width={ _width - _paddingX * 2 - _marginX * 2} 
           height={ _height - _paddingY * 2 - _marginY * 2}/>
       </Card>
-    </DVisualContext.Provider>
+    </_dvisualContext.Provider>
   )
 }
 

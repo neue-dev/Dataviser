@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-03 05:42:21
+ * @ Modified time: 2024-07-03 06:50:43
  * @ Description:
  * 
  * This represents the header of the application.
@@ -9,7 +9,6 @@
  */
 
 import * as React from 'react'
-import { useContext } from 'react';
 
 // Chakra components
 import { Heading, Text } from '@chakra-ui/react'
@@ -34,7 +33,7 @@ import { ClientOps } from '../../client/client.ops'
 import { ourMetaParser } from '../../our/our'
 
 // Comps and contexts
-import { DataviserContext } from '../Dataviser.ctx';
+import { DataviserCtx } from '../Dataviser.ctx';
 
 /**
  * The header component 
@@ -46,7 +45,7 @@ export function DHeader() {
   // Grab the filenames for display, toast for toasting
   const _filenames = useSelector(state => state);
   const _toast = useToast();
-  const _state = useContext(DataviserContext);
+  const _dataviserState = DataviserCtx.useCtx();
 
   /**
    * Prompts the user to select files from their device.
@@ -80,7 +79,7 @@ export function DHeader() {
   function addChart() {
 
     // Create a new vis
-    const dvisuals = _state.dvisuals;
+    const dvisuals = _dataviserState.dvisuals;
     const dvisual = {
       id: '_' + crypto.randomUUID(),
       title: 'New Graph', 
@@ -92,7 +91,7 @@ export function DHeader() {
     dvisuals.push(dvisual);
 
     // Push the visual
-    _state.set({ dvisuals })
+    _dataviserState.set({ dvisuals })
   }
 
   /**
