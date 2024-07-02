@@ -1,14 +1,10 @@
 TODO
 
 0.1 BEFORE SAVING THE DFS INTO THE STORE, MAKE SURE TO CONVERT THEM INTO PANDAS DATAFRAMES IN PYODIDE
-0.2 grab metadata THEN save it in the store (the parsing of the metadata should be done outside, in FS module)
-0.3 
 
 1. Create a composbale class that represents a visualization
    Create a separate class that the first one uses to refernce data stored by redux.
 
-2. DF loader
+2. Put a loading screen when initializing the app
 
-3. Put a loading screen when initializing the app
-
-4. Move the app exit button to the upper right of the screen?
+3. Move the app exit button to the upper right of the screen?
