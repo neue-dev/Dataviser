@@ -12,7 +12,8 @@ import { Card, Box, Spacer } from '@chakra-ui/react'
 import { Button, Text } from '@chakra-ui/react'
 import { Divider, HStack, VStack } from '@chakra-ui/react'
 
-// Custom components and hooks
+// Custom components, hooks and, contexts
+import { DVisualContext, DVisualContextInitial } from './DVisual.ctx'
 import { useParentDimensions } from '../../hooks/useParentDimensions'
 
 /**
@@ -22,8 +23,10 @@ import { useParentDimensions } from '../../hooks/useParentDimensions'
  */
 export function DVisual(props={}) {
 
+  // The initial state of the context and
   // A reference to the current element
   // Each visualization also has a unique id
+  const [ _state, _setState ] = useState(DVisualContextInitial);
   const _ref = useRef(null);
   const _id = '_' + crypto.randomUUID();
 
@@ -40,22 +43,24 @@ export function DVisual(props={}) {
   useParentDimensions(_ref, _setWidth, _setHeight);
   
   return (
-    <Card className={ _id } ref={ _ref } boxShadow="lg" style={{
-      width: _width,
-      height: _height,
-      padding: _padding,
-    }}>
+    <DVisualContext.Provider value={ _state }>
+      <Card className={ _id } ref={ _ref } boxShadow="lg" style={{
+        width: _width,
+        height: _height,
+        padding: _padding,
+      }}>
 
-      <_DVisualHeader 
-        title={ _title } 
-        subtitle={ _subtitle }/>
-      
-      <_DVisualD3 
-        id={ _id }
-        width={ _width - _padding * 4 } 
-        height={ _height - _padding * 4}
-        margin={ _padding }/>
-    </Card>
+        <_DVisualHeader 
+          title={ _title } 
+          subtitle={ _subtitle }/>
+        
+        <_DVisualD3 
+          id={ _id }
+          width={ _width - _padding * 4 } 
+          height={ _height - _padding * 4}
+          margin={ _padding }/>
+      </Card>
+    </DVisualContext.Provider>
   )
 }
 
