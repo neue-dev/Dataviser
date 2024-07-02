@@ -33,7 +33,10 @@ export function DVisual(props={}) {
   // The dimensions of the visual,
   const [ _width, _setWidth ] = useState(0);
   const [ _height, _setHeight ] = useState(0);
-  const _padding = props.padding ?? 32;
+  const _paddingX = props.padding ?? props.py ?? 24;
+  const _paddingY = props.padding ?? props.py ?? 32;
+  const _marginX = props.margin ?? props.my ?? 8;
+  const _marginY = props.margin ?? props.mx ?? 10;
 
   // Grab some of the props
   const _title = props.title ?? 'Graph';
@@ -45,9 +48,16 @@ export function DVisual(props={}) {
   return (
     <DVisualContext.Provider value={ _state }>
       <Card className={ _id } ref={ _ref } boxShadow="lg" style={{
-        width: _width,
-        height: _height,
-        padding: _padding,
+
+        // Dimensions
+        width: _width - _marginX * 2,
+        height: _height - _marginY * 2,
+
+        // Add the margins
+        paddingLeft: _paddingX, paddingRight: _paddingX,
+        paddingTop: _paddingY, paddingBottom: _paddingY,
+        marginLeft: _marginX, marginRight: _marginX,
+        marginTop: _marginY, marginBottom: _marginY,
       }}>
 
         <_DVisualHeader 
@@ -56,9 +66,8 @@ export function DVisual(props={}) {
         
         <_DVisualD3 
           id={ _id }
-          width={ _width - _padding * 4 } 
-          height={ _height - _padding * 4}
-          margin={ _padding }/>
+          width={ _width - _paddingX * 2 - _marginX * 2} 
+          height={ _height - _paddingY * 2 - _marginY * 2}/>
       </Card>
     </DVisualContext.Provider>
   )
@@ -77,7 +86,7 @@ const _DVisualHeader = function(props={}) {
 
   return (
     <VStack align="left">
-      <HStack pt="0.33em" pb="0.33em">
+      <HStack pb="0.33em">
         <VStack p="0" m="0" mr="1em" spacing="0" align="left">
           <_DVisualTitle text={ _title } />
           <_DVisualSubtitle text={ _subtitle } />

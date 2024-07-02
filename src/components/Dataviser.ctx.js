@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-02 21:47:10
+ * @ Modified time: 2024-07-03 04:22:50
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -14,10 +14,10 @@ export const DataviserContextInitial = {
   
   // Stores all our current charts and what not
   dvisuals: [
-    { title: 'Migration Over Time', subtitle: '', x: 0, y: 0, w: 11, h: 5 },
-    { title: 'Chord Graph', subtitle: '', x: 0, y: 5, w: 11, h: 6 },
-    { title: 'Heat Map', subtitle: '', x: 11, y: 0, w: 10, h: 6 },
-    { title: 'Plot Graph', subtitle: '', x: 11, y: 7, w: 10, h: 5 },
+    { title: 'Migration Over Time', subtitle: '', x: 0, y: 0, w: 16, h: 6 },
+    { title: 'Chord Graph', subtitle: '', x: 0, y: 8, w: 16, h: 9 },
+    { title: 'Heat Map', subtitle: '', x: 16, y: 0, w: 16, h: 9 },
+    { title: 'Plot Graph', subtitle: '', x: 16, y: 8, w: 16, h: 6 },
   ],
 };
 

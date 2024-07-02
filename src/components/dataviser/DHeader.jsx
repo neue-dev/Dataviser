@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-02 20:55:47
+ * @ Modified time: 2024-07-03 04:02:32
  * @ Description:
  * 
  * This represents the header of the application.
@@ -75,7 +75,7 @@ export function DHeader() {
         <DHeaderButton text="view files" action={ viewFiles } Icon={ BiFolderOpen } />
         <DHeaderButton text="add chart" action={ addChart } Icon={ BiLayerPlus } />
         <DHeaderButton text="exit app" action={ appExit } Icon={ BiWindowClose } />
-        <Heading className="title" mt="0.01em" ml="0.5em" opacity="0.7">dataviser</Heading>
+        <Heading className="title" mt="0.01em" ml="0.5em" opacity="0.6">dataviser</Heading>
       </HStack>
       <Divider orientation="horizontal"/>
     </VStack>
@@ -96,7 +96,7 @@ function DHeaderButton(props={}) {
 
   // Create the button
   return (
-    <Button w="10em" h="5em" fontSize="0.5rem" onClick={ action }>
+    <Button w="10em" h="5.4em" fontSize="0.5rem" onClick={ action }>
       <VStack spacing="0" fontSize="0.6rem" align="left">
         <div style={{ marginBottom: '0.1em', display: 'block' }}> <Icon /> </div>
         <Text fontSize="0.8em"> { text } </Text>

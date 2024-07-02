@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-02 20:08:25
+ * @ Modified time: 2024-07-03 05:12:12
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -24,12 +24,12 @@ export function DLayout(props={}) {
 
   // Get window dimensions and row-col properties from that
   const { width: _width, height: _height } = useWindowDimensions();
-  const _rowCount = 15, _colCount = 21;
+  const _rowCount = 18, _colCount = 32;
   const _rowHeight = _height / _rowCount;
   const _colWidth = _width / _colCount;
 
   // The resize handles we're using
-  const _handles = [ 's', 'w', 'e', 'n', 'sw', 'nw', 'se', 'ne' ];
+  const _handles = [ 'sw', 'nw', 'se', 'ne' ];
   
   // Define the elements in the layout
   const _layout = [];
@@ -56,8 +56,10 @@ export function DLayout(props={}) {
 
   // Create the grid layout
   return (
-    <GridLayout className="layout" layout={ _layout } width={ _width } height={ _height } 
-      cols={ _colCount } rowHeight={ _rowHeight }>
+    <GridLayout className="layout" layout={ _layout } 
+      containerPadding={ [0, 0] } margin={ [0, 0] }
+      cols={ _colCount } rowHeight={ _rowHeight } 
+      width={ _width } height={ _height }>
       
       { _layout.map(child => (
         <div key={ child.i }>

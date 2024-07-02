@@ -13,6 +13,7 @@ D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\dataviser\.debu
 [ is it good practice to resolve promises externally? ]   https://stackoverflow.com/questions/26150232/how-can-i-access-promise-resolution-callbacks-outside-the-promise-constructor-ca
 [ isinstance() in Python ]                                https://stackoverflow.com/questions/152580/whats-the-canonical-way-to-check-for-type-in-python
 [ pyodide! ]                                              https://pyodide.org/en/stable/
+[ react grid layout ]                                     https://www.reddit.com/r/react/comments/13tfjuj/is_there_a_library_for_gridbased_dragndrop/
 [ redux in electron ]                                     https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
 [ resize observer for parent dimensions ]                 https://stackoverflow.com/questions/58222004/how-to-get-parent-width-height-in-react-using-hooks
 [ serializing functions in JS ]                           https://stackoverflow.com/questions/7395686/how-can-i-serialize-a-function-in-javascript

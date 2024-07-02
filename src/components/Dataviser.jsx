@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-02 21:45:33
+ * @ Modified time: 2024-07-03 04:22:28
  * @ Description:
  * 
  * The main component that houses the app.
@@ -30,7 +30,7 @@ export function Dataviser() {
   const [ _state, _setState ] = useState(DataviserContextInitial);
 
   // Create an array to store the children of the _dvisuals
-  const _header = (<DHeader i="ha" static="true" w="max" h="2" />);
+  const _header = (<DHeader i="ha" static="true" w="max" h="3" />);
   const _dvisuals = [ _header, ..._state.dvisuals.map(dvisual => {
     return (<DVisual
       i={ dvisual.title } 
