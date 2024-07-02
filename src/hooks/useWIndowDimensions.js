@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:18:42
- * @ Modified time: 2024-07-02 20:07:36
+ * @ Modified time: 2024-07-02 20:14:50
  * @ Description:
  * 
  * This was adapted from a stackoverflow post and lets us retrieve the window dimensions in react.
@@ -11,7 +11,7 @@
 import { useState, useEffect } from 'react';
 
 /**
- * A hook that grabs the window information.
+ * A hook that grabs the window dimensions.
  * 
  * @hook
  */

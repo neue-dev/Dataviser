@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-02 01:37:07
+ * @ Modified time: 2024-07-02 20:08:25
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -13,7 +13,7 @@ import * as React from 'react';
 import GridLayout from 'react-grid-layout';
 
 // Custom hooks
-import { useWindow } from '../../hooks/useWindow'
+import { useWindowDimensions } from '../../hooks/useWIndowDimensions'
 
 /**
  * This acts as the grid that holds all our components together.
@@ -23,7 +23,7 @@ import { useWindow } from '../../hooks/useWindow'
 export function DLayout(props={}) {
 
   // Get window dimensions and row-col properties from that
-  const { innerWidth: _width, innerHeight: _height } = useWindow();
+  const { width: _width, height: _height } = useWindowDimensions();
   const _rowCount = 15, _colCount = 21;
   const _rowHeight = _height / _rowCount;
   const _colWidth = _width / _colCount;

@@ -3,6 +3,7 @@ D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\dataviser\.debu
 [ amazing: how to properly do ipc in electron ]           https://jaketrent.com/post/select-directory-in-electron/
 [ another cors problem ]                                  https://stackoverflow.com/questions/70132291/electron-content-security-policy-error-when-connecting-to-my-api
 [ d3 ]                                                    https://d3js.org/
+[ d3 fundamentals ]                                       https://yangdanny97.github.io/intro-to-d3/
 [ d3 guide ]                                              https://d3-graph-gallery.com/graph/chord_basic.html
 [ d3 in depth ]                                           https://www.d3indepth.com/axes/
 [ electron dialog api ]                                   https://www.electronjs.org/docs/latest/api/dialog 
@@ -13,4 +14,5 @@ D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\dataviser\.debu
 [ isinstance() in Python ]                                https://stackoverflow.com/questions/152580/whats-the-canonical-way-to-check-for-type-in-python
 [ pyodide! ]                                              https://pyodide.org/en/stable/
 [ redux in electron ]                                     https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
+[ resize observer for parent dimensions ]                 https://stackoverflow.com/questions/58222004/how-to-get-parent-width-height-in-react-using-hooks
 [ serializing functions in JS ]                           https://stackoverflow.com/questions/7395686/how-can-i-serialize-a-function-in-javascript

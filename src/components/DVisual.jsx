@@ -12,6 +12,9 @@ import { Card, Box, Spacer } from '@chakra-ui/react'
 import { Button, Text } from '@chakra-ui/react'
 import { Divider, HStack, VStack } from '@chakra-ui/react'
 
+// Custom components and hooks
+import { useParentDimensions } from '../hooks/useParentDimensions'
+
 /**
  * The DVisual component houses a D3-backed component.
  * 
@@ -19,21 +22,28 @@ import { Divider, HStack, VStack } from '@chakra-ui/react'
  */
 export function DVisual(props={}) {
 
+  // A reference to the current element
+  const ref = useRef(null);
+
   // Each visualization should have a unique id
-  const _id = crypto.randomUUID();
+  const _id = '_' + crypto.randomUUID();
 
   // The dimensions of the visual
-  const _width = props.width ?? 480;
-  const _height = props.height ?? 360;
+  const [ _width, _setWidth ] = useState(0);
+  const [ _height, _setHeight ] = useState(0);
   const _padding = props.padding ?? 32;
+
+  // Use the parent dimensions
+  useParentDimensions(ref, _setWidth, _setHeight);
 
   // Grab some of the props
   const _title = props.title ?? 'Graph';
   const _subtitle = props.subtitle ?? 'This is a graph about the thing in the thing.';
 
   return (
-    <Card boxShadow="lg" style={{
-      width: _width + _padding * 4,
+    <Card className={ _id } ref={ ref } boxShadow="lg" style={{
+      width: _width,
+      height: _height,
       padding: _padding,
     }}>
 
@@ -43,8 +53,8 @@ export function DVisual(props={}) {
       
       <_DVisualD3 
         id={ _id }
-        width={ _width } 
-        height={ _height }
+        width={ _width - _padding * 4 } 
+        height={ _height - _padding * 4}
         margin={ _padding }/>
     </Card>
   )
