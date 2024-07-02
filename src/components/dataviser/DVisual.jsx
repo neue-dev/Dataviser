@@ -13,7 +13,7 @@ import { Button, Text } from '@chakra-ui/react'
 import { Divider, HStack, VStack } from '@chakra-ui/react'
 
 // Custom components and hooks
-import { useParentDimensions } from '../hooks/useParentDimensions'
+import { useParentDimensions } from '../../hooks/useParentDimensions'
 
 /**
  * The DVisual component houses a D3-backed component.
@@ -71,16 +71,16 @@ const _DVisualHeader = function(props={}) {
   const _subtitle = props.subtitle ?? '';
 
   return (
-    <VStack p="0" m="0" spacing="0" align="left">
-      <_DVisualTitle text={ _title } />
-      <_DVisualSubtitle text={ _subtitle } />
-      
-      <HStack pt="0.5rem" pb="0.5rem">
+    <VStack align="left">
+      <HStack pt="0.33em" pb="0.33em">
+        <VStack p="0" m="0" mr="1em" spacing="0" align="left">
+          <_DVisualTitle text={ _title } />
+          <_DVisualSubtitle text={ _subtitle } />
+        </VStack>
         <_DVisualGizmo />
       </HStack>
-
       <Divider />
-    </VStack>
+    </VStack> 
   );
 }
 
@@ -93,7 +93,7 @@ const _DVisualTitle = function(props={}) {
   const _text = props.text ?? '';
 
   return (
-    <Text fontSize="0.6rem">
+    <Text fontSize="0.5rem">
       <b>{ _text }</b>
     </Text>
   )
@@ -108,7 +108,7 @@ const _DVisualSubtitle = function(props={}) {
   const _text = props.text ?? '';
 
   return (
-    <Text fontSize="0.6rem">
+    <Text fontSize="0.5rem">
       { _text }
     </Text>
   )
@@ -122,8 +122,8 @@ const _DVisualSubtitle = function(props={}) {
 const _DVisualGizmo = function(props={}) {
   return (
     <Box>
-      <Button size="sm" fontSize="0.6rem">
-        click me!
+      <Button size="sm" fontSize="0.6rem" variant="outline">
+        gizmo name
       </Button>
     </Box>
   )
