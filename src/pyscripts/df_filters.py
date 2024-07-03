@@ -45,8 +45,18 @@ def dfFilterRows(dfs, col, rows):
   @return         The same collection of dfs but filtered.
   '''
 
+  # For each dataframe...
   for df_key in dfs:
-    dfs[df_key] = dfs[df_key].mask(lambda df: df[col] in rows)
+    df = dfs[df_key] 
+
+    # Do the filtering
+    if col == 'index':
+      df = df.loc[df.index.isin(rows)]
+    else: 
+      df = df.loc[df[col].isin(rows)]
+
+    # Save the filtered df
+    dfs[df_key] = df
 
   return dfs
 
