@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-28 21:12:24
- * @ Modified time: 2024-06-29 23:34:42
+ * @ Modified time: 2024-07-03 11:51:34
  * @ Description:
  * 
  * This portion of redux manages our dataframe data.
@@ -24,6 +24,9 @@ export const dfSlice = createSlice({
 
     // Store all our dataframe data, indexed by unique id
     dfs: {},
+
+    // The metadata of each of the dfs
+    meta: {},
   },
 
   // Reducers
@@ -41,6 +44,7 @@ export const dfSlice = createSlice({
       // Get the action details
       const id = action?.payload?.id ?? null;
       const data = action?.payload?.data ?? null;
+      const meta = action?.payload?.meta ?? {};
 
       // We don't generate ids within this method
       // They must be provided, otherwise nothing happens
@@ -50,6 +54,7 @@ export const dfSlice = createSlice({
 
       // Save the data
       state.dfs[id] = data;
+      state.meta[id] = meta;
     },
 
     /**
