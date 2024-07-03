@@ -7,4 +7,3 @@
  This file gives us functions which allow us to transform the dataframe into something d3 can use.
  '''
 
-

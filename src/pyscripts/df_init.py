@@ -11,6 +11,7 @@
 import pandas as pd
 
 META = {}   # Stores the metadata for each df
+REF = {}    # The reference of dataframes we use to reset 'DFS'
 DFS = {}    # Stores the actual dataframes
 OUT = {}    # Always stores the dfs we retrieve in JS
 
@@ -19,16 +20,14 @@ try:
 
   # For each piece of data in the dict, we save it
   for key in dfs:
-    DFS[key] = DF.of(key, pd.DataFrame(dfs[key]['df']))
+    REF[key] = pd.DataFrame(dfs[key]['df'])
+    DFS[key] = REF[key]
     META[key] = dfs[key]['meta']
     
   # Since we didn't modify anything, we just set OUT to dfs
   OUT = dfs
 
-  print(OUT);
-
 # dfs was most likely undefined
 except NameError:
-  print('It seems \'dfs\' is undefined...')
-  'It seems \'dfs\' is undefined...'
+  print('PYTHON: It seems \'dfs\' is undefined...')
   

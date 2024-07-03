@@ -108,5 +108,4 @@ class DF:
     return DF.__dfs.keys()
 
 # Progress log
-print('Loaded df.py.')
-'Loaded df.py'
+print('PYTHON: Loaded df.py.')

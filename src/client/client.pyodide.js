@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-07-02 07:00:35
+ * @ Modified time: 2024-07-03 20:05:39
  * @ Description:
  */
 
@@ -157,8 +157,8 @@ export const ClientPyodide = (function() {
   _.processRun(`
     import pyodide
     import pandas as pd
-    print('Warm-up script...')
-    print('Pyodide configured.')
+    print('PYTHON: Warm-up script...')
+    print('PYTHON: Pyodide configured.')
   `);
   
   return {
