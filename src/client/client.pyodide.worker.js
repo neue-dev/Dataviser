@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-04-27 09:03:51
- * @ Modified time: 2024-07-02 06:47:49
+ * @ Modified time: 2024-07-03 13:40:33
  * @ Description:
  * 
  * The script defines the structure of the worker responsible for executing Python scripts.
@@ -57,6 +57,7 @@ if('function' == typeof importScripts) {
     for(let i = 0; i < globals.length; i++) {
       let g = globals[i];
       script += `${g} = ${g}.to_py() if isinstance(${g}, pyodide.ffi.JsProxy) else ${g}\n`;
+      script += `print('Successfully sent ${g}.')\n`;
     }
 
     // Run the script

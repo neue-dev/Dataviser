@@ -107,14 +107,6 @@ class DF:
     '''
     return DF.__dfs.keys()
 
-# ! remove
-import pandas as pd
-testdf = pd.DataFrame([0, 1, 2])
-test = DF.of('test', testdf)
-test = DF.of('other', testdf)
-
-print(DF.get_ids())
-
 # Progress log
 print('Loaded df.py.')
 'Loaded df.py'

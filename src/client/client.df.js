@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-03 13:14:51
+ * @ Modified time: 2024-07-03 13:52:53
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -15,6 +15,7 @@ import { ClientToast } from './client.toast';
 export const ClientDF = (function() {
 
   const _ = {};
+  const _out = 'OUT';   // The name of the output variable
 
   /**
    * Saves all the provided dfs into the store.
@@ -62,8 +63,9 @@ export const ClientDF = (function() {
 
     // Send the data to the Python script
     ClientPython.dataSend(pyData)
-      .then(() => ClientPython.dataRequest('dfs'))
-      .then((result) => _dfCreate(result.dfs))
+      .then(() => ClientPython.fileRun('df_init'))
+      .then(() => ClientPython.dataRequest(_out))
+      .then((result) => _dfCreate(result[_out]))
       .then(() => resolveHandle())
       .catch((e) => rejectHandle(e));
 
