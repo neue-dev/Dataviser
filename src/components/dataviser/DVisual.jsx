@@ -8,13 +8,16 @@ import { useEffect } from 'react'
 import * as d3 from 'd3'
 
 // Chakra
-import { Card, Box, Flex, Spacer } from '@chakra-ui/react'
+import { Card, Box, Flex, Spacer, Tooltip, Heading } from '@chakra-ui/react'
 import { Button, Text } from '@chakra-ui/react'
 import { Divider, HStack, VStack } from '@chakra-ui/react'
+import { Popover, Portal, PopoverCloseButton, PopoverTrigger } from '@chakra-ui/react'
+import { PopoverBody, PopoverContent, PopoverHeader } from '@chakra-ui/react'
 
 // Icons
-import { BiSolidXCircle } from 'react-icons/bi'
+import { BiSlider } from 'react-icons/bi'
 import { BiPencil } from 'react-icons/bi'
+import { BiSolidXCircle } from 'react-icons/bi'
 
 // Custom components, hooks and, contexts
 import { DVisualCtx, DVisualManager } from './DVisual.ctx'
@@ -121,9 +124,11 @@ const _DVisualTitle = function(props={}) {
   const _text = props.text ?? '';
 
   return (
-    <Text fontSize="0.5rem">
-      <b>{ _text }</b>
-    </Text>
+    <b>
+      <Heading fontSize="1rem">
+        { _text }
+      </Heading>
+    </b>
   )
 }
 
@@ -148,10 +153,45 @@ const _DVisualSubtitle = function(props={}) {
  * @component 
  */
 const _DVisualTitleButtons = function(props={}) {
+  return (
+    <HStack>
+      <_DVisualTitleButtonFilter />
+      <_DVisualTitleButtonUpdate />
+      <_DVisualTitleButtonRemove />
+    </HStack>
+  )
+}
 
-  const _dataviserState = DataviserCtx.useCtx();
-  const _dvisualState = DVisualCtx.useCtx();
-  const _id = _dvisualState.get('id');
+/**
+ * The button that lets us edit chart details.
+ * 
+ * @component
+ */
+const _DVisualTitleButtonFilter = function() {
+
+  /**
+   * Brings up the popup for updating a chart when clicking the pencil.
+   */
+  function onClickFilter() {
+
+  }
+
+  return (
+    <_DPopover 
+      label="change chart filters"
+      onClick={ onClickFilter } 
+      Icon={ BiSlider }>
+      insert filters here
+    </_DPopover>
+  )
+}
+
+/**
+ * The button that lets us edit chart details.
+ * 
+ * @component
+ */
+const _DVisualTitleButtonUpdate = function() {
 
   /**
    * Brings up the popup for updating a chart when clicking the pencil.
@@ -159,6 +199,28 @@ const _DVisualTitleButtons = function(props={}) {
   function onClickUpdate() {
 
   }
+
+  return (
+    <_DPopover 
+      label="edit chart details"
+      onClick={ onClickUpdate } 
+      Icon={ BiPencil }>
+
+      <Heading fontSize="1rem">title</Heading>
+      <Text fontSize="0.5rem">subtitle</Text>
+    </_DPopover>
+  )
+}
+
+/**
+ * The button for removing the current visual.
+ * 
+ * @component
+ */
+const _DVisualTitleButtonRemove = function() {
+  const _dataviserState = DataviserCtx.useCtx();
+  const _dvisualState = DVisualCtx.useCtx();
+  const _id = _dvisualState.get('id');
 
   /**
    * Removes the visual from the dataviser state object.
@@ -168,14 +230,44 @@ const _DVisualTitleButtons = function(props={}) {
   }
 
   return (
-    <HStack>
-      <Button size="sm" onClick={ onClickUpdate }>
-        <BiPencil />
-      </Button>
+    <Tooltip label="remove chart" fontSize="xs">
       <Button size="sm" variant="ghost" colorScheme="red" onClick={ onClickRemove }>
         <BiSolidXCircle />
       </Button>
-    </HStack>
+    </Tooltip>
+  )
+}
+
+/**
+ * A template for popover components.
+ * 
+ * @component
+ */
+const _DPopover = function(props={}) {
+
+  // Grab the props
+  const onClick = props.onClick ?? (d => d);
+  const Icon = props.Icon ?? (d => (<div />));
+  const label = props.label ?? '';
+
+  // Return the popover
+  return (
+    <Popover>
+      <Tooltip label={ label } fontSize="xs">
+        <Box><PopoverTrigger>
+          <Button size="sm" onClick={ onClick }>
+            <Icon />
+          </Button>
+        </PopoverTrigger></Box>
+      </Tooltip>
+      <Portal>
+        <PopoverContent>
+          <PopoverBody>
+            { props.children }
+          </PopoverBody>
+        </PopoverContent>
+      </Portal>
+    </Popover>
   )
 }
 
