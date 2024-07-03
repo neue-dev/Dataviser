@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-03 06:50:43
+ * @ Modified time: 2024-07-03 07:53:21
  * @ Description:
  * 
  * This represents the header of the application.
@@ -33,7 +33,7 @@ import { ClientOps } from '../../client/client.ops'
 import { ourMetaParser } from '../../our/our'
 
 // Comps and contexts
-import { DataviserCtx } from '../Dataviser.ctx';
+import { DataviserCtx, DataviserManager } from '../Dataviser.ctx';
 
 /**
  * The header component 
@@ -77,21 +77,9 @@ export function DHeader() {
    * // ! todo
    */
   function addChart() {
-
-    // Create a new vis
-    const dvisuals = _dataviserState.dvisuals;
-    const dvisual = {
-      id: '_' + crypto.randomUUID(),
-      title: 'New Graph', 
-      subtitle: 'click the edit icon on the upper right to change this chart', 
-      x: 0, y: 0, w: 10, h: 6
-    };
-
-    // Push the dvisual
-    dvisuals.push(dvisual);
-
-    // Push the visual
-    _dataviserState.set({ dvisuals })
+    DataviserManager.dvisualCreate(_dataviserState, { 
+      title: 'new graph',
+    });
   }
 
   /**

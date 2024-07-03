@@ -14,6 +14,7 @@ import { Divider, HStack, VStack } from '@chakra-ui/react'
 
 // Custom components, hooks and, contexts
 import { DVisualCtx } from './DVisual.ctx'
+import { DataviserCtx } from '../Dataviser.ctx'
 import { useParentDimensions } from '../../hooks/useParentDimensions'
 
 /**
@@ -26,6 +27,7 @@ export function DVisual(props={}) {
   // The initial state of the context and
   // A reference to the current element
   // Each visualization also has a unique id
+  const _dataviserState = DataviserCtx.useCtx();
   const _dvisualState = DVisualCtx.newCtx();
   const _dvisualContext = DVisualCtx.getCtx();
   const _ref = useRef(null);

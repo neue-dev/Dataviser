@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-03 06:49:24
+ * @ Modified time: 2024-07-03 07:52:40
  * @ Description:
  * 
  * The main component that houses the app.
@@ -17,7 +17,7 @@ import { DHeader } from './dataviser/DHeader.jsx'
 import { DVisual } from './dataviser/DVisual.jsx';
 
 // Import the context of the app
-import { DataviserCtx } from './Dataviser.ctx.js';
+import { DataviserCtx, DataviserManager } from './Dataviser.ctx.js';
 
 /**
  * Dataviser component class.
