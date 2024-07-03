@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 06:59:05
- * @ Modified time: 2024-07-03 08:19:39
+ * @ Modified time: 2024-07-03 09:41:30
  * @ Description:
  * 
  * This allows us to create a construct for contexts without repeating code.
@@ -24,7 +24,7 @@ export const UtilsContext = function(initial) {
   return (function() {
   
     const _= {};
-    const _initial = initial;                   // The intial value of the context
+    const _initial = { _: initial };            // The intial value of the context
     const _context = createContext(_initial);   // The context object
 
     /**
@@ -47,10 +47,12 @@ export const UtilsContext = function(initial) {
       const [ state, setState ] = useState(_initial);
   
       // A function for setting the state
-      const set = (newState) => setState({ ...state, ...newState });
-  
+      const set = (newState) => setState({ _: { ...state._, ...newState }});
+      const get = (key) => state._[key];
+
       // If the state doesn't have the setter yet
-      if(!state.set) set({ set });
+      if(!state.set) state.set = set;
+      if(!state.get) state.get = get;
       
       // Return the state
       return state;

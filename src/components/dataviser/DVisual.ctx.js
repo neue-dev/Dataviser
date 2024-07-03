@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 03:49:19
- * @ Modified time: 2024-07-03 07:13:32
+ * @ Modified time: 2024-07-03 09:33:16
  * @ Description:
  * 
  * This stores the state of a given chart or visualization.
@@ -14,6 +14,27 @@ export const DVisualCtx = UtilsContext({
   data: [],         // The actual data the vis is rendering
 });
 
+export const DVisualManager = (function() {
+
+  const _ = {};
+
+  /**
+   * Initializes the state of the visual.
+   * Does not perform a rerender.
+   * 
+   * @param   { State }   state     The dvisual state.
+   * @param   { object }  options   The options for the initial dvisual state.
+   */
+  _.init = function(state, options) {
+    state._ = { ...state._, ...options };
+  }
+
+  return {
+    ..._,
+  }
+})();
+
 export default {
   DVisualCtx,
+  DVisualManager,
 }

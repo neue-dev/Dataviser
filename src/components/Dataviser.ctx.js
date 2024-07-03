@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-03 09:07:43
+ * @ Modified time: 2024-07-03 09:36:02
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -45,7 +45,7 @@ export const DataviserManager = (function() {
     const h = options.h ?? 6;
 
     // Get the existing visuals
-    const dvisuals = state.dvisuals;
+    const dvisuals = state.get('dvisuals');
     
     // Append the new visual
     dvisuals.push({
@@ -71,14 +71,14 @@ export const DataviserManager = (function() {
     if(!id) return;
 
     // Get the selected visual and the old ones
-    const dvisual = state.dvisuals.filter(dvisual => dvisual.id == id)[0];
-    const dvisuals = state.dvisuals.filter(dvisual => dvisual.id != id);
+    const dvisual = state.get('dvisuals').filter(dvisual => dvisual.id == id)[0];
+    const dvisuals = state.get('dvisuals').filter(dvisual => dvisual.id != id);
 
     // Replace the old dvisual
     dvisuals.push({ ...dvisual, ...options });
 
     // We don't want a rerender here so we manually change it
-    state.dvisuals = dvisuals;
+    state._.dvisuals = dvisuals;
   }
 
   /**
@@ -96,7 +96,7 @@ export const DataviserManager = (function() {
     if(!id) return;
 
     // Exclude the dvisual with the given id
-    const dvisuals = state.dvisuals.filter(dvisual => dvisual.id != id);
+    const dvisuals = state.get('dvisuals').filter(dvisual => dvisual.id != id);
 
     // Update the state
     state.set({ dvisuals })
@@ -109,4 +109,5 @@ export const DataviserManager = (function() {
 
 export default {
   DataviserCtx,
+  DataviserManager,
 }

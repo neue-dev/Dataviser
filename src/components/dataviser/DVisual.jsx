@@ -17,7 +17,7 @@ import { BiSolidXCircle } from 'react-icons/bi'
 import { BiPencil } from 'react-icons/bi'
 
 // Custom components, hooks and, contexts
-import { DVisualCtx } from './DVisual.ctx'
+import { DVisualCtx, DVisualManager } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
 import { useParentDimensions } from '../../hooks/useParentDimensions'
 
@@ -51,7 +51,15 @@ export function DVisual(props={}) {
 
   // Use the parent dimensions
   useParentDimensions(_ref, _setWidth, _setHeight);
+
+  // Init the state
+  DVisualManager.init(_dvisualState, {
+    id: _id,
+    title: _title,
+    subtitle: _subtitle,
+  });
   
+  // Return the DVisual component
   return (
     <_dvisualContext.Provider value={ _dvisualState }>
       <Card className={ _id } ref={ _ref } boxShadow="lg" style={{
@@ -67,11 +75,7 @@ export function DVisual(props={}) {
         marginTop: _marginY, marginBottom: _marginY,
       }}>
 
-        <_DVisualHeader 
-          title={ _title } 
-          subtitle={ _subtitle }
-          id={ _id }/>
-        
+        <_DVisualHeader/>
         <_DVisualD3 
           id={ _id }
           width={ _width - _paddingX * 2 - _marginX * 2} 
@@ -88,11 +92,10 @@ export function DVisual(props={}) {
  */
 const _DVisualHeader = function(props={}) {
 
-  // Grab the props
-  // ! put these in the dvisual state instead
-  const _title = props.title ?? '';
-  const _subtitle = props.subtitle ?? '';
-  const _id = props.id ?? '';
+  // Get the state of the visual
+  const _dvisualState = DVisualCtx.useCtx();
+  const _title = _dvisualState.get('title');
+  const _subtitle = _dvisualState.get('subtitle');
 
   return (
     <VStack align="left">
@@ -102,7 +105,7 @@ const _DVisualHeader = function(props={}) {
           <_DVisualSubtitle text={ _subtitle } />
         </VStack>
         <Spacer />
-        <_DVisualTitleButtons id={ _id } />
+        <_DVisualTitleButtons />
       </Flex>
       <Divider />
     </VStack> 
@@ -146,10 +149,9 @@ const _DVisualSubtitle = function(props={}) {
  */
 const _DVisualTitleButtons = function(props={}) {
 
-  // ! put this into the dvisual state too
-  const _id = props.id ?? '';
-
   const _dataviserState = DataviserCtx.useCtx();
+  const _dvisualState = DVisualCtx.useCtx();
+  const _id = _dvisualState.get('id');
 
   /**
    * Brings up the popup for updating a chart when clicking the pencil.
@@ -167,7 +169,7 @@ const _DVisualTitleButtons = function(props={}) {
 
   return (
     <HStack>
-      <Button size="sm">
+      <Button size="sm" onClick={ onClickUpdate }>
         <BiPencil />
       </Button>
       <Button size="sm" variant="ghost" colorScheme="red" onClick={ onClickRemove }>
