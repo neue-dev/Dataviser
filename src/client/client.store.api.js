@@ -1,13 +1,13 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 07:41:58
- * @ Modified time: 2024-06-30 02:13:13
+ * @ Modified time: 2024-07-03 13:22:02
  * @ Description:
  * 
  * This file links our store with the ipc.
  */
 
-import { store } from '../data/store'
+import { store } from '../store/store'
 import { ClientIPC } from './client.ipc'
 
 export const ClientStore = (function() {

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:55:08
- * @ Modified time: 2024-06-29 23:00:17
+ * @ Modified time: 2024-07-03 13:23:40
  * @ Description:
  * 
  * The main app file.
@@ -15,7 +15,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 
 // Redux
 import { Provider } from 'react-redux';
-import { store } from './data/store.js'
+import { store } from './store/store.js'
 
 // Custom
 import { Dataviser } from './components/Dataviser.jsx'
