@@ -14,7 +14,10 @@ try:
   
   # For each DF, we save it's df as a dict
   for key in DFS:
-    OUT[key] = DFS[key].get_df().to_dict()
+    OUT[key] = DFS[key].to_dict('dict')
+
+  # Reset the dfs
+  DFS = REF
 
 except NameError:
   print('PYTHON: I don\'t think DFS has been defined.')

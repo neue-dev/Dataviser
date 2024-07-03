@@ -15,12 +15,23 @@ REF = {}    # The reference of dataframes we use to reset 'DFS'
 DFS = {}    # Stores the actual dataframes
 OUT = {}    # Always stores the dfs we retrieve in JS
 
+# !THIS SHOULD BE MOVED ELSEWHERE AND SHUD BE SWAPPABLE FOR OTHER LOGIC
+def preprocess(df):
+  '''
+  Preprocesses the df and makes sure it has the right columns and rows.
+  '''
+
+  df = df.set_index(0)
+  df.columns = df.iloc[0]
+
+  return df
+
 # In case we haven't imported dfs yet
 try:
 
   # For each piece of data in the dict, we save it
   for key in dfs:
-    REF[key] = pd.DataFrame(dfs[key]['df'])
+    REF[key] = preprocess(pd.DataFrame(dfs[key]['df']))
     DFS[key] = REF[key]
     META[key] = dfs[key]['meta']
     
