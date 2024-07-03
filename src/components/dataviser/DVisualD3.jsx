@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 10:28:21
- * @ Modified time: 2024-07-03 10:41:03
+ * @ Modified time: 2024-07-03 11:30:25
  * @ Description:
  * 
  * A file that constructs our D3 components.
@@ -12,7 +12,11 @@ import { useRef } from 'react'
 import { useState } from 'react'
 import { useEffect } from 'react'
 
+// D3
 import * as d3 from 'd3'
+
+// Custom hooks
+import { DVisualCtx } from './DVisual.ctx'
 
 /**
  * This manages the state of the D3 aspect of the component.
@@ -21,9 +25,20 @@ import * as d3 from 'd3'
  */
 export const DVisualD3 = function(props={}) {
 
-  const _id = "random"
+  // Grab the state of the visual
+  const _dvisualState = DVisualCtx.useCtx();
   
   // State variables
+  const _id = _dvisualState.get('id');
+  const _data = _dvisualState.get('data');
+  const _width = parseInt(_dvisualState.get('chartWidth'));
+  const _height = parseInt(_dvisualState.get('chartHeight'));
+
+  // Make sure we don't render with 0 dimensions
+  if(_width <= 0 || _height <= 0)
+    return (<></>)
+
+  // ! remove this and add it to the state
   const [ styles, setStyles ] = useState({});
   const [ data, setData ] = useState([
     {
@@ -44,9 +59,6 @@ export const DVisualD3 = function(props={}) {
     },
   ]);
 
-  // Properties of the visual
-  const _width = props.width ?? 480;
-  const _height = props.height ?? 360;
   const _margin = {
     top: props.margin ?? props.mt ?? 25,
     left: props.margin ?? props.ml ?? 50,

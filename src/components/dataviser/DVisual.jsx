@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-03 10:45:31
+ * @ Modified time: 2024-07-03 11:30:59
  * @ Description:
  * 
  * A around our d3 visualizations.
@@ -64,7 +64,11 @@ export function DVisual(props={}) {
   // Use the parent dimensions
   useParentDimensions(_ref, _setWidth, _setHeight);
 
-  console.log(_data)
+  // Compute the other dimensions we need
+  const _cardWidth = _width - _mx * 2;
+  const _cardHeight = _height - _my * 2;
+  const _chartWidth = _cardWidth - _px * 4; 
+  const _chartHeight = _cardHeight - _py * 5;
 
   // Init the state
   DVisualManager.init(_dvisualState, {
@@ -76,14 +80,11 @@ export function DVisual(props={}) {
     subtitle: _subtitle,
     
     // Dimensions and sizing
-    width: _width,
-    height: _height,
+    cardWidth: _cardWidth, cardHeight: _cardHeight,
+    chartWidth: _chartWidth, chartHeight: _chartHeight,
     mx: _mx, my: _my,
     px: _px, py: _py,
   });
-
-  const _cardWidth = _width - _mx * 2;
-  const _cardHeight = _height - _my * 2;
   
   // Return the DVisual component
   return (
@@ -96,7 +97,7 @@ export function DVisual(props={}) {
 
         // Add the margins
         paddingLeft: _px, paddingRight: _px,
-        paddingTop: _py, paddingBottom: _py,
+        paddingTop: _py, paddingBottom: 0,
         marginLeft: _mx, marginRight: _mx,
         marginTop: _my, marginBottom: _my,
       }}>
