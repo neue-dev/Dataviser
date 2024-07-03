@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 10:28:21
- * @ Modified time: 2024-07-03 11:30:25
+ * @ Modified time: 2024-07-03 13:18:33
  * @ Description:
  * 
  * A file that constructs our D3 components.
@@ -33,10 +33,6 @@ export const DVisualD3 = function(props={}) {
   const _data = _dvisualState.get('data');
   const _width = parseInt(_dvisualState.get('chartWidth'));
   const _height = parseInt(_dvisualState.get('chartHeight'));
-
-  // Make sure we don't render with 0 dimensions
-  if(_width <= 0 || _height <= 0)
-    return (<></>)
 
   // ! remove this and add it to the state
   const [ styles, setStyles ] = useState({});
@@ -181,6 +177,10 @@ export const DVisualD3 = function(props={}) {
     _visualStyle(styles);
 
   }, [ data, styles ])
+
+  // Make sure we don't render with 0 dimensions
+  if(_width <= 0 || _height <= 0)
+    return (<></>)
 
   return (
     <div className={'dvisual' + _id}/>

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-03 11:58:23
+ * @ Modified time: 2024-07-03 13:14:51
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -20,16 +20,15 @@ export const ClientDF = (function() {
    * Saves all the provided dfs into the store.
    * 
    * @param   { object }  dfs   A dict containing all the dfs.
-   * @param   { object }  meta  A dict containing the metadata of the dfs.
    */
-  const _dfCreate = function(dfs, meta) {
+  const _dfCreate = function(dfs) {
 
     // The dispatcher and the dfkeys
     const dispatch = ClientStore.storeDispatcher('df/dfCreate');
     const dfKeys = Object.keys(dfs);
 
     // Save each of the dfs to the store
-    dfKeys.forEach(dfKey => dispatch({ id: dfKey, data: dfs[dfKey], meta: meta[dfKey] }))
+    dfKeys.forEach(dfKey => dispatch({ id: dfKey, data: dfs[dfKey].df, meta: dfs[dfKey].meta }))
   }
 
   /**
@@ -46,16 +45,25 @@ export const ClientDF = (function() {
     // Grab the data from the store
     const filedata = ClientStore.select(state => state.fs.filedata);
     const filemeta = ClientStore.select(state => state.fs.filemeta);
+    const filepaths = Object.keys(filedata);
 
     // We format the data so it's properly accessible through Python
     const pyData = {
-      dfs: { ...filedata },
+      dfs: {},
     };
+
+    // Append data and the metadata
+    filepaths.forEach(filepath => {
+      pyData.dfs[filepath] = {
+        df: filedata[filepath],
+        meta: filemeta[filepath],
+      }
+    })
 
     // Send the data to the Python script
     ClientPython.dataSend(pyData)
       .then(() => ClientPython.dataRequest('dfs'))
-      .then((result) => _dfCreate(result.dfs, filemeta))
+      .then((result) => _dfCreate(result.dfs))
       .then(() => resolveHandle())
       .catch((e) => rejectHandle(e));
 
