@@ -8,13 +8,17 @@ import { useEffect } from 'react'
 import * as d3 from 'd3'
 
 // Chakra
-import { Card, Box, Spacer } from '@chakra-ui/react'
+import { Card, Box, Flex, Spacer } from '@chakra-ui/react'
 import { Button, Text } from '@chakra-ui/react'
 import { Divider, HStack, VStack } from '@chakra-ui/react'
 
+// Icons
+import { BiSolidXCircle } from 'react-icons/bi'
+import { BiPencil } from 'react-icons/bi'
+
 // Custom components, hooks and, contexts
 import { DVisualCtx } from './DVisual.ctx'
-import { DataviserCtx } from '../Dataviser.ctx'
+import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
 import { useParentDimensions } from '../../hooks/useParentDimensions'
 
 /**
@@ -65,7 +69,8 @@ export function DVisual(props={}) {
 
         <_DVisualHeader 
           title={ _title } 
-          subtitle={ _subtitle }/>
+          subtitle={ _subtitle }
+          id={ _id }/>
         
         <_DVisualD3 
           id={ _id }
@@ -84,18 +89,21 @@ export function DVisual(props={}) {
 const _DVisualHeader = function(props={}) {
 
   // Grab the props
+  // ! put these in the dvisual state instead
   const _title = props.title ?? '';
   const _subtitle = props.subtitle ?? '';
+  const _id = props.id ?? '';
 
   return (
     <VStack align="left">
-      <HStack pb="0.33em">
+      <Flex>
         <VStack p="0" m="0" mr="1em" spacing="0" align="left">
           <_DVisualTitle text={ _title } />
           <_DVisualSubtitle text={ _subtitle } />
         </VStack>
-        <_DVisualGizmo />
-      </HStack>
+        <Spacer />
+        <_DVisualTitleButtons id={ _id } />
+      </Flex>
       <Divider />
     </VStack> 
   );
@@ -132,17 +140,40 @@ const _DVisualSubtitle = function(props={}) {
 }
 
 /**
- * Attaches a gizmo that helps us filter and do other stuff with the graph.
+ * This contains the edit and remove buttons for the dvisual.
  * 
  * @component 
  */
-const _DVisualGizmo = function(props={}) {
+const _DVisualTitleButtons = function(props={}) {
+
+  // ! put this into the dvisual state too
+  const _id = props.id ?? '';
+
+  const _dataviserState = DataviserCtx.useCtx();
+
+  /**
+   * Brings up the popup for updating a chart when clicking the pencil.
+   */
+  function onClickUpdate() {
+
+  }
+
+  /**
+   * Removes the visual from the dataviser state object.
+   */
+  function onClickRemove() {
+    DataviserManager.dvisualRemove(_dataviserState, { id: _id });
+  }
+
   return (
-    <Box>
-      <Button size="sm" fontSize="0.6rem" variant="outline">
-        gizmo name
+    <HStack>
+      <Button size="sm">
+        <BiPencil />
       </Button>
-    </Box>
+      <Button size="sm" variant="ghost" colorScheme="red" onClick={ onClickRemove }>
+        <BiSolidXCircle />
+      </Button>
+    </HStack>
   )
 }
 

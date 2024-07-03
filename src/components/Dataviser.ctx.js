@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-03 08:34:57
+ * @ Modified time: 2024-07-03 09:07:43
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -65,7 +65,7 @@ export const DataviserManager = (function() {
   _.dvisualUpdate = function(state, options) {
 
     // Grab the id
-    const id = options.i ?? null;
+    const id = options.id ?? options.i ?? null;
 
     // Nothing to update
     if(!id) return;
@@ -83,9 +83,23 @@ export const DataviserManager = (function() {
 
   /**
    * Removes one of the dvisual components.
+   * 
+   * @param   { State }   state     The dataviser state.
+   * @param   { object }  options   The options for the updated dvisual.
    */
-  _.dvisualRemove = function() {
+  _.dvisualRemove = function(state, options) {
     
+    // Grab the id
+    const id = options.id ?? options.i ?? null;
+
+    // Nothing to update
+    if(!id) return;
+
+    // Exclude the dvisual with the given id
+    const dvisuals = state.dvisuals.filter(dvisual => dvisual.id != id);
+
+    // Update the state
+    state.set({ dvisuals })
   }
 
   return {

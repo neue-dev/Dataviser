@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-03 08:37:05
+ * @ Modified time: 2024-07-03 08:40:38
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -27,14 +27,14 @@ export function DLayout(props={}) {
   const _dataviserState = DataviserCtx.useCtx();
 
   // Dimensions and sizing
-  const { width: _width, height: _height } = useWindowDimensions();
-  const _rowCount = 18, _colCount = 32;         // Row and column counts
-  const _rowHeight = _height / _rowCount;       // The size of each row
-  const _colWidth = _width / _colCount;         // The size of each column
+  const { width: _width, height: _height } = useWindowDimensions();   // Window dimensions
+  const _rowCount = 18, _colCount = 32;                               // Row and column counts
+  const _rowHeight = _height / _rowCount;                             // The size of each row
+  const _colWidth = _width / _colCount;                               // The size of each column
   
   // Some other params
-  const _handles = [ 'sw', 'nw', 'se', 'ne' ];  // The resize handles we're using 
-  const _layout = [];                           // Define the elements in the layout
+  const _handles = [ 'sw', 'nw', 'se', 'ne' ];                        // The resize handles we're using 
+  const _layout = [];                                                 // Define the elements in the layout
   
   // For each child in the layout
   props.children.map(child => {
