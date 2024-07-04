@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-05 06:10:52
+ * @ Modified time: 2024-07-05 07:41:24
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -16,6 +16,27 @@ export const ClientDF = (function() {
 
   const _ = {};
   const _out = 'OUT';   // The name of the output variable
+
+  /**
+   * Creates the filter script based on the provided rows and cols.
+   * 
+   * @param   { array }   rows  The rows to use for filtering.
+   * @param   { array }   cols  The cols to use for filtering.
+   * @return  { string }        The script to filter for the rows and cols.
+   */
+  const _filterScriptCreate = function(rows, cols) {
+
+    // Stringify the arrays
+    const rowString = JSON.stringify(rows);
+    const colString = JSON.stringify(cols);
+
+    // Create the filter script
+    return `
+      DFS = dfFilterRows(DFS, 'index', ${rowString})
+      DFS = dfFilterCols(DFS, ${colString})
+      print('PYTHON: filtered')
+    `;
+  }
 
   /**
    * Saves all the provided dfs into the store.
@@ -37,7 +58,9 @@ export const ClientDF = (function() {
   }
 
   /**
-   * // ! put the doc here
+   * Register metadata for the given dfs.
+   * 
+   * @param   { object }  dfs   The collection of dfs whose metadata to register.
    */
   const _dfCreateMeta = function(dfs) {
 
@@ -104,9 +127,7 @@ export const ClientDF = (function() {
   /**
    * Loads the dfs we have from the files into the Python environment.
    * AND THEN it loads them into the df slice of our store.
-   * 
-   * // ! allow us to specify filters and what not
-   * // ! when saving dfs, save them to a new 'data group', and not the dfs dict
+   * Note that it saves them to the group we provide.
    * 
    * @param   { object }    options   The options for loading the dataframes.
    * @return  { Promise }             A promise for the execution of the action. 
@@ -117,18 +138,17 @@ export const ClientDF = (function() {
     const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
 
     // Parse the options
-    const group = options.group ?? 'test';
+    const group = options.group ?? null;
+    const ids = options.ids ?? [];
+    const rows = options.rows ?? [];
+    const cols = options.cols ?? [];
 
-    // !Remove
-    const filters = `
-      # DFS = dfFilterRows(DFS, 'index', ['Chanthaburi'])
-      DFS = dfFilterCols(DFS, ['Chanthaburi'])
-      print('PYTHON: filtered')
-    `;
+    // Create the filter script
+    const filterScript = _filterScriptCreate(rows, cols);
 
     // Send the data to the Python script
-    ClientPython.dataSend({ IDS: [], })
-      .then(() => ClientPython.scriptRun(filters))
+    ClientPython.dataSend({ IDS: ids, })
+      .then(() => ClientPython.scriptRun(filterScript))
       .then(() => ClientPython.fileRun('df_out'))
       .then(() => ClientPython.dataRequest(_out))
       .then((result) => _dfCreate(result[_out], { group }))
