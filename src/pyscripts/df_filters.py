@@ -49,6 +49,10 @@ def dfFilterRows(dfs, col, rows):
   for df_key in dfs:
     df = dfs[df_key] 
 
+    # Include all rows when an empty list is provided
+    if len(rows) == 0:
+      continue
+
     # Do the filtering
     if col == 'index':
       df = df.loc[df.index.isin(rows)]
@@ -70,6 +74,12 @@ def dfFilterCols(dfs, cols):
   '''
 
   for df_key in dfs:
+
+    # Include all cols when an empty list is provided
+    if len(cols) == 0:
+      continue
+
+    # Filter the df by column names
     dfs[df_key] = dfs[df_key].filter(items=cols)
 
   return dfs
