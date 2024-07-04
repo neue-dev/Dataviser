@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-03 21:31:17
+ * @ Modified time: 2024-07-05 06:10:52
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -20,28 +20,39 @@ export const ClientDF = (function() {
   /**
    * Saves all the provided dfs into the store.
    * 
-   * @param   { object }  dfs   A dict containing all the dfs.
+   * @param   { object }  dfs       A dict containing all the dfs.
+   * @param   { object }  options   Options for saving the dfs.
    */
-  const _dfCreate = function(dfs) {
+  const _dfCreate = function(dfs, options={}) {
+
+    // Grab the options
+    const group = options.group ?? null;
 
     // The dispatcher and the dfkeys
     const dispatch = ClientStore.storeDispatcher('df/dfCreate');
     const dfKeys = Object.keys(dfs);
 
     // Save each of the dfs to the store
-    dfKeys.forEach(dfKey => dispatch({ id: dfKey, data: dfs[dfKey].df, meta: dfs[dfKey].meta }))
+    dfKeys.forEach(dfKey => dispatch({ id: dfKey, data: dfs[dfKey].df, group }))
   }
 
   /**
-   * Loads the dfs we have from the files into the Python environment.
-   * AND THEN it loads them into the df slice of our store.
-   * 
-   * // ! allow us to specify filters and what not
-   * // ! when saving dfs, save them to a new 'data group', and not the dfs dict
-   * 
-   * @return  { Promise }   A promise for the execution of the action. 
+   * // ! put the doc here
    */
-  _.dfLoad = function() {
+  const _dfCreateMeta = function(dfs) {
+
+    // The dispatcher and the dfkeys
+    const dispatch = ClientStore.storeDispatcher('df/dfMetaCreate');
+    const dfKeys = Object.keys(dfs);
+
+    // Save each of the dfs to the store
+    dfKeys.forEach(dfKey => dispatch({ id: dfKey, meta: dfs[dfKey].meta }))
+  }
+
+  /**
+   * Initializes our dataframes from the fs part of the store.
+   */
+  _.dfInit = function() {
 
     // Create the output promise
     const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
@@ -69,6 +80,45 @@ export const ClientDF = (function() {
       }
     })
 
+    // Send the data to the Python script
+    ClientPython.dataSend({ ...pyData, ...pyOptions })
+      .then(() => ClientPython.fileRun('df_preprocess'))
+      .then(() => ClientPython.fileRun('df_out'))
+      .then(() => ClientPython.dataRequest(_out))
+      .then((result) => {
+        _dfCreate(result[_out])
+        _dfCreateMeta(result[_out]);
+      })
+      .then(() => resolveHandle())
+      .catch((e) => rejectHandle(e));
+
+    // Return the promise
+    return ClientToast.createToaster({ 
+      promise,
+      success: 'Files were converted into Pandas dataframes.',
+      loading: 'Creating dataframes...',
+      failure: 'Could not create dataframes.'
+    });
+  }
+
+  /**
+   * Loads the dfs we have from the files into the Python environment.
+   * AND THEN it loads them into the df slice of our store.
+   * 
+   * // ! allow us to specify filters and what not
+   * // ! when saving dfs, save them to a new 'data group', and not the dfs dict
+   * 
+   * @param   { object }    options   The options for loading the dataframes.
+   * @return  { Promise }             A promise for the execution of the action. 
+   */
+  _.dfLoad = function(options={}) {
+
+    // Create the output promise
+    const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
+
+    // Parse the options
+    const group = options.group ?? 'test';
+
     // !Remove
     const filters = `
       # DFS = dfFilterRows(DFS, 'index', ['Chanthaburi'])
@@ -77,13 +127,11 @@ export const ClientDF = (function() {
     `;
 
     // Send the data to the Python script
-    ClientPython.dataSend({ ...pyData, ...pyOptions })
-      .then(() => ClientPython.fileRun('df_init'))
-      .then(() => ClientPython.fileRun('df_filters'))
+    ClientPython.dataSend({ IDS: [], })
       .then(() => ClientPython.scriptRun(filters))
       .then(() => ClientPython.fileRun('df_out'))
       .then(() => ClientPython.dataRequest(_out))
-      .then((result) => _dfCreate(result[_out]))
+      .then((result) => _dfCreate(result[_out], { group }))
       .then(() => resolveHandle())
       .catch((e) => rejectHandle(e));
 

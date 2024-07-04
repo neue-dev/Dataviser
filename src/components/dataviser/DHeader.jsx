@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-03 07:53:21
+ * @ Modified time: 2024-07-05 05:47:35
  * @ Description:
  * 
  * This represents the header of the application.
@@ -60,6 +60,7 @@ export function DHeader() {
     // Select the files, save them, then load them as dfs
     ClientFS.fileChoose(chooseOptions)(_toast)
       .then(() => ClientFS.fileLoad(loadOptions)(_toast))
+      .then(() => ClientDF.dfInit()(_toast))
       .then(() => ClientDF.dfLoad()(_toast))
       .catch((e) => console.error(e))
   }
