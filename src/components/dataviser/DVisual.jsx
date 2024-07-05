@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-05 08:06:06
+ * @ Modified time: 2024-07-06 06:01:11
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -37,6 +37,7 @@ import { useParentDimensions } from '../../hooks/useParentDimensions'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
+import { ClientStore } from '../../client/client.store.api.js'
 
 /**
  * The DVisual component houses a D3-backed component.
@@ -93,12 +94,20 @@ export function DVisual(props={}) {
   });
 
   /**
+   * Retrieves the data associated with the dvisual instance.
+   * Grabs the data from the store based on the group name.
+   */
+  function updateData() {
+    const result = ClientDF.dfGet({ group: _name });
+    _setData(result);
+  }
+
+  /**
    * Loads the data for the visual.
    */
   function loadData() {
     ClientDF.dfLoad({ group: _name })(_toast)
-      .then((result) => _setData(result))
-      .then(() => console.warn('PLEASE DAVE THE DATA PROPERLY (call _setData() with the right params)'))
+      .then(() => updateData())
   }
   
   // Return the DVisual component

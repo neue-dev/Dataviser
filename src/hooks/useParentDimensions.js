@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 19:51:39
- * @ Modified time: 2024-07-02 20:45:24
+ * @ Modified time: 2024-07-06 05:46:12
  * @ Description:
  * 
  * This hook gives us access to the properties of the parent of a given component.
@@ -39,7 +39,7 @@ export function useParentDimensions(ref, setWidth, setHeight) {
     // Clean up function
     return () => resizeObserver.disconnect();
     
-  }, [ ref ]);
+  }, []);
 }
 
 export default {

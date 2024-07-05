@@ -10,5 +10,3 @@ TODO
 2. Put a loading screen when initializing the app
 
 3. Move the app exit button to the upper right of the screen?
-
-4. Make sure to execute the proper python scripts at the start of the app

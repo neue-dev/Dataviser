@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-05 07:41:24
+ * @ Modified time: 2024-07-06 06:03:14
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -162,6 +162,36 @@ export const ClientDF = (function() {
       loading: 'Creating dataframes...',
       failure: 'Could not create dataframes.'
     });
+  }
+
+  /**
+   * Retrieves the dataframes of the given group from the store.
+   * Reformats the data based on the given options.
+   * 
+   * @param   { string }  options   The options for which group of dataframes we want.
+   * @return  { object }            The requested dataframes.
+   */
+  _.dfGet = function(options={}) {
+
+    // Parse the options
+    const group = options.group ?? '_';
+    const format = options.format ?? 'default';
+
+    // Grab the raw df data
+    const result = ClientStore.select(state => state.df.dfs[group]);
+    
+    // Reformats the data based on the options
+    switch(format) {
+
+      
+
+      // Default formatting
+      case 'default':
+      default:
+        break;
+    }
+
+    return result;
   }
 
   return {
