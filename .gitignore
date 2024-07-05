@@ -99,3 +99,4 @@ build/
 
 # Ignore my debug py files
 .debug/
+.debug.py
