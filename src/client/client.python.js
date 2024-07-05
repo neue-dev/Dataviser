@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-07-05 05:43:01
+ * @ Modified time: 2024-07-05 08:18:04
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -10,10 +10,18 @@
 import { ClientIPC } from './client.ipc'
 import { ClientPyodide } from "./client.pyodide";
 import { ClientStore } from './client.store.api';
+import { ClientPromise } from './client.promise';
 
 export const ClientPython = (function() {
 
   const _ = {};
+
+  // Makes sure scripts only run after everything is initted
+  const { 
+    promise: _initPromise, 
+    resolveHandle: _resolveHandle, 
+    rejectHandle: _rejectHandle 
+  } = ClientPromise.createPromise();
 
   /**
    * Requests scripts from the main process.
@@ -65,44 +73,64 @@ export const ClientPython = (function() {
   /**
    * Defines the given variables in the Python namespace.
    * 
-   * @param   { object }  data  The variables to define within the namespace.
-   * @return  { Promise }       A promise for the completion of the action.
+   * @param   { object }    data        The variables to define within the namespace.
+   * @param   { boolean }   isInitting  Tells us that we're doing an init and shouldn't chain the promise to _initPromise.
+   * @return  { Promise }               A promise for the completion of the action.
    */
-  _.dataSend = function(data={}) {
-    return ClientPyodide.processSetContext(data);
+  _.dataSend = function(data={}, isInitting) {
+
+    // If we're doing the init, the just call it directly
+    if(isInitting)
+      return ClientPyodide.processSetContext(data)
+
+    // Execute the script if init done
+    return _initPromise.then(() => ClientPyodide.processSetContext(data));
   }
 
   /**
    * Runs a custom Python script.
    * 
-   * @param   { string }    script  The script we want to execute.
-   * @return  { Promise }           A promise for the execution of the script.
+   * @param   { string }    script      The script we want to execute.
+   * @param   { boolean }   isInitting  Tells us that we're doing an init and shouldn't chain the promise to _initPromise.
+   * @return  { Promise }               A promise for the execution of the script.
    */
-  _.scriptRun = function(script) {
-    return ClientPyodide.processRun(script);
+  _.scriptRun = function(script, isInitting) {
+
+    // If we're doing the init, the just call it directly
+    if(isInitting)
+      return ClientPyodide.processRun(script)
+    
+    // Execute the script if init done
+    return _initPromise.then(() => ClientPyodide.processRun(script));
   }
 
   /**
    * Runs a particular file from the ones we have.
    * 
    * @param   { string }    filename    The name of the file to run. 
+   * @param   { boolean }   isInitting  Tells us that we're doing an init and shouldn't chain the promise to _initPromise.
    * @return  { Promise }               A promise for the execution of the script. 
    */
-  _.fileRun = function(filename) {
+  _.fileRun = function(filename, isInitting) {
 
     // Get the scripts from the store and run the 
     const scripts = ClientStore.select(state => state.py.scripts);
     const script = scripts[filename];
 
-    // Execute the script
-    return ClientPyodide.processRun(script);
+    // If we're doing the init, the just call it directly
+    if(isInitting)
+      return ClientPyodide.processRun(script)
+
+    // Execute the script if init done
+    return _initPromise.then(() => ClientPyodide.processRun(script));
   }
 
   // Load all the script files
+  // This is the only time we set isInitting to true
   _scriptInit()
-    .then(result => _.fileRun('df'))
-    .then(result => _.fileRun('df_filters'))
-    .then(result => console.log(result));
+    .then(() => _.fileRun('df', true))
+    .then(() => _.fileRun('df_filters', true))
+    .then(() => _resolveHandle())
 
   return {
     ..._,

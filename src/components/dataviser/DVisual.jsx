@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-03 13:07:50
+ * @ Modified time: 2024-07-05 08:06:06
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -20,6 +20,7 @@ import { Button, Text } from '@chakra-ui/react'
 import { Divider, HStack, VStack } from '@chakra-ui/react'
 import { Popover, Portal, PopoverTrigger } from '@chakra-ui/react'
 import { PopoverBody, PopoverContent } from '@chakra-ui/react'
+import { useToast } from '@chakra-ui/react'
 
 // Icons
 import { BiSlider } from 'react-icons/bi'
@@ -34,6 +35,9 @@ import { DVisualCtx, DVisualManager } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
 import { useParentDimensions } from '../../hooks/useParentDimensions'
 
+// Client stuff
+import { ClientDF } from '../../client/client.df.js'
+
 /**
  * The DVisual component houses a D3-backed component.
  * 
@@ -45,11 +49,13 @@ export function DVisual(props={}) {
   const _dvisualState = DVisualCtx.newCtx();
   const _dvisualContext = DVisualCtx.getCtx();
   const _dataviserState = DataviserCtx.useCtx();
-  
+  const _toast = useToast();
+
   // Some primary properties of the vis
-  const _data = useSelector(state => state.df.dfs);
+  const [ _data, _setData ] = useState(null);
   const _ref = useRef(null);
   const _id = props.id ?? '';
+  const _name = props.name ?? '_';
 
   // The dimensions of the visual,
   const [ _width, _setWidth ] = useState(0);
@@ -85,6 +91,15 @@ export function DVisual(props={}) {
     mx: _mx, my: _my,
     px: _px, py: _py,
   });
+
+  /**
+   * Loads the data for the visual.
+   */
+  function loadData() {
+    ClientDF.dfLoad({ group: _name })(_toast)
+      .then((result) => _setData(result))
+      .then(() => console.warn('PLEASE DAVE THE DATA PROPERLY (call _setData() with the right params)'))
+  }
   
   // Return the DVisual component
   return (
@@ -103,6 +118,12 @@ export function DVisual(props={}) {
       }}>
 
         <_DVisualHeader/>
+        <Button onClick={ loadData }> { 
+          // ! remove 
+          // ! this should happen automatically after a graph is created, ORR prompt user for data if no files
+          // ! otherwise, it should also only happen when the refresh button is clicked
+          'load dfs'
+        } </Button>
         <DVisualD3 />
       </Card>
     </_dvisualContext.Provider>

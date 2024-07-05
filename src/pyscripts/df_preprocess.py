@@ -10,12 +10,6 @@
 
 import pandas as pd
 
-META = {}   # Stores the metadata for each df
-REF = {}    # The reference of dataframes we use to reset 'DFS'
-DFS = {}    # Stores the actual dataframes
-OUT = {}    # Always stores the dfs we retrieve in JS
-IDS = []    # The ids of the dataframes we'll be using
-
 # !THIS SHOULD BE MOVED ELSEWHERE AND SHUD BE SWAPPABLE FOR OTHER LOGIC
 def preprocess(df):
   '''
