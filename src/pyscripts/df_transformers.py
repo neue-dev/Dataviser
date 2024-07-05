@@ -24,7 +24,8 @@ def df_transform_col_sums(dfs):
 
   # Convert each of the dataframes
   for df in dfs:
-    out[df] = dfs[df].apply(np.sum, axis=1)
+    index = dfs[df].index
+    out[df] = pd.DataFrame(dfs[df].apply(np.sum, axis=1), index=index)
 
   return out
   
@@ -43,6 +44,6 @@ def df_transform_row_sums(dfs):
 
   # Convert each of the dataframes
   for df in dfs:
-    out[df] = dfs[df].apply(np.sum, axis=1)
+    out[df] = pd.DataFrame(dfs[df].apply(np.sum, axis=1))
   
   return out

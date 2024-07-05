@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-14 21:53:19
- * @ Modified time: 2024-07-05 08:18:04
+ * @ Modified time: 2024-07-06 07:49:47
  * @ Description:
  * 
  * This file holds all the Python scripts our program will be running.
@@ -130,6 +130,7 @@ export const ClientPython = (function() {
   _scriptInit()
     .then(() => _.fileRun('df', true))
     .then(() => _.fileRun('df_filters', true))
+    .then(() => _.fileRun('df_transformers', true))
     .then(() => _resolveHandle())
 
   return {

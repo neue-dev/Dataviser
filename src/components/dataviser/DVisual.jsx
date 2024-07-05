@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-06 06:01:11
+ * @ Modified time: 2024-07-06 07:47:40
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -98,7 +98,7 @@ export function DVisual(props={}) {
    * Grabs the data from the store based on the group name.
    */
   function updateData() {
-    const result = ClientDF.dfGet({ group: _name });
+    const result = ClientDF.dfGet({ group: _name, orient: 'cols' });
     _setData(result);
   }
 
@@ -106,7 +106,7 @@ export function DVisual(props={}) {
    * Loads the data for the visual.
    */
   function loadData() {
-    ClientDF.dfLoad({ group: _name })(_toast)
+    ClientDF.dfLoad({ group: _name, orient: 'cols' })(_toast)
       .then(() => updateData())
   }
   

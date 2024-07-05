@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:41:45
- * @ Modified time: 2024-07-05 06:07:00
+ * @ Modified time: 2024-07-06 07:47:23
  * @ Description:
  * 
  * This file reads all the python scripts and forwards them to the renderer process.
@@ -18,6 +18,7 @@ export const Python = (function() {
     df: './src/pyscripts/df.py',
     df_out: './src/pyscripts/df_out.py',
     df_filters: './src/pyscripts/df_filters.py',
+    df_transformers: './src/pyscripts/df_transformers.py',
     df_preprocess: './src/pyscripts/df_preprocess.py',
   };
 
