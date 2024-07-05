@@ -9,7 +9,7 @@
 
 import pandas as pd
 
-def dfFilterMeta(dfs, meta, metafilter):
+def df_filter_meta(dfs, meta, metafilter):
   '''
   Filters all the dataframes using their metadata.
 
@@ -35,7 +35,7 @@ def dfFilterMeta(dfs, meta, metafilter):
 
   return dfs
 
-def dfFilterRows(dfs, col, rows):
+def df_filter_rows(dfs, col, rows):
   '''
   Filters dfs by their row values in a particular column.
 
@@ -64,7 +64,7 @@ def dfFilterRows(dfs, col, rows):
 
   return dfs
 
-def dfFilterCols(dfs, cols):
+def df_filter_cols(dfs, cols):
   '''
   Filters dfs by their col names.
 

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-06 06:03:14
+ * @ Modified time: 2024-07-06 07:39:07
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -24,7 +24,11 @@ export const ClientDF = (function() {
    * @param   { array }   cols  The cols to use for filtering.
    * @return  { string }        The script to filter for the rows and cols.
    */
-  const _filterScriptCreate = function(rows, cols) {
+  const _filterScriptCreate = function(options) {
+
+    // Grab the options
+    const rows = options.rows ?? [];
+    const cols = options.cols ?? [];
 
     // Stringify the arrays
     const rowString = JSON.stringify(rows);
@@ -32,9 +36,37 @@ export const ClientDF = (function() {
 
     // Create the filter script
     return `
-      DFS = dfFilterRows(DFS, 'index', ${rowString})
-      DFS = dfFilterCols(DFS, ${colString})
-      print('PYTHON: filtered')
+      DFS = df_filter_rows(DFS, 'index', ${rowString})
+      DFS = df_filter_cols(DFS, ${colString})
+      print('PYTHON: filtered.')
+    `;
+  }
+
+  /**
+   * Creates the transformer script.
+   * Converts the dataframes to row sums or cols sums based on the options.
+   * 
+   * @param   { object }  options   The options for how to convert the dataframe.
+   * @return  { string }            The script to filter for the rows and cols.
+   */
+  const _transformScriptCreate = function(options={}) {
+
+    // Parse the options
+    const orient = options.orient ?? '';
+    const transform = [ 'cols', 'col' ].includes(orient) ? 
+      'df_transform_col_sums' :
+      'df_transform_row_sums';
+
+    // No transform was provided
+    if(!orient.length)
+      return `
+        print('PYTHON: no transform applied.')
+      `;
+
+    // Create the filter script
+    return `
+      DFS = ${transform}(DFS)
+      print('PYTHON: transformed.')
     `;
   }
 
@@ -142,13 +174,16 @@ export const ClientDF = (function() {
     const ids = options.ids ?? [];
     const rows = options.rows ?? [];
     const cols = options.cols ?? [];
+    const orient = options.orient ?? '';
 
     // Create the filter script
-    const filterScript = _filterScriptCreate(rows, cols);
+    const filterScript = _filterScriptCreate({ rows, cols });
+    const transformScript = _transformScriptCreate({ orient });
 
     // Send the data to the Python script
     ClientPython.dataSend({ IDS: ids, })
       .then(() => ClientPython.scriptRun(filterScript))
+      .then(() => ClientPython.scriptRun(transformScript))
       .then(() => ClientPython.fileRun('df_out'))
       .then(() => ClientPython.dataRequest(_out))
       .then((result) => _dfCreate(result[_out], { group }))
@@ -181,9 +216,8 @@ export const ClientDF = (function() {
     const result = ClientStore.select(state => state.df.dfs[group]);
     
     // Reformats the data based on the options
+    // ! remove the format option if its actually not needed
     switch(format) {
-
-      
 
       // Default formatting
       case 'default':
