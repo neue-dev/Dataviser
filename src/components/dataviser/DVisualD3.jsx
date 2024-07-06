@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 10:28:21
- * @ Modified time: 2024-07-06 14:47:37
+ * @ Modified time: 2024-07-06 17:30:59
  * @ Description:
  * 
  * A file that constructs our D3 components.
@@ -17,6 +17,7 @@ import * as d3 from 'd3'
 
 // Custom d3 utils
 import '../../d3/d3.sankey'
+import '../../d3/d3.lineplot'
 
 // Custom hooks
 import { DVisualCtx } from './DVisual.ctx'

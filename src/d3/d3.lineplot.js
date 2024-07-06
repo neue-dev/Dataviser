@@ -1,11 +1,13 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-06 13:22:57
- * @ Modified time: 2024-07-06 17:01:37
+ * @ Modified time: 2024-07-06 18:23:42
  * @ Description:
  * 
  * A lineplot utility for our graphs.
  */
+
+import * as d3 from 'd3'
 
 /**
  * Augments the d3 library with our own lineplot code.
@@ -128,10 +130,10 @@ export const d3lineplot = (function() {
       .selectAll('.line')
       .data(_points)
       .join('path')
-        .attr("fill", "none")
-        .attr("stroke", function(d){ return color(d[0]) })
-        .attr("stroke-width", 1.5)
-        .attr("d", function(d){
+        .attr('fill', 'none')
+        .attr('stroke', function(d){ return color(d[0]) })
+        .attr('stroke-width', 1.5)
+        .attr('d', function(d){
           return d3.line()
             .x(function(d) { return x(d.year); })
             .y(function(d) { return y(+d.n); })
