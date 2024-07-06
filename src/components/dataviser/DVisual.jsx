@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-06 14:49:41
+ * @ Modified time: 2024-07-06 16:14:59
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -98,7 +98,7 @@ export function DVisual(props={}) {
    * Grabs the data from the store based on the group name.
    */
   function updateData() {
-    const result = ClientDF.dfGet({ group: _name, orient: 'cols' });
+    const result = ClientDF.dfGet({ group: _name });
     _setData(result);
   }
 
