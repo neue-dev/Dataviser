@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 10:28:21
- * @ Modified time: 2024-07-06 05:51:06
+ * @ Modified time: 2024-07-06 14:47:37
  * @ Description:
  * 
  * A file that constructs our D3 components.
@@ -14,6 +14,9 @@ import { useEffect } from 'react'
 
 // D3
 import * as d3 from 'd3'
+
+// Custom d3 utils
+import '../../d3/d3.sankey'
 
 // Custom hooks
 import { DVisualCtx } from './DVisual.ctx'
@@ -47,7 +50,7 @@ export const DVisualD3 = function(props={}) {
   // Setup the svg
   _svg.current = d3.select('dvisual' + _id).append('svg');
 
-  console.warn('D3', _data);
+  
 
   // Make sure we don't render with 0 dimensions
   if(_width <= 0 || _height <= 0)
