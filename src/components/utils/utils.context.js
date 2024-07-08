@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 06:59:05
- * @ Modified time: 2024-07-03 09:41:30
+ * @ Modified time: 2024-07-09 06:35:06
  * @ Description:
  * 
  * This allows us to create a construct for contexts without repeating code.
@@ -30,7 +30,7 @@ export const UtilsContext = function(initial) {
     /**
      * Retrieves the dataviser context object.
      * 
-     * @return  { Context }   The dataviser context object.
+     * @return  { Context }   The context object.
      */
     _.getCtx = function() {
       return _context;
@@ -44,7 +44,7 @@ export const UtilsContext = function(initial) {
     _.newCtx = function() {
   
       // Create the state
-      const [ state, setState ] = useState(_initial);
+      const [ state, setState ] = useState(structuredClone(_initial));
   
       // A function for setting the state
       const set = (newState) => setState({ _: { ...state._, ...newState }});

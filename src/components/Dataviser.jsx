@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-06 05:00:55
+ * @ Modified time: 2024-07-09 06:25:20
  * @ Description:
  * 
  * The main component that houses the app.
@@ -14,7 +14,7 @@ import { useState } from 'react'
 // Custom components
 import { DLayout } from './dataviser/DLayout.jsx';
 import { DHeader } from './dataviser/DHeader.jsx'
-import { DVisual } from './dataviser/DVisual.jsx';
+import { DVisual } from './dvisual/DVisual.jsx';
 
 // Import the context of the app
 import { DataviserCtx, DataviserManager } from './Dataviser.ctx.js';
@@ -34,7 +34,7 @@ export function Dataviser() {
   const _header = (<DHeader i="ha" static="true" w="max" h="3" />);
 
   // ! change this and put the function into another file perhaps
-  const _dvisuals = [ _header, ..._dataviserState.get('dvisuals').map(dvisual => {
+  const _dlayout = [ _header, ..._dataviserState.get('dvisuals').map(dvisual => {
     return (<DVisual
       i={ dvisual.id } 
       id={ dvisual.id }
@@ -49,7 +49,7 @@ export function Dataviser() {
   // Pass the state to everyone else
   return (
     <_dataviserContext.Provider value={ _dataviserState }>
-      <DLayout children={ _dvisuals }> 
+      <DLayout children={ _dlayout }> 
       </DLayout>
     </_dataviserContext.Provider>
   )

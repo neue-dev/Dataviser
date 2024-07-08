@@ -3,6 +3,7 @@ TODO
 0.1 BEFORE SAVING THE DFS INTO THE STORE, MAKE SURE TO CONVERT THEM INTO PANDAS DATAFRAMES IN PYODIDE
 0.2 SAVE THE NUMBER OF COLS AND ROWS IN THE DATAVISER CONTEXT TOO
 0.3 ADD OPTION TO ZOOM IN ON A PARTICULAR VIZ (it fills up the screen)
+0.4 REMOVE VISUAL OPTION
 
 1. Create a composbale class that represents a visualization
    Create a separate class that the first one uses to refernce data stored by redux.

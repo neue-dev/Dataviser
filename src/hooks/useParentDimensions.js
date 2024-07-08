@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 19:51:39
- * @ Modified time: 2024-07-06 05:46:12
+ * @ Modified time: 2024-07-06 19:12:45
  * @ Description:
  * 
  * This hook gives us access to the properties of the parent of a given component.
@@ -14,7 +14,7 @@ import { useState, useEffect } from 'react'
  * 
  * @hook
  */
-export function useParentDimensions(ref, setWidth, setHeight) {
+export function useParentDimensions(ref, setWidth, setHeight, callback=d=>d) {
 
   // Creates a new resize observer to give us the component dimensions
   useEffect(() => {
@@ -22,19 +22,32 @@ export function useParentDimensions(ref, setWidth, setHeight) {
     // Return if not defined
     if(!ref.current)
       return;
+    
+    // Grab width and height
+    let width = ref.current.parentElement.offsetWidth;
+    let height = ref.current.parentElement.offsetHeight;
 
     // Set the initial dimensions
-    setWidth(ref.current.parentElement.offsetWidth);
-    setHeight(ref.current.parentElement.offsetHeight);
+    setWidth(width);
+    setHeight(height);
     
     // Update the parent when a resize occurs
     const resizeObserver = new ResizeObserver((e) => {
-      setWidth(e[0].contentBoxSize[0].inlineSize);
-      setHeight(e[0].contentBoxSize[0].blockSize);
-    });
+      width = e[0].contentBoxSize[0].inlineSize;
+      height = e[0].contentBoxSize[0].blockSize;
 
+      setWidth(width);
+      setHeight(height);
+
+      // ! find a better solution than using a callback gdi
+      callback(width, height);
+    });
+    
     // Observe the parent element
     resizeObserver.observe(ref.current.parentElement);
+    
+    // ! find a better solution than using a callback gdi
+    callback(width, height);
 
     // Clean up function
     return () => resizeObserver.disconnect();
