@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-10 03:20:36
+ * @ Modified time: 2024-07-10 03:24:46
  * @ Description:
  */
 
@@ -12,7 +12,6 @@ import { useState } from 'react'
 import { Box, Heading, HStack } from '@chakra-ui/react'
 import { Button, Text, Tooltip } from '@chakra-ui/react'
 import { Popover, PopoverBody, PopoverContent, PopoverTrigger, Portal } from '@chakra-ui/react'
-import { RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack } from '@chakra-ui/react'
 
 // Icons
 import { BiSlider } from 'react-icons/bi'
@@ -72,18 +71,13 @@ const _DVisualButtonFilters = function() {
       fontSize='0.5em'
       p='2em'>
 
-      date:
-      <RangeSlider defaultValue={[120, 240]} min={0} max={300} step={30}>
-        <RangeSliderTrack bg='red.100'>
-          <RangeSliderFilledTrack bg='tomato' />
-        </RangeSliderTrack>
-        <RangeSliderThumb boxSize={6} index={0} />
-        <RangeSliderThumb boxSize={6} index={1} />
-      </RangeSlider>
+      <DVisualFilterSlider 
+        min={ 0 } max={ 100 } step={ 2 }
+      />
       <DVisualFilterTags 
         label="Select a province."
-        suggestions={ suggestions } />
-
+        suggestions={ suggestions } 
+      />
     </_DPopover>
   )
 }

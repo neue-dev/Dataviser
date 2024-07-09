@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-10 03:21:01
+ * @ Modified time: 2024-07-10 03:27:33
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -12,6 +12,7 @@ import { useState } from 'react'
 
 // React tags
 import { ReactTags } from 'react-tag-autocomplete'
+import { RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack } from '@chakra-ui/react'
 
 /**
  * Creates a filter with state that slides between two values.
@@ -20,8 +21,19 @@ import { ReactTags } from 'react-tag-autocomplete'
  */
 export function DVisualFilterSlider(props={}) {
   
+  // Grab the props
+  const _min = props.min ?? 0;
+  const _max = props.max ?? 100;
+  const _step = props.step ?? 1;
+
   return (
-    <></>
+    <RangeSlider defaultValue={ [ _min, _max ] } min={ _min } max={ _max } step={ _step }>
+      <RangeSliderTrack>
+        <RangeSliderFilledTrack bg="teal.500" />
+      </RangeSliderTrack>
+      <RangeSliderThumb boxSize={ 3 } index={ 0 } bg="teal.400"/>
+      <RangeSliderThumb boxSize={ 3 } index={ 1 } bg="teal.400"/>
+    </RangeSlider>
   )
 }
 
@@ -34,12 +46,12 @@ export function DVisualFilterSlider(props={}) {
 export function DVisualFilterTags(props={}) {
   
   // The selected tags and the allowed tags
-  const [ selected, setSelected ] = useState([]);
-  const suggestions = props.suggestions ?? [];
+  const [ _selected, _setSelected ] = useState([]);
+  const _suggestions = props.suggestions ?? [];
 
   // Parse the other props
-  const label = props.label ?? 'Type a selection.';
-  const noOptions = props.noOptions ?? 'No matches.';
+  const _label = props.label ?? 'Type a selection.';
+  const _noOptions = props.noOptions ?? 'No matches.';
 
   /**
    * Adds a tag to the selected tags.
@@ -47,7 +59,7 @@ export function DVisualFilterTags(props={}) {
    * @param   { object }  newTag  The tag data. 
    */
   function onAddTag(newTag) {
-    setSelected([ ...selected, newTag ]);
+    _setSelected([ ..._selected, newTag ]);
   }
   
   /**
@@ -56,17 +68,17 @@ export function DVisualFilterTags(props={}) {
    * @param   { number }  tagIndex  The index of the tag to remove. 
    */
   function onRemoveTag(tagIndex) {
-    setSelected(selected.filter((e, i) => i != tagIndex));
+    _setSelected(_selected.filter((e, i) => i != tagIndex));
   }
 
   return (
     <ReactTags 
-      labelText={ label }
-      selected={ selected }
-      suggestions={ suggestions }
+      labelText={ _label }
+      selected={ _selected }
+      suggestions={ _suggestions }
       onAdd={ onAddTag }
       onDelete={ onRemoveTag }
-      noOptionsText={ noOptions }
+      noOptionsText={ _noOptions }
     />
   )
 }
