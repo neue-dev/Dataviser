@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-28 21:12:24
- * @ Modified time: 2024-07-09 12:34:27
+ * @ Modified time: 2024-07-10 02:35:52
  * @ Description:
  * 
  * This portion of redux manages our dataframe data.
@@ -103,6 +103,8 @@ export const dfSlice = createSlice({
       // Grab the action details
       const id = action?.payload?.id ?? null;
       const meta = action?.payload?.meta ?? null;
+      const cols = action?.payload?.cols ?? [];
+      const rows = action?.payload?.rows ?? [];
 
       // Id was not provided
       if(id == null)
@@ -113,7 +115,7 @@ export const dfSlice = createSlice({
         return state;
 
       // Save the metadata
-      state.meta[id] = meta;
+      state.meta[id] = { ...meta, rows, cols };
     },
 
     /**
