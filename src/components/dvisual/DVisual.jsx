@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-09 11:46:05
+ * @ Modified time: 2024-07-09 12:20:35
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -16,7 +16,7 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
 // Chakra
-import { Button, Container } from '@chakra-ui/react'
+import { Container } from '@chakra-ui/react'
 
 // Custom hooks, contexts, and components
 import { DVisualCtx, DVisualManager } from './DVisual.ctx'
@@ -97,11 +97,7 @@ export function DVisual(props={}) {
         marginLeft: _mx, marginRight: _mx,
         marginTop: _my, marginBottom: _my,
       }}>
-
-        <DVisualHeader/>
-        <Button onClick={ () => ClientDF.dfLoad({ group: _id})}>
-          
-        </Button>
+        <DVisualHeader/>          
         <svg width={ 1000 } height={ 1000 }>
         </svg>
       </Container>

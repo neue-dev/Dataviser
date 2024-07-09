@@ -1,13 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-03 08:40:38
+ * @ Modified time: 2024-07-09 12:01:32
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
  */
 
 import * as React from 'react';
+import { useEffect } from 'react';
 
 // React grid layout
 import GridLayout from 'react-grid-layout';
@@ -15,6 +16,7 @@ import GridLayout from 'react-grid-layout';
 // Custom hooks and contexts
 import { useWindowDimensions } from '../../hooks/useWIndowDimensions'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx';
+import { ClientDF } from '../../client/client.df';
 
 /**
  * This acts as the grid that holds all our components together.
@@ -25,6 +27,7 @@ export function DLayout(props={}) {
 
   // Get the state
   const _dataviserState = DataviserCtx.useCtx();
+  const _dvisuals = _dataviserState.get('dvisuals');
 
   // Dimensions and sizing
   const { width: _width, height: _height } = useWindowDimensions();   // Window dimensions
@@ -36,6 +39,27 @@ export function DLayout(props={}) {
   const _handles = [ 'sw', 'nw', 'se', 'ne' ];                        // The resize handles we're using 
   const _layout = [];                                                 // Define the elements in the layout
   
+  // This subscribes the dvisuals to the store
+  useEffect(() => {
+
+    // The list of unsubscribers
+    const unsubscribers = [];
+    
+    // For each child, subscribe to the store
+    props.children.map(child => {
+
+      // Grab the child props
+      const childProps = child.props;
+      
+      // Subscribe the child
+      unsubscribers.push(ClientDF.dfSubscribeGroup({ group: childProps.i }))
+    })
+
+    // Return the clean up function
+    return () => unsubscribers.forEach(unsubscribe => unsubscribe());
+    
+  }, [ _dvisuals ])
+
   // For each child in the layout
   props.children.map(child => {
 

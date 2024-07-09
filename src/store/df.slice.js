@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-28 21:12:24
- * @ Modified time: 2024-07-09 06:59:13
+ * @ Modified time: 2024-07-09 12:34:27
  * @ Description:
  * 
  * This portion of redux manages our dataframe data.
@@ -48,14 +48,11 @@ export const dfSlice = createSlice({
       const id = action?.payload?.id ?? null;
       const group = action?.payload?.group ?? '_';
       const data = action?.payload?.data ?? null;
-      
-      // I know this is bad but eh
-      const timestamp = Date.now();
 
       // We don't generate ids within this method
       // They must be provided, otherwise nothing happens
       // Also, we can't save nullish data
-      if(id == null || data == null || timestamp == null)
+      if(id == null || data == null)
         return state;
 
       // The group hasn't been created yet
@@ -64,7 +61,6 @@ export const dfSlice = createSlice({
 
       // Save the data to the group it belongs to
       state.dfs[group][id] = data;
-      state.timestamps[group] = timestamp;
     },
 
     /**
@@ -80,9 +76,6 @@ export const dfSlice = createSlice({
       const id = action?.payload?.id ?? null;
       const group = action?.payload?.group ?? null;
 
-      // I know this is bad but eh
-      const timestamp = Date.now();
-
       // Missing id or group
       if(id == null || group == null)
         return state;
@@ -97,7 +90,6 @@ export const dfSlice = createSlice({
 
       // Delete entry and update timestamp
       delete state.dfs[group][id];
-      state.timestamps[group] = timestamp;
     },
 
     /**
@@ -146,6 +138,29 @@ export const dfSlice = createSlice({
       
       // Delete the metadata
       delete state.meta[id];
+    },
+
+    /**
+     * Updates the timestamp for the given group.
+     * We should only do this after all dfs have been updated for that group.
+     * 
+     * @param { state }   state   The value of the current state. 
+     * @param { action }  action  The details of the action.
+     */
+    dfTimestampUpdate: (state, action) => {
+
+      // Get the group
+      const group = action?.payload?.group ?? null;
+
+      // I know this is bad but eh
+      const timestamp = Date.now();
+
+      // Missing id or group
+      if(group == null)
+        return state;
+
+      // Update the timestamp
+      state.timestamps[group] = timestamp;
     },
 
     /**

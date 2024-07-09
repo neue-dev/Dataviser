@@ -1,12 +1,13 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-09 11:52:46
+ * @ Modified time: 2024-07-09 13:03:18
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
  */
 
+import { dispatch } from 'd3';
 import { ClientPromise } from './client.promise';
 import { ClientPython } from './client.python';
 import { ClientStore } from './client.store.api'; 
@@ -87,6 +88,9 @@ export const ClientDF = (function() {
 
     // Save each of the dfs to the store
     dfKeys.forEach(dfKey => dispatch({ id: dfKey, data: dfs[dfKey].df, group }))
+
+    // Update the timestamp
+    _dfUpdateTimestamp(group);
   }
 
   /**
@@ -102,6 +106,48 @@ export const ClientDF = (function() {
 
     // Save each of the dfs to the store
     dfKeys.forEach(dfKey => dispatch({ id: dfKey, meta: dfs[dfKey].meta }))
+
+    // Update the timestamp
+    _dfUpdateTimestamp('_');
+  }
+
+  /**
+   * Update the timestamp for the specified group.
+   * 
+   * @param   { string }  group   The group we want to update.
+   */
+  const _dfUpdateTimestamp = function(group='_') {
+    
+    // The dispatcher
+    const dispatch = ClientStore.storeDispatcher('df/dfTimestampUpdate');
+
+    // Update the timestamp for that group
+    dispatch({ group });
+  }
+
+  /**
+   * Returns a function that checks whether or not the store updated the group last time.
+   * 
+   * @param   { string }    group   The group we're checking updates for.
+   * @return  { function }          A function that checks if the group was updated from the last check.
+   */
+  const _dfUpdateChecker = function(group='_') {
+    
+    // The timestamps
+    let prevTimestamp = null;
+    let currTimestamp = null;
+
+    return () => {
+
+      // Update the previous and current timestamp
+      prevTimestamp = currTimestamp;
+      currTimestamp = ClientStore.select(state => state.df.timestamps[group]);
+
+      // Return whether or not there was an update
+      if(prevTimestamp != currTimestamp)
+        return true;
+      return false;
+    }
   }
 
   /**
@@ -156,49 +202,6 @@ export const ClientDF = (function() {
     });
   }
 
-  // /**
-  //  * Loads the dfs we have from the files into the Python environment.
-  //  * AND THEN it loads them into the df slice of our store.
-  //  * Note that it saves them to the group we provide.
-  //  * 
-  //  * @param   { object }    options   The options for loading the dataframes.
-  //  * @return  { Promise }             A promise for the execution of the action. 
-  //  */
-  // _.dfLoad = function(options={}) {
-
-  //   // Create the output promise
-  //   const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
-
-  //   // Parse the options
-  //   const group = options.group ?? null;
-  //   const ids = options.ids ?? [];
-  //   const rows = options.rows ?? [];
-  //   const cols = options.cols ?? [];
-  //   const orient = options.orient ?? '';
-
-  //   // Create the filter script
-  //   const filterScript = _filterScriptCreate({ rows, cols });
-  //   const transformScript = _transformScriptCreate({ orient });
-
-  //   // Send the data to the Python script
-  //   ClientPython.dataSend({ IDS: ids, })
-  //     .then(() => ClientPython.scriptRun(filterScript))
-  //     .then(() => ClientPython.scriptRun(transformScript))
-  //     .then(() => ClientPython.fileRun('df_out'))
-  //     .then(() => ClientPython.dataRequest(_out))
-  //     .then((result) => _dfCreate(result[_out], { group }))
-  //     .then(() => resolveHandle())
-  //     .catch((e) => rejectHandle(e));
-
-  //   // Return the promise
-  //   return ClientToast.createToaster({ 
-  //     promise,
-  //     success: 'Files were converted into Pandas dataframes.',
-  //     loading: 'Creating dataframes...',
-  //     failure: 'Could not create dataframes.'
-  //   });
-  // }
-
   /**
    * Retrieves the dataframes of the given group from the store.
    * Reformats the data based on the given options.
@@ -224,7 +227,7 @@ export const ClientDF = (function() {
    * @param   { string }    group   The name of the group of dfs to retrieve.
    * @return  { function }          A selector function that returns the group of dfs specified. 
    */
-  _.dfSelector = function(group) {
+  _.dfSelector = function(group='_') {
     return (state) => {
       return state.df.dfs[group];
     }
@@ -242,6 +245,7 @@ export const ClientDF = (function() {
 
   /**
    * Subscribes a given group to the store.
+   * This means that when any of the file contents change, the groups are automatically updated.
    * 
    * @param   { object }    options   The options for the subscription.
    * @return  { function }            The function that unsubscribes the callback.
@@ -260,8 +264,13 @@ export const ClientDF = (function() {
     const transformScript = _transformScriptCreate({ orient });
 
     // The function we subscribe to the store
-    const updater = (state) => {
+    const checker = _dfUpdateChecker('_');
+    const updater = () => {
 
+      // No update happened, so no need to run scripts
+      if(!checker())
+        return;
+      
       // Send the data to Python and update the store after
       ClientPython.dataSend({ IDS: ids, })
         .then(() => ClientPython.scriptRun(filterScript))
@@ -270,6 +279,9 @@ export const ClientDF = (function() {
         .then(() => ClientPython.dataRequest(_out))
         .then((result) => _dfCreate(result[_out], { group }))
     }
+
+    // Call it once at the start too
+    updater();
 
     // Subscribe to the store
     return ClientStore.subscribe(updater);
