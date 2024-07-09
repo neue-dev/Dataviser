@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 06:59:05
- * @ Modified time: 2024-07-09 06:35:06
+ * @ Modified time: 2024-07-09 13:09:36
  * @ Description:
  * 
  * This allows us to create a construct for contexts without repeating code.

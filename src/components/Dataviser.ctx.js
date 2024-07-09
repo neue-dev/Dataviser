@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-09 06:15:42
+ * @ Modified time: 2024-07-09 13:10:19
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -45,7 +45,7 @@ export const DataviserManager = (function() {
     const h = options.h ?? 6;
 
     // Get the existing visuals
-    const dvisuals = state.get('dvisuals');
+    const dvisuals = state.get('dvisuals').filter(dvisual => dvisual);
     
     // Append the new visual
     dvisuals.push({

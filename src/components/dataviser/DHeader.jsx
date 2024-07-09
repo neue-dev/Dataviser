@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-05 07:50:54
+ * @ Modified time: 2024-07-09 13:07:51
  * @ Description:
  * 
  * This represents the header of the application.
@@ -43,6 +43,7 @@ import { DataviserCtx, DataviserManager } from '../Dataviser.ctx';
 export function DHeader() {
 
   // Grab the filenames for display, toast for toasting
+  // ! change this so it doesn't return root state
   const _filenames = useSelector(state => state);
   const _toast = useToast();
   const _dataviserState = DataviserCtx.useCtx();

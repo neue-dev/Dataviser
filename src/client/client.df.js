@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-09 13:03:18
+ * @ Modified time: 2024-07-09 13:11:02
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -263,14 +263,16 @@ export const ClientDF = (function() {
     const filterScript = _filterScriptCreate({ rows, cols });
     const transformScript = _transformScriptCreate({ orient });
 
-    // The function we subscribe to the store
+    // Checks if an update happened
     const checker = _dfUpdateChecker('_');
+
+    // The function we subscribe to the store
     const updater = () => {
 
       // No update happened, so no need to run scripts
       if(!checker())
         return;
-      
+
       // Send the data to Python and update the store after
       ClientPython.dataSend({ IDS: ids, })
         .then(() => ClientPython.scriptRun(filterScript))
