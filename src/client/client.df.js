@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-10 03:55:32
+ * @ Modified time: 2024-07-10 04:20:38
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -325,6 +325,7 @@ export const ClientDF = (function() {
     // Grab the option params
     const group = options.group ?? '_';
     const ids = options.ids ?? [];
+    const exclude = options.exclude ?? [];
     const rows = options.rows ?? [];
     const cols = options.cols ?? [];
     const orient = options.orient ?? '';
@@ -348,7 +349,7 @@ export const ClientDF = (function() {
       const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
 
       // Send the data to Python and update the store after
-      ClientPython.dataSend({ IDS: ids, })
+      ClientPython.dataSend({ IDS: ids, EXC: exclude })
         .then(() => ClientPython.scriptRun(filterScript))
         .then(() => ClientPython.scriptRun(transformScript))
         .then(() => ClientPython.fileRun('df_out'))

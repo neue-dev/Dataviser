@@ -29,12 +29,16 @@ try:
 
   # Grab the keys we're using  
   if len(IDS) == 0:
-    keys = DFS.keys()
+    keys = REF.keys()
   else:
     keys = IDS
 
   # For each DF, we save it's df as a dict
   for key in keys:
+
+    # Exclude certain keys
+    if key in EXC:
+      continue;
 
     # Create entries for each df
     OUT[key] = {
