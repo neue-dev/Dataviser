@@ -13,6 +13,7 @@ REF = {}    # The reference of dataframes we use to reset 'DFS'
 DFS = {}    # Stores the actual dataframes
 OUT = {}    # Always stores the dfs we retrieve in JS
 IDS = []    # The ids of the dataframes we'll be using
+EXC = []    # The ids to exclude
 
 # Progress log
 print('PYTHON: Loaded df.py.')

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-10 02:55:46
+ * @ Modified time: 2024-07-10 03:29:12
  * @ Description:
  */
 
@@ -10,21 +10,18 @@ import { useState } from 'react'
 
 // Chakra
 import { Box, Heading, HStack } from '@chakra-ui/react'
-import { Button, Input, Text, Tooltip } from '@chakra-ui/react'
+import { Button, Text, Tooltip } from '@chakra-ui/react'
 import { Popover, PopoverBody, PopoverContent, PopoverTrigger, Portal } from '@chakra-ui/react'
-import { RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack } from '@chakra-ui/react'
 
 // Icons
 import { BiSlider } from 'react-icons/bi'
 import { BiPencil } from 'react-icons/bi'
 import { BiSolidXCircle } from 'react-icons/bi'
 
-// Extras
-import { ReactTags } from 'react-tag-autocomplete'
-
 // Custom components and contexts
 import { DVisualCtx } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
+import { DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
 /**
  * This contains the edit and remove buttons for the dvisual.
@@ -49,9 +46,6 @@ export const DVisualButtons = function(props={}) {
  */
 const _DVisualButtonFilters = function() {
 
-  // State of the filters
-  const [ selected, setSelected ] = useState([]);
-
   // ! remove
   const suggestions = [
     { value: 0, label: 'hi', },
@@ -69,14 +63,6 @@ const _DVisualButtonFilters = function() {
 
   }
 
-  function onAddTag(newTag) {
-    setSelected([ ...selected, newTag ]);
-  }
-  
-  function onRemoveTag(tagIndex) {
-    setSelected(selected.filter((e, i) => i != tagIndex));
-  }
-
   return (
     <_DPopover 
       label="change chart filters"
@@ -85,21 +71,12 @@ const _DVisualButtonFilters = function() {
       fontSize='0.5em'
       p='2em'>
 
-      date:
-      <RangeSlider defaultValue={[120, 240]} min={0} max={300} step={30}>
-        <RangeSliderTrack bg='red.100'>
-          <RangeSliderFilledTrack bg='tomato' />
-        </RangeSliderTrack>
-        <RangeSliderThumb boxSize={6} index={0} />
-        <RangeSliderThumb boxSize={6} index={1} />
-      </RangeSlider>
-      <ReactTags 
-        labelText="Select provinces"
-        selected={ selected }
-        suggestions={ suggestions }
-        onAdd={ onAddTag }
-        onDelete={ onRemoveTag }
-        noOptionsText="No matching provinces"
+      <DVisualFilterSlider 
+        min={ 0 } max={ 100 } step={ 2 }
+      />
+      <DVisualFilterTags 
+        label="Select a province."
+        suggestions={ suggestions } 
       />
     </_DPopover>
   )

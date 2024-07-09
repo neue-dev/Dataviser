@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-10 00:52:20
+ * @ Modified time: 2024-07-10 04:06:52
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -16,7 +16,8 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
 // Chakra
-import { Container } from '@chakra-ui/react'
+import { Container, Skeleton } from '@chakra-ui/react'
+import { Box, SkeletonCircle, SkeletonText } from '@chakra-ui/react'
 
 // Custom hooks, contexts, and components
 import { DVisualCtx, DVisualManager } from './DVisual.ctx'
@@ -47,7 +48,7 @@ export function DVisual(props={}) {
   // The data the component should visualize
   // The timestamp tells the component when updates happen
   const _data = useSelector(ClientDF.dfDataSelector(_id));
-  const _timestamp = useSelector(ClientDF.dfTimestampSelector(_id));
+  const _timestamp = useSelector(ClientDF.dfTimestampSelector('_'));
 
   // The dimensions of the visual and margins + paddings
   const [ _width, _setWidth ] = useState(0);
@@ -86,6 +87,9 @@ export function DVisual(props={}) {
     });
   }, [ _width, _height ]);
 
+  // Our condition for checking if the visual has loaded
+  const hasLoaded = () => !(!_data.length && _timestamp);
+
   // Return the DVisual component
   return (
     <_dvisualContext.Provider value={ _dvisualState }>
@@ -102,9 +106,30 @@ export function DVisual(props={}) {
         marginLeft: _mx, marginRight: _mx,
         marginTop: _my, marginBottom: _my,
       }}>
-        <DVisualHeader/>          
-        <Linechart data={ _data } width={ _chartWidth } height={ _chartHeight } />
+        <DVisualHeader/>  
+        <_DVisualSkeleton isLoaded={ hasLoaded() }>
+          <Linechart data={ _data } width={ _chartWidth } height={ _chartHeight } />          
+        </_DVisualSkeleton>        
       </Container>
     </_dvisualContext.Provider>
+  )
+}
+
+/**
+ * The skeleton we display for our content.
+ * 
+ * @component 
+ */
+function _DVisualSkeleton(props={}) {
+  
+  // Grab the props
+  const isLoaded = props.isLoaded ?? true;
+  
+  // The skeleton
+  return (
+    <SkeletonText isLoaded={ isLoaded } noOfLines="5" spacing="4" skeletonHeight="2"
+      mt={ isLoaded ? 0 : 4 }>
+      { props.children }     
+    </SkeletonText>
   )
 }

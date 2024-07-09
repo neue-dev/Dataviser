@@ -29,6 +29,10 @@ def preprocess(df):
 # In case we haven't imported dfs yet
 try:
 
+  # Reset the sum
+  if 'sum' in DFS:
+    del DFS['sum']
+
   # For each piece of data in the dict, we save it
   for key in dfs:
 

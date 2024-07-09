@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-09 12:01:32
+ * @ Modified time: 2024-07-10 04:20:26
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -9,6 +9,9 @@
 
 import * as React from 'react';
 import { useEffect } from 'react';
+
+// Toaster
+import { useToast } from '@chakra-ui/react'
 
 // React grid layout
 import GridLayout from 'react-grid-layout';
@@ -28,6 +31,7 @@ export function DLayout(props={}) {
   // Get the state
   const _dataviserState = DataviserCtx.useCtx();
   const _dvisuals = _dataviserState.get('dvisuals');
+  const _toast = useToast();
 
   // Dimensions and sizing
   const { width: _width, height: _height } = useWindowDimensions();   // Window dimensions
@@ -51,8 +55,12 @@ export function DLayout(props={}) {
       // Grab the child props
       const childProps = child.props;
       
+      // The child doesn't have an id, we don't do anything with it
+      if([ 'NA', 'none', 'NONE', '-' ].includes(childProps.i))
+        return;
+
       // Subscribe the child
-      unsubscribers.push(ClientDF.dfSubscribeGroup({ group: childProps.i }))
+      unsubscribers.push(ClientDF.dfSubscribeGroup({ group: childProps.i, exclude: [ 'sum' ], toast: _toast }))
     })
 
     // Return the clean up function
