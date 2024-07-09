@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-09 12:20:35
+ * @ Modified time: 2024-07-10 00:35:54
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -23,6 +23,9 @@ import { DVisualCtx, DVisualManager } from './DVisual.ctx'
 import { useParentDimensions } from '../../hooks/useParentDimensions.js'
 import { DVisualHeader } from './DVisualHeader.jsx'
 
+// Import the charts and all
+import { Linechart } from './vsix/Linechart.jsx'
+
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
 
@@ -42,16 +45,18 @@ export function DVisual(props={}) {
   const _id = props.id ?? null;
 
   // The data the component should visualize
-  const _data = useSelector(ClientDF.dfSelector(_id));
+  // The timestamp tells the component when updates happen
+  const _meta = useSelector(ClientDF.dfMetaSelector());
+  const _data = useSelector(ClientDF.dfDataSelector(_id));
+  const _timestamp = useSelector(ClientDF.dfTimestampSelector(_id));
+
+  console.log(_data)
 
   // The dimensions of the visual and margins + paddings
   const [ _width, _setWidth ] = useState(0);
   const [ _height, _setHeight ] = useState(0);
   const _mx = 8, _my = 10;
   const _px = 24, _py = 32;
-
-  // Use the parent dimensions
-  useParentDimensions(_containerRef, _setWidth, _setHeight);
 
   // Grab some of the props
   const _title = props.title ?? 'Graph';
@@ -62,6 +67,9 @@ export function DVisual(props={}) {
   const _containerHeight = _height - _my * 2;
   const _chartWidth = _containerWidth - _px * 4; 
   const _chartHeight = _containerHeight - _py * 5;
+
+  // Use the parent dimensions
+  useParentDimensions(_containerRef, _setWidth, _setHeight);
 
   // Init the state
   useEffect(() => {
@@ -80,7 +88,7 @@ export function DVisual(props={}) {
       px: _px, py: _py,
     });
   }, [ _width, _height ]);
-  
+
   // Return the DVisual component
   return (
     <_dvisualContext.Provider value={ _dvisualState }>
@@ -98,8 +106,7 @@ export function DVisual(props={}) {
         marginTop: _my, marginBottom: _my,
       }}>
         <DVisualHeader/>          
-        <svg width={ 1000 } height={ 1000 }>
-        </svg>
+        <Linechart></Linechart>
       </Container>
     </_dvisualContext.Provider>
   )

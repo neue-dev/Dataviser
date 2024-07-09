@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-09 13:11:02
+ * @ Modified time: 2024-07-10 00:35:12
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -204,7 +204,7 @@ export const ClientDF = (function() {
 
   /**
    * Retrieves the dataframes of the given group from the store.
-   * Reformats the data based on the given options.
+   * Includes the metadata of the dataframes when retrieving them.
    * 
    * @param   { object }  options   The options for which group of dataframes we want.
    * @return  { object }            The requested dataframes.
@@ -214,11 +214,8 @@ export const ClientDF = (function() {
     // Parse the options
     const group = options.group ?? '_';
 
-    // Grab the raw df data
-    const result = ClientStore.select(state => state.df.dfs[group]);
-
     // Return the result
-    return result;
+    return ClientStore.select(state => state.df.dfs[group]);
   }
 
   /**
@@ -228,6 +225,57 @@ export const ClientDF = (function() {
    * @return  { function }          A selector function that returns the group of dfs specified. 
    */
   _.dfSelector = function(group='_') {
+    return (state) => {
+      return state.df.dfs[group];
+    }
+  }
+
+  /**
+   * Returns a selector that creates a derived result of the dfs.
+   * 
+   * @param   { string }    group   The group to get data about.
+   * @return  { function }          A function that returns derived data on the dfs.
+   */
+  _.dfDataSelector = function(group='_') {
+    return (state) => {
+
+      // Retrieve the data and generate the result
+      const meta = ClientStore.select(state => state.df.meta) ?? {};
+      const data = ClientStore.select(state => state.df.dfs[group]) ?? {};
+      const keys = Object.keys(data);
+      const result = [];
+
+      // For each key
+      keys.forEach(key => {
+        result.push({
+          x: meta[key],
+          y: data[key],
+        })
+      })
+
+      // Return the result
+      return result;
+    }
+  }
+
+  /**
+   * Selects the metadata of the dfs.
+   * 
+   * @return  { function }  A selector function for the df metadata. 
+   */
+  _.dfMetaSelector = function(group='_') {
+    return (state) => {
+      return state.df.meta;
+    }
+  }
+
+  /**
+   * Creates a selector for the timestamp associated with the group.
+   * 
+   * @param   { string }    group   The group we want.
+   * @return  { function }          A function that selects the timestamp of the state for that group.         
+   */
+  _.dfTimestampSelector = function(group='_') {
     return (state) => {
       return state.df.dfs[group];
     }
