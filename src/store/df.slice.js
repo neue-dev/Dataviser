@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-28 21:12:24
- * @ Modified time: 2024-07-05 05:49:06
+ * @ Modified time: 2024-07-09 06:59:13
  * @ Description:
  * 
  * This portion of redux manages our dataframe data.
@@ -25,6 +25,9 @@ export const dfSlice = createSlice({
     // Store all our dataframe data, indexed by unique id
     dfs: {},
 
+    // Timestamps for the last updates
+    timestamps: {},
+
     // The metadata of each of the dfs
     meta: {},
   },
@@ -45,11 +48,14 @@ export const dfSlice = createSlice({
       const id = action?.payload?.id ?? null;
       const group = action?.payload?.group ?? '_';
       const data = action?.payload?.data ?? null;
+      
+      // I know this is bad but eh
+      const timestamp = Date.now();
 
       // We don't generate ids within this method
       // They must be provided, otherwise nothing happens
       // Also, we can't save nullish data
-      if(id == null || data == null)
+      if(id == null || data == null || timestamp == null)
         return state;
 
       // The group hasn't been created yet
@@ -58,6 +64,7 @@ export const dfSlice = createSlice({
 
       // Save the data to the group it belongs to
       state.dfs[group][id] = data;
+      state.timestamps[group] = timestamp;
     },
 
     /**
@@ -73,6 +80,9 @@ export const dfSlice = createSlice({
       const id = action?.payload?.id ?? null;
       const group = action?.payload?.group ?? null;
 
+      // I know this is bad but eh
+      const timestamp = Date.now();
+
       // Missing id or group
       if(id == null || group == null)
         return state;
@@ -85,8 +95,9 @@ export const dfSlice = createSlice({
       if(!state.dfs[group][id])
         return state;
 
-      // Delete entry
+      // Delete entry and update timestamp
       delete state.dfs[group][id];
+      state.timestamps[group] = timestamp;
     },
 
     /**

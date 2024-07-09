@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 03:49:19
- * @ Modified time: 2024-07-09 06:27:16
+ * @ Modified time: 2024-07-09 06:37:29
  * @ Description:
  * 
  * This stores the state of a given chart or visualization.
@@ -27,8 +27,6 @@ export const DVisualManager = (function() {
    */
   _.init = function(state, options) {
     state._ = { ...state._, ...options };
-
-    console.log(state)
   }
 
   return {

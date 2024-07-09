@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-06 07:50:27
+ * @ Modified time: 2024-07-09 11:24:53
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -226,6 +226,18 @@ export const ClientDF = (function() {
     }
 
     return result;
+  }
+
+  /**
+   * Creates a selector that retrieves the group of dfs.
+   * 
+   * @param   { string }    group   The name of the group of dfs to retrieve.
+   * @return  { function }          A selector function that returns the group of dfs specified. 
+   */
+  _.dfSelector = function(group) {
+    return (state) => {
+      return state.df.dfs[group];
+    }
   }
 
   return {
