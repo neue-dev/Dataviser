@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-10 00:54:17
+ * @ Modified time: 2024-07-10 07:10:40
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -23,8 +23,6 @@ export function Linechart(props={}) {
   const _data = props.data;
   const _width = props.width ?? 0;
   const _height = props.height ?? 0;
-
-  console.log(_data)
   
   // The accessors
   const accessors = {

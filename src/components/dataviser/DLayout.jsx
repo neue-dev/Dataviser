@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-10 04:20:26
+ * @ Modified time: 2024-07-10 07:20:49
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -60,7 +60,12 @@ export function DLayout(props={}) {
         return;
 
       // Subscribe the child
-      unsubscribers.push(ClientDF.dfSubscribeGroup({ group: childProps.i, exclude: [ 'sum' ], toast: _toast }))
+      unsubscribers.push(ClientDF.dfSubscribeGroup({ 
+        group: childProps.i, 
+        // orient: 'cols',
+        exclude: [ 'sum' ], 
+        toast: _toast 
+      }))
     })
 
     // Return the clean up function

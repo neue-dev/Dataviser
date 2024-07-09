@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-10 04:06:52
+ * @ Modified time: 2024-07-10 06:55:26
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -127,7 +127,7 @@ function _DVisualSkeleton(props={}) {
   
   // The skeleton
   return (
-    <SkeletonText isLoaded={ isLoaded } noOfLines="5" spacing="4" skeletonHeight="2"
+    <SkeletonText isLoaded={ isLoaded } fadeDuration="1" noOfLines="5" spacing="4" skeletonHeight="2"
       mt={ isLoaded ? 0 : 4 }>
       { props.children }     
     </SkeletonText>
