@@ -1,11 +1,12 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-09 06:26:08
+ * @ Modified time: 2024-07-10 02:55:46
  * @ Description:
  */
 
 import * as React from 'react'
+import { useState } from 'react'
 
 // Chakra
 import { Box, Heading, HStack } from '@chakra-ui/react'
@@ -17,6 +18,9 @@ import { RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack
 import { BiSlider } from 'react-icons/bi'
 import { BiPencil } from 'react-icons/bi'
 import { BiSolidXCircle } from 'react-icons/bi'
+
+// Extras
+import { ReactTags } from 'react-tag-autocomplete'
 
 // Custom components and contexts
 import { DVisualCtx } from './DVisual.ctx'
@@ -30,7 +34,7 @@ import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
 export const DVisualButtons = function(props={}) {
   return (
     <HStack>
-      <_DVisualButtonFilter />
+      <_DVisualButtonFilters />
       <_DVisualButtonUpdate />
       <_DVisualButtonRemove />
     </HStack>
@@ -43,13 +47,34 @@ export const DVisualButtons = function(props={}) {
  * 
  * @component
  */
-const _DVisualButtonFilter = function() {
+const _DVisualButtonFilters = function() {
+
+  // State of the filters
+  const [ selected, setSelected ] = useState([]);
+
+  // ! remove
+  const suggestions = [
+    { value: 0, label: 'hi', },
+    { value: 1, label: 'perhaps', },
+    { value: 2, label: 'another dummy', },
+    { value: 3, label: 'dummy', },
+    { value: 5, label: 'hello', },
+    { value: 6, label: 'suggestion', },
+  ]
 
   /**
    * Brings up the popup for updating a chart when clicking the pencil.
    */
   function onClickFilter() {
 
+  }
+
+  function onAddTag(newTag) {
+    setSelected([ ...selected, newTag ]);
+  }
+  
+  function onRemoveTag(tagIndex) {
+    setSelected(selected.filter((e, i) => i != tagIndex));
   }
 
   return (
@@ -68,10 +93,14 @@ const _DVisualButtonFilter = function() {
         <RangeSliderThumb boxSize={6} index={0} />
         <RangeSliderThumb boxSize={6} index={1} />
       </RangeSlider>
-      
-      include: <Input placeholder='type province names' /><br />
-      
-      exclude: <Input placeholder='type province names' />
+      <ReactTags 
+        labelText="Select provinces"
+        selected={ selected }
+        suggestions={ suggestions }
+        onAdd={ onAddTag }
+        onDelete={ onRemoveTag }
+        noOptionsText="No matching provinces"
+      />
     </_DPopover>
   )
 }
