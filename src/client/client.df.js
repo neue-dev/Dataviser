@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-10 00:35:12
+ * @ Modified time: 2024-07-10 02:41:27
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -105,7 +105,29 @@ export const ClientDF = (function() {
     const dfKeys = Object.keys(dfs);
 
     // Save each of the dfs to the store
-    dfKeys.forEach(dfKey => dispatch({ id: dfKey, meta: dfs[dfKey].meta }))
+    dfKeys.forEach(dfKey => {
+
+      // Grab some data
+      let df = dfs[dfKey].df;
+      let cols = Object.keys(df);
+      let rows = [];
+
+      // Populate the rows
+      cols.forEach(col => {
+        Object.keys(df[col]).forEach(row => {
+          if(!rows.includes(row) && row)
+            rows.push(row);
+        })
+      })
+
+      // Dispatch the action
+      return dispatch({ 
+        id: dfKey, 
+        meta: dfs[dfKey].meta, 
+        cols: cols, 
+        rows: rows,
+      })
+    })
 
     // Update the timestamp
     _dfUpdateTimestamp('_');
