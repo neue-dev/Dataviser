@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-10 03:37:10
+ * @ Modified time: 2024-07-10 03:55:32
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -299,7 +299,7 @@ export const ClientDF = (function() {
    */
   _.dfTimestampSelector = function(group='_') {
     return (state) => {
-      return state.df.dfs[group];
+      return state.df.timestamps[group];
     }
   }
 
