@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-09 11:47:59
+ * @ Modified time: 2024-07-09 11:52:46
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -156,48 +156,48 @@ export const ClientDF = (function() {
     });
   }
 
-  /**
-   * Loads the dfs we have from the files into the Python environment.
-   * AND THEN it loads them into the df slice of our store.
-   * Note that it saves them to the group we provide.
-   * 
-   * @param   { object }    options   The options for loading the dataframes.
-   * @return  { Promise }             A promise for the execution of the action. 
-   */
-  _.dfLoad = function(options={}) {
+  // /**
+  //  * Loads the dfs we have from the files into the Python environment.
+  //  * AND THEN it loads them into the df slice of our store.
+  //  * Note that it saves them to the group we provide.
+  //  * 
+  //  * @param   { object }    options   The options for loading the dataframes.
+  //  * @return  { Promise }             A promise for the execution of the action. 
+  //  */
+  // _.dfLoad = function(options={}) {
 
-    // Create the output promise
-    const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
+  //   // Create the output promise
+  //   const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
 
-    // Parse the options
-    const group = options.group ?? null;
-    const ids = options.ids ?? [];
-    const rows = options.rows ?? [];
-    const cols = options.cols ?? [];
-    const orient = options.orient ?? '';
+  //   // Parse the options
+  //   const group = options.group ?? null;
+  //   const ids = options.ids ?? [];
+  //   const rows = options.rows ?? [];
+  //   const cols = options.cols ?? [];
+  //   const orient = options.orient ?? '';
 
-    // Create the filter script
-    const filterScript = _filterScriptCreate({ rows, cols });
-    const transformScript = _transformScriptCreate({ orient });
+  //   // Create the filter script
+  //   const filterScript = _filterScriptCreate({ rows, cols });
+  //   const transformScript = _transformScriptCreate({ orient });
 
-    // Send the data to the Python script
-    ClientPython.dataSend({ IDS: ids, })
-      .then(() => ClientPython.scriptRun(filterScript))
-      .then(() => ClientPython.scriptRun(transformScript))
-      .then(() => ClientPython.fileRun('df_out'))
-      .then(() => ClientPython.dataRequest(_out))
-      .then((result) => _dfCreate(result[_out], { group }))
-      .then(() => resolveHandle())
-      .catch((e) => rejectHandle(e));
+  //   // Send the data to the Python script
+  //   ClientPython.dataSend({ IDS: ids, })
+  //     .then(() => ClientPython.scriptRun(filterScript))
+  //     .then(() => ClientPython.scriptRun(transformScript))
+  //     .then(() => ClientPython.fileRun('df_out'))
+  //     .then(() => ClientPython.dataRequest(_out))
+  //     .then((result) => _dfCreate(result[_out], { group }))
+  //     .then(() => resolveHandle())
+  //     .catch((e) => rejectHandle(e));
 
-    // Return the promise
-    return ClientToast.createToaster({ 
-      promise,
-      success: 'Files were converted into Pandas dataframes.',
-      loading: 'Creating dataframes...',
-      failure: 'Could not create dataframes.'
-    });
-  }
+  //   // Return the promise
+  //   return ClientToast.createToaster({ 
+  //     promise,
+  //     success: 'Files were converted into Pandas dataframes.',
+  //     loading: 'Creating dataframes...',
+  //     failure: 'Could not create dataframes.'
+  //   });
+  // }
 
   /**
    * Retrieves the dataframes of the given group from the store.
@@ -247,14 +247,32 @@ export const ClientDF = (function() {
    * @return  { function }            The function that unsubscribes the callback.
    */
   _.dfSubscribeGroup = function(options={}) {
-    const group = options.group ?? '_';
-    const script = options.script ?? '';
 
+    // Grab the option params
+    const group = options.group ?? '_';
+    const ids = options.ids ?? [];
+    const rows = options.rows ?? [];
+    const cols = options.cols ?? [];
+    const orient = options.orient ?? '';
+
+    // Create the filter script
+    const filterScript = _filterScriptCreate({ rows, cols });
+    const transformScript = _transformScriptCreate({ orient });
+
+    // The function we subscribe to the store
     const updater = (state) => {
-      const ref = _.dfGet();
+
+      // Send the data to Python and update the store after
+      ClientPython.dataSend({ IDS: ids, })
+        .then(() => ClientPython.scriptRun(filterScript))
+        .then(() => ClientPython.scriptRun(transformScript))
+        .then(() => ClientPython.fileRun('df_out'))
+        .then(() => ClientPython.dataRequest(_out))
+        .then((result) => _dfCreate(result[_out], { group }))
     }
 
-    return ClientStore.subscribe();
+    // Subscribe to the store
+    return ClientStore.subscribe(updater);
   }
 
   return {
