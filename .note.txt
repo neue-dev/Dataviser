@@ -17,6 +17,7 @@ D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\dataviser\.debu
 [ isinstance() in Python ]                                https://stackoverflow.com/questions/152580/whats-the-canonical-way-to-check-for-type-in-python
 [ pyodide! ]                                              https://pyodide.org/en/stable/
 [ react grid layout ]                                     https://www.reddit.com/r/react/comments/13tfjuj/is_there_a_library_for_gridbased_dragndrop/
+[ react tags autocomplete ]                               https://www.npmjs.com/package/react-tag-autocomplete
 [ redux in electron ]                                     https://borstch.com/blog/development/integrating-redux-with-electron-for-desktop-applications
 [ resize observer for parent dimensions ]                 https://stackoverflow.com/questions/58222004/how-to-get-parent-width-height-in-react-using-hooks
 [ sankey plot in d3 ]                                     https://gist.github.com/d3noob/013054e8d7807dff76247b81b0e29030
