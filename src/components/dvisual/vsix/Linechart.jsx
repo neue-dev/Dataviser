@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-10 00:15:43
+ * @ Modified time: 2024-07-10 00:54:17
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -12,31 +12,36 @@ import * as React from 'react'
 // Visx
 import { AnimatedAxis, AnimatedGrid, AnimatedLineSeries, Tooltip, XYChart } from '@visx/xychart'
 
+/**
+ * The linechart component.
+ * 
+ * @component
+ */
 export function Linechart(props={}) {
 
-  const data1 = [
-    { x: '2020-01-01', y: 50 },
-    { x: '2020-01-02', y: 10 },
-    { x: '2020-01-03', y: 20 },
-  ];
+  // Grab the props
+  const _data = props.data;
+  const _width = props.width ?? 0;
+  const _height = props.height ?? 0;
+
+  console.log(_data)
   
-  const data2 = [
-    { x: '2020-01-01', y: 30 },
-    { x: '2020-01-02', y: 40 },
-    { x: '2020-01-03', y: 80 },
-  ];
-  
+  // The accessors
   const accessors = {
-    xAccessor: (d) => d.x,
-    yAccessor: (d) => d.y,
+    xAccessor: (d) => new Date(d.x.date).getTime(),
+    yAccessor: (d) => { 
+      let keys = Object.keys(d.y);
+      return d.y[keys[1]][keys[5]];
+    },
   };
   
   return (
-    <XYChart height={ 400 } xScale={{ type: 'linear' }} yScale={{ type: 'linear' }}>
+    <XYChart 
+      width={ _width } height={ _height } 
+      xScale={{ type: 'band' }} yScale={{ type: 'linear' }}>
       <AnimatedAxis orientation="bottom" />
       <AnimatedGrid columns={false} numTicks={4} />
-      <AnimatedLineSeries dataKey="Line 1" data={data1} {...accessors} />
-      <AnimatedLineSeries dataKey="Line 2" data={data2} {...accessors} />
+      <AnimatedLineSeries dataKey="Line 1" data={_data} {...accessors} />
       <Tooltip
         snapTooltipToDatumX
         snapTooltipToDatumY
@@ -47,7 +52,7 @@ export function Linechart(props={}) {
             <div style={{ color: colorScale(tooltipData.nearestDatum.key) }}>
               {tooltipData.nearestDatum.key}
             </div>
-            {accessors.xAccessor(tooltipData.nearestDatum.datum)}
+            {new Date(accessors.xAccessor(tooltipData.nearestDatum.datum)).toDateString()}
             {', '}
             {accessors.yAccessor(tooltipData.nearestDatum.datum)}
           </div>

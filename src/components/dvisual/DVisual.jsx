@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-10 00:35:54
+ * @ Modified time: 2024-07-10 00:52:20
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -46,11 +46,8 @@ export function DVisual(props={}) {
 
   // The data the component should visualize
   // The timestamp tells the component when updates happen
-  const _meta = useSelector(ClientDF.dfMetaSelector());
   const _data = useSelector(ClientDF.dfDataSelector(_id));
   const _timestamp = useSelector(ClientDF.dfTimestampSelector(_id));
-
-  console.log(_data)
 
   // The dimensions of the visual and margins + paddings
   const [ _width, _setWidth ] = useState(0);
@@ -65,8 +62,8 @@ export function DVisual(props={}) {
   // Compute the other dimensions we need
   const _containerWidth = _width - _mx * 2;
   const _containerHeight = _height - _my * 2;
-  const _chartWidth = _containerWidth - _px * 4; 
-  const _chartHeight = _containerHeight - _py * 5;
+  const _chartWidth = _containerWidth - _px * 2; 
+  const _chartHeight = _containerHeight - _py * 3;
 
   // Use the parent dimensions
   useParentDimensions(_containerRef, _setWidth, _setHeight);
@@ -82,7 +79,7 @@ export function DVisual(props={}) {
       subtitle: _subtitle,
       
       // Dimensions and sizing
-      cardWidth: _containerWidth, cardHeight: _containerHeight,
+      containerWidth: _containerWidth, containerHeight: _containerHeight,
       chartWidth: _chartWidth, chartHeight: _chartHeight,
       mx: _mx, my: _my,
       px: _px, py: _py,
@@ -106,7 +103,7 @@ export function DVisual(props={}) {
         marginTop: _my, marginBottom: _my,
       }}>
         <DVisualHeader/>          
-        <Linechart></Linechart>
+        <Linechart data={ _data } width={ _chartWidth } height={ _chartHeight } />
       </Container>
     </_dvisualContext.Provider>
   )
