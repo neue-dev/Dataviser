@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-09 11:24:53
+ * @ Modified time: 2024-07-09 11:47:59
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -203,28 +203,18 @@ export const ClientDF = (function() {
    * Retrieves the dataframes of the given group from the store.
    * Reformats the data based on the given options.
    * 
-   * @param   { string }  options   The options for which group of dataframes we want.
+   * @param   { object }  options   The options for which group of dataframes we want.
    * @return  { object }            The requested dataframes.
    */
   _.dfGet = function(options={}) {
 
     // Parse the options
     const group = options.group ?? '_';
-    const format = options.format ?? 'default';
 
     // Grab the raw df data
     const result = ClientStore.select(state => state.df.dfs[group]);
-    
-    // Reformats the data based on the options
-    // ! remove the format option if its actually not needed
-    switch(format) {
 
-      // Default formatting
-      case 'default':
-      default:
-        break;
-    }
-
+    // Return the result
     return result;
   }
 
@@ -238,6 +228,33 @@ export const ClientDF = (function() {
     return (state) => {
       return state.df.dfs[group];
     }
+  }
+
+  /**
+   * Subscribes a given callback to the store.
+   * 
+   * @param   { function }  callback  The callback that executes per dispatch.
+   * @return  { function }            The function that unsubscribes the callback.
+   */
+  _.dfSubscribe = function(callback) {
+    return ClientStore.subscribe(callback);
+  }
+
+  /**
+   * Subscribes a given group to the store.
+   * 
+   * @param   { object }    options   The options for the subscription.
+   * @return  { function }            The function that unsubscribes the callback.
+   */
+  _.dfSubscribeGroup = function(options={}) {
+    const group = options.group ?? '_';
+    const script = options.script ?? '';
+
+    const updater = (state) => {
+      const ref = _.dfGet();
+    }
+
+    return ClientStore.subscribe();
   }
 
   return {

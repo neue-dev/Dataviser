@@ -25,8 +25,16 @@ We have to return both the new dfs and their corresponding metadata.
 '''
 try:
 
+  keys = []
+
+  # Grab the keys we're using  
+  if len(IDS) == 0:
+    keys = DFS.keys()
+  else:
+    keys = IDS
+
   # For each DF, we save it's df as a dict
-  for key in DFS:
+  for key in keys:
 
     # Create entries for each df
     OUT[key] = {

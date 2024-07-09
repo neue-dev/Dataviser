@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-29 07:41:58
- * @ Modified time: 2024-07-03 13:22:02
+ * @ Modified time: 2024-07-09 11:33:09
  * @ Description:
  * 
  * This file links our store with the ipc.
@@ -18,10 +18,11 @@ export const ClientStore = (function() {
    * Subscribes a function to the store.
    * This is kept here so we don't have to reference the store directly.
    * 
-   * @param   { function }  callback  The callback to execute when responding to store events. 
+   * @param   { function }  callback  The callback to execute when responding to store events.
+   * @return  { function }            The cleanup function that unsubscribes the registered callback. 
    */
   _.subscribe = function(callback) {
-    store.subscribe(callback);
+    return store.subscribe(callback);
   }
 
   /**
