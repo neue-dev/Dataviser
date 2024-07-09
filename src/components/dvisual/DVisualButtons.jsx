@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-10 02:55:46
+ * @ Modified time: 2024-07-10 03:20:36
  * @ Description:
  */
 
@@ -10,7 +10,7 @@ import { useState } from 'react'
 
 // Chakra
 import { Box, Heading, HStack } from '@chakra-ui/react'
-import { Button, Input, Text, Tooltip } from '@chakra-ui/react'
+import { Button, Text, Tooltip } from '@chakra-ui/react'
 import { Popover, PopoverBody, PopoverContent, PopoverTrigger, Portal } from '@chakra-ui/react'
 import { RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack } from '@chakra-ui/react'
 
@@ -19,12 +19,10 @@ import { BiSlider } from 'react-icons/bi'
 import { BiPencil } from 'react-icons/bi'
 import { BiSolidXCircle } from 'react-icons/bi'
 
-// Extras
-import { ReactTags } from 'react-tag-autocomplete'
-
 // Custom components and contexts
 import { DVisualCtx } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
+import { DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
 /**
  * This contains the edit and remove buttons for the dvisual.
@@ -49,9 +47,6 @@ export const DVisualButtons = function(props={}) {
  */
 const _DVisualButtonFilters = function() {
 
-  // State of the filters
-  const [ selected, setSelected ] = useState([]);
-
   // ! remove
   const suggestions = [
     { value: 0, label: 'hi', },
@@ -67,14 +62,6 @@ const _DVisualButtonFilters = function() {
    */
   function onClickFilter() {
 
-  }
-
-  function onAddTag(newTag) {
-    setSelected([ ...selected, newTag ]);
-  }
-  
-  function onRemoveTag(tagIndex) {
-    setSelected(selected.filter((e, i) => i != tagIndex));
   }
 
   return (
@@ -93,14 +80,10 @@ const _DVisualButtonFilters = function() {
         <RangeSliderThumb boxSize={6} index={0} />
         <RangeSliderThumb boxSize={6} index={1} />
       </RangeSlider>
-      <ReactTags 
-        labelText="Select provinces"
-        selected={ selected }
-        suggestions={ suggestions }
-        onAdd={ onAddTag }
-        onDelete={ onRemoveTag }
-        noOptionsText="No matching provinces"
-      />
+      <DVisualFilterTags 
+        label="Select a province."
+        suggestions={ suggestions } />
+
     </_DPopover>
   )
 }
