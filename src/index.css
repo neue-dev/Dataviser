@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 15:43:11
- * @ Modified time: 2024-07-10 03:03:11
+ * @ Modified time: 2024-07-10 03:30:42
  * @ Description:
  *
  * The main stylesheet.
@@ -75,6 +75,10 @@
   color: rgba(var(--black), 0.83);
   font-size: var(--root-font-size);
   line-height: calc(var(--root-line-height) * 1em);
+}
+
+body {
+  overflow: hidden;
 }
 
 #root {

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-10 02:41:27
+ * @ Modified time: 2024-07-10 03:37:10
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -328,6 +328,7 @@ export const ClientDF = (function() {
     const rows = options.rows ?? [];
     const cols = options.cols ?? [];
     const orient = options.orient ?? '';
+    const toast = options.toast ?? null;
 
     // Create the filter script
     const filterScript = _filterScriptCreate({ rows, cols });
@@ -343,6 +344,9 @@ export const ClientDF = (function() {
       if(!checker())
         return;
 
+      // Create a promise
+      const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
+
       // Send the data to Python and update the store after
       ClientPython.dataSend({ IDS: ids, })
         .then(() => ClientPython.scriptRun(filterScript))
@@ -350,6 +354,19 @@ export const ClientDF = (function() {
         .then(() => ClientPython.fileRun('df_out'))
         .then(() => ClientPython.dataRequest(_out))
         .then((result) => _dfCreate(result[_out], { group }))
+        .then(() => resolveHandle())
+
+      // Skip the toast creation if toast wasn't passed
+      if(!toast)
+        return;
+
+      // Syncing dataframes
+      ClientToast.createToaster({ 
+        promise,
+        success: 'Visual was synced with its data.',
+        loading: 'Syncing visualizations with data...',
+        failure: 'Could not render data.'
+      })(toast);
     }
 
     // Call it once at the start too
