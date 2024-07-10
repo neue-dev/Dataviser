@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-10 03:29:12
+ * @ Modified time: 2024-07-10 09:45:19
  * @ Description:
  */
 
@@ -21,7 +21,7 @@ import { BiSolidXCircle } from 'react-icons/bi'
 // Custom components and contexts
 import { DVisualCtx } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
-import { DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
+import { DVisualFilter, DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
 /**
  * This contains the edit and remove buttons for the dvisual.
@@ -70,14 +70,15 @@ const _DVisualButtonFilters = function() {
       Icon={ BiSlider }
       fontSize='0.5em'
       p='2em'>
-
-      <DVisualFilterSlider 
-        min={ 0 } max={ 100 } step={ 2 }
-      />
-      <DVisualFilterTags 
-        label="Select a province."
-        suggestions={ suggestions } 
-      />
+      <DVisualFilter>  
+        <DVisualFilterSlider 
+          min={ 0 } max={ 100 } step={ 2 }
+        />
+        <DVisualFilterTags 
+          label="Select a province."
+          suggestions={ suggestions } 
+        />
+      </DVisualFilter>
     </_DPopover>
   )
 }
