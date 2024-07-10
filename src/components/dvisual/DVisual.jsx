@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-10 06:55:26
+ * @ Modified time: 2024-07-10 07:37:13
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -60,9 +60,22 @@ export function DVisual(props={}) {
   const _title = props.title ?? 'Graph';
   const _subtitle = props.subtitle ?? 'No description.';
 
-  // Compute the other dimensions we need
+  // Container properties
   const _containerWidth = _width - _mx * 2;
   const _containerHeight = _height - _my * 2;
+  const _containerStyle = {
+    
+    background: 'white',
+    width: _containerWidth,
+    height: _containerHeight,
+
+    paddingLeft: _px, paddingRight: _px,
+    paddingTop: _py, paddingBottom: 0,
+    marginLeft: _mx, marginRight: _mx,
+    marginTop: _my, marginBottom: _my,
+  };
+
+  // Chart properties
   const _chartWidth = _containerWidth - _px * 2; 
   const _chartHeight = _containerHeight - _py * 3;
 
@@ -93,19 +106,7 @@ export function DVisual(props={}) {
   // Return the DVisual component
   return (
     <_dvisualContext.Provider value={ _dvisualState }>
-      <Container className={ _id } maxW="100vw" ref={ _containerRef } boxShadow="lg" style={{
-
-        // Dimensions
-        width: _containerWidth,
-        height: _containerHeight,
-        background: 'white',
-
-        // Add the margins
-        paddingLeft: _px, paddingRight: _px,
-        paddingTop: _py, paddingBottom: 0,
-        marginLeft: _mx, marginRight: _mx,
-        marginTop: _my, marginBottom: _my,
-      }}>
+      <Container className={ _id } maxW="100vw" ref={ _containerRef } boxShadow="lg" style={ _containerStyle }>
         <DVisualHeader/>  
         <_DVisualSkeleton isLoaded={ hasLoaded() }>
           <Linechart data={ _data } width={ _chartWidth } height={ _chartHeight } />          

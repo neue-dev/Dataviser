@@ -25,7 +25,7 @@ def df_transform_col_sums(dfs):
   # Convert each of the dataframes
   for df in dfs:
     index = dfs[df].index
-    out[df] = pd.DataFrame(dfs[df].apply(np.sum, axis=1), index=index)
+    out[df] = pd.DataFrame(dfs[df].apply(np.sum, axis=1), index=index).transpose()
 
   return out
   
