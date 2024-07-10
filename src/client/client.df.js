@@ -1,13 +1,12 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-10 04:20:38
+ * @ Modified time: 2024-07-10 07:26:38
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
  */
 
-import { dispatch } from 'd3';
 import { ClientPromise } from './client.promise';
 import { ClientPython } from './client.python';
 import { ClientStore } from './client.store.api'; 
@@ -16,7 +15,8 @@ import { ClientToast } from './client.toast';
 export const ClientDF = (function() {
 
   const _ = {};
-  const _out = 'OUT';   // The name of the output variable
+  const _out = 'OUT';                 // The name of the output variable
+  let _queue = Promise.resolve();     // Our promise queue so we can order our scripts
 
   /**
    * Creates the filter script based on the provided rows and cols.
@@ -204,7 +204,8 @@ export const ClientDF = (function() {
     })
 
     // Send the data to the Python script
-    ClientPython.dataSend({ ...pyData, ...pyOptions })
+    _queue = _queue
+      .then(() => ClientPython.dataSend({ ...pyData, ...pyOptions }))
       .then(() => ClientPython.fileRun('df_preprocess'))
       .then(() => ClientPython.fileRun('df_out'))
       .then(() => ClientPython.dataRequest(_out))
@@ -349,7 +350,8 @@ export const ClientDF = (function() {
       const { promise, resolveHandle, rejectHandle } = ClientPromise.createPromise();
 
       // Send the data to Python and update the store after
-      ClientPython.dataSend({ IDS: ids, EXC: exclude })
+      _queue = _queue
+        .then(() => ClientPython.dataSend({ IDS: ids, EXC: exclude }))
         .then(() => ClientPython.scriptRun(filterScript))
         .then(() => ClientPython.scriptRun(transformScript))
         .then(() => ClientPython.fileRun('df_out'))

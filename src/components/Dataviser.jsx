@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-10 03:40:20
+ * @ Modified time: 2024-07-10 07:35:13
  * @ Description:
  * 
  * The main component that houses the app.
@@ -32,18 +32,9 @@ export function Dataviser() {
 
   // Create an array to store the children of the _dvisuals
   const _header = (<DHeader i="-" static="true" w="max" h="3" />);
-
-  // ! change this and put the function into another file perhaps
   const _dlayout = [ _header, ..._dataviserState.get('dvisuals').map(dvisual => {
-    return (<DVisual
-      i={ dvisual.id } 
-      id={ dvisual.id }
-      key={ dvisual.id } 
-      name={ dvisual.id }
-      title={ dvisual.title }
-      
-      x={ dvisual.x } y={ dvisual.y } 
-      w={ dvisual.w } h={ dvisual.h }/>)
+    const id = dvisual.id;
+    return (<DVisual { ...dvisual } i={ id } key={ id }/>)
   })];
 
   // Pass the state to everyone else
