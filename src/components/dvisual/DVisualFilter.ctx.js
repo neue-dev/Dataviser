@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 09:06:58
- * @ Modified time: 2024-07-13 11:23:56
+ * @ Modified time: 2024-07-13 15:08:41
  * @ Description:
  * 
  * The filter state variables.
@@ -89,6 +89,7 @@ export const DVisualFilterManager = (function() {
     // Gather the details of the filter to register
     const name = options.name ?? null;
     const type = options.type ?? 'array';
+    const args = options.args ?? {};
     
     // Name is required
     if(!name)
@@ -104,25 +105,27 @@ export const DVisualFilterManager = (function() {
     // Grab the callbacks of that filter
     const dataCallback = filters[name].dataCallback;
     const filterCallback = filters[name].filterCallback;
+    const wrappedFilter = (d) => filterCallback(d, args);
     
     // For each type, perform a different filter method
     switch(type) {
-      case 'array':
-      case 'arr':
-      case 'a':
-        return dataCallback().filter(filterCallback);
-
       case 'keys':
       case 'key':
       case 'k':
-        return ClientDict.filterKeys(dataCallback(), filterCallback);
+        return ClientDict.filterKeys(dataCallback(), wrappedFilter);
 
       case 'values':
       case 'value':
       case 'vals':
       case 'val':
       case 'v':
-        return ClientDict.filterValues(dataCallback(), filterCallback);
+        return ClientDict.filterValues(dataCallback(), wrappedFilter);
+
+      case 'array':
+      case 'arr':
+      case 'a':
+      default:
+        return dataCallback().filter(wrappedFilter);
     }
   }
 
