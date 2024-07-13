@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-10 09:42:24
+ * @ Modified time: 2024-07-13 11:29:03
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -46,16 +46,21 @@ export function DVisualFilterSlider(props={}) {
 
   // Use the context
   const _dvisualFilterState = DVisualFilterCtx.useCtx();
-  const id = useRef(crypto.randomUUID());
 
   // Register the filter to the state
   useEffect(() => {
 
-    // Register the filter
-    DVisualFilterManager.registerFilter(_dvisualFilterState, { name: id.current });
-
+    // Create the filter
+    DVisualFilterManager.filterCreate(_dvisualFilterState, {
+      name: 'dvisual-date-slider',
+      dataCallback: () => { return {} },
+      filterCallback: () => { return true }
+    });
+    
     // Remove the filter from the state
-    return () => DVisualFilterManager.removeFilter(_dvisualFilterState, { name: id.current });
+    return () => DVisualFilterManager.filterRemove(_dvisualFilterState, { 
+      name: 'dvisual-date-slider' 
+    });
   }, [])
   
   // Grab the props
@@ -99,11 +104,13 @@ export function DVisualFilterTags(props={}) {
   // Register the filter to the state
   useEffect(() => {
 
-    // Register the filter
-    DVisualFilterManager.registerFilter(_dvisualFilterState, { name: id.current });
+    // ! register the filter here using the manager; provide cleanup func
 
-    // Remove the filter from the state
-    return () => DVisualFilterManager.removeFilter(_dvisualFilterState, { name: id.current });
+    // // Register the filter
+    // DVisualFilterManager.registerFilter(_dvisualFilterState, { name: id.current });
+
+    // // Remove the filter from the state
+    // return () => DVisualFilterManager.removeFilter(_dvisualFilterState, { name: id.current });
   }, [])
 
   /**

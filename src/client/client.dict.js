@@ -1,13 +1,13 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-13 08:47:11
- * @ Modified time: 2024-07-13 08:53:20
+ * @ Modified time: 2024-07-13 11:10:59
  * @ Description:
  * 
  * Allows us to filter dictionaries much more easily.
  */
 
-const ClientDict = (function() {
+export const ClientDict = (function() {
 
   const _ = {};
 
@@ -53,3 +53,7 @@ const ClientDict = (function() {
     ..._,
   }
 })();
+
+export default {
+  ClientDict,
+}
