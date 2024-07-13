@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-10 03:29:12
+ * @ Modified time: 2024-07-13 08:41:47
  * @ Description:
  */
 
@@ -15,13 +15,13 @@ import { Popover, PopoverBody, PopoverContent, PopoverTrigger, Portal } from '@c
 
 // Icons
 import { BiSlider } from 'react-icons/bi'
-import { BiPencil } from 'react-icons/bi'
+import { BiExpand } from "react-icons/bi";
 import { BiSolidXCircle } from 'react-icons/bi'
 
 // Custom components and contexts
 import { DVisualCtx } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
-import { DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
+import { DVisualFilter, DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
 /**
  * This contains the edit and remove buttons for the dvisual.
@@ -32,7 +32,7 @@ export const DVisualButtons = function(props={}) {
   return (
     <HStack>
       <_DVisualButtonFilters />
-      <_DVisualButtonUpdate />
+      <_DVisualButtonExpand />
       <_DVisualButtonRemove />
     </HStack>
   )
@@ -40,7 +40,7 @@ export const DVisualButtons = function(props={}) {
 
 
 /**
- * The button that lets us edit chart details.
+ * The button that lets us edit chart filters.
  * 
  * @component
  */
@@ -70,24 +70,25 @@ const _DVisualButtonFilters = function() {
       Icon={ BiSlider }
       fontSize='0.5em'
       p='2em'>
-
-      <DVisualFilterSlider 
-        min={ 0 } max={ 100 } step={ 2 }
-      />
-      <DVisualFilterTags 
-        label="Select a province."
-        suggestions={ suggestions } 
-      />
+      <DVisualFilter>  
+        <DVisualFilterSlider 
+          min={ 0 } max={ 100 } step={ 2 }
+        />
+        <DVisualFilterTags 
+          label="Select a province."
+          suggestions={ suggestions } 
+        />
+      </DVisualFilter>
     </_DPopover>
   )
 }
 
 /**
- * The button that lets us edit chart details.
+ * The button that lets us zoom into a chart and edit its details.
  * 
  * @component
  */
-const _DVisualButtonUpdate = function() {
+const _DVisualButtonExpand = function() {
 
   /**
    * Brings up the popup for updating a chart when clicking the pencil.
@@ -98,12 +99,11 @@ const _DVisualButtonUpdate = function() {
 
   return (
     <_DPopover 
-      label="edit chart details"
+      label="expand chart to fullscreen"
       onClick={ onClickUpdate } 
-      Icon={ BiPencil }>
+      Icon={ BiExpand }>
 
-      <Heading fontSize="1rem">title</Heading>
-      <Text fontSize="0.5rem">subtitle</Text>
+      // ! load the isolated version of the chart
     </_DPopover>
   )
 }

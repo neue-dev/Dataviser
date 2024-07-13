@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-10 08:40:22
+ * @ Modified time: 2024-07-10 08:55:16
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -21,9 +21,10 @@ import * as Scale from '@visx/scale'
 export function Linechart(props={}) {
 
   // Grab the props
-  const _data = props.data;
-  const _width = props.width ?? 0;
-  const _height = props.height ?? 0;
+  const _data = props.data;           // Contains all the data of all the series
+  const _lines = props.lines ?? [];   // The name of the different series we're plotting
+  const _width = props.width ?? 0;    // The width of the visual
+  const _height = props.height ?? 0;  // The height of the visual
 
   // ! put somewhere else
   // Sort the data first
@@ -52,10 +53,10 @@ export function Linechart(props={}) {
       <AnimatedAxis orientation="bottom" />
       <AnimatedAxis orientation="left" />
       <AnimatedGrid columns={ false } numTicks={ 4 } />
-      <AnimatedLineSeries dataKey={ keys[3] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(4)}/>
+      <AnimatedLineSeries dataKey={ keys[3] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(3)}/>
       <AnimatedLineSeries dataKey={ keys[4] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(4)}/>
-      {/* <AnimatedLineSeries dataKey={ keys[5] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(5)}/> */}
-      <AnimatedLineSeries dataKey={ keys[6] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(6)}/>
+      <AnimatedLineSeries dataKey={ keys[5] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(5)}/>
+      {/* <AnimatedLineSeries dataKey={ keys[6] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(6)}/> */}
       <AnimatedLineSeries dataKey={ keys[7] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(7)}/>
       <Tooltip
         snapTooltipToDatumX
