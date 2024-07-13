@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-10 07:26:38
+ * @ Modified time: 2024-07-13 16:10:09
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -239,6 +239,16 @@ export const ClientDF = (function() {
 
     // Return the result
     return ClientStore.select(state => state.df.dfs[group]);
+  }
+
+  /**
+   * Returns the metadata of the dataframes.
+   * 
+   * @param   { object }  options   The options for the metadata selection.
+   * @return  { object }            The requested metadata.
+   */
+  _.dfMetaGet = function(options={}) {
+    return ClientStore.select(state => state.df.meta);
   }
 
   /**
