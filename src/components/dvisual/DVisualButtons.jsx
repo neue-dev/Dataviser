@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-13 15:32:19
+ * @ Modified time: 2024-07-13 16:34:16
  * @ Description:
  */
 
@@ -23,6 +23,12 @@ import { DVisualCtx } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
 import { DVisualFilterContainer, DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
+// Client stuff
+import { ClientDF } from '../../client/client.df.js'
+
+// User logic
+import { UserLogic } from '../../user/user.logic.js'
+
 /**
  * This contains the edit and remove buttons for the dvisual.
  * 
@@ -38,13 +44,19 @@ export const DVisualButtons = function(props={}) {
   )
 }
 
-
 /**
  * The button that lets us edit chart filters.
  * 
  * @component
  */
 const _DVisualButtonFilters = function() {
+
+  // The ranges we'll use to filter the data
+  const _meta = ClientDF.dfMetaGet();
+  const _metaMin = UserLogic.getMetaMin(_meta);
+  const _metaMax = UserLogic.getMetaMax(_meta);
+
+  console.log(_meta, _metaMin, _metaMax)
 
   // ! remove
   const suggestions = [
@@ -57,22 +69,35 @@ const _DVisualButtonFilters = function() {
   ]
 
   /**
-   * Brings up the popup for updating a chart when clicking the pencil.
+   * The date filter we pass to the slider.
+   * // ! move this to user logic file
+   * 
+   * @param   { object }    d     The metadata to filter. 
+   * @param   { object }    args  The args passed to the filter.
+   * @return  { boolean }         Whether or not the metadata passed the filter.
    */
-  function onClickFilter() {
-
+  function metaFilter(d, args={}) {
+    return d.date >= args.min && d.date <= args.max;
   }
 
   return (
     <_DPopover 
       label="change chart filters"
-      onClick={ onClickFilter } 
       Icon={ BiSlider }
       fontSize='0.5em'
       p='2em'>
       <DVisualFilterContainer>  
         <DVisualFilterSlider 
-          name="filter-date-slider" min={ 0 } max={ 100 } step={ 2 }
+          name="filter-date-slider" 
+          type="values"
+          onFilter={(d) => d}
+          dataCallback={() => ClientDF.dfMetaGet()} 
+          filterCallback={ metaFilter } 
+
+          // ! ADD ERROR CHECKING WHEN THESE ARE UNDEFINED AT STARTUP
+          min={ _metaMin.date } 
+          max={ _metaMax.date } 
+          step={ (_metaMax.date - _metaMin.date) / 100 }
         />
         <DVisualFilterTags 
           name="filter-province-tags"

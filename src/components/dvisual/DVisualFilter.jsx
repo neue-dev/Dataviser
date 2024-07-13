@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-13 15:34:57
+ * @ Modified time: 2024-07-13 16:32:58
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -51,8 +51,8 @@ function _DVisualFilter(props={}) {
 
   // Some params
   const _name = props.name ?? null;
-  const _dataCallback = props.dataCallback ?? (() => (console.log(_name), []));
-  const _filterCallback = props.filterCallback ?? null;
+  const _dataCallback = props.dataCallback ?? (() => []);
+  const _filterCallback = props.filterCallback ?? (() => true);
 
   // Register the filter
   useEffect(() => {
@@ -85,8 +85,12 @@ export function DVisualFilterSlider(props={}) {
   // Use the context
   const _dvisualFilterState = DVisualFilterCtx.useCtx();
 
-  // Grab the props
+  // Grab the name and filter callback function
   const _name = props.name ?? null;
+  const _type = props.type ?? null;
+  const _onFilter = props.onFilter ?? (d => d);
+
+  // Grab the props
   const _min = props.min ?? 0;      // The minimum value
   const _max = props.max ?? 100;    // The maximum value
   const _step = props.step ?? 1;    // The step size
@@ -102,19 +106,41 @@ export function DVisualFilterSlider(props={}) {
 
   // Execute the associated filter
   if(_name)
-    DVisualFilterManager.filterExecute(_dvisualFilterState, {
-      name: _name,
-      args: { min: _min, max: _max },
+    onRender();
+
+  /**
+   * Our callback which we execute when the filter changes.
+   */
+  function onRender() {
+
+    // Get the filtered data
+    const filtered = DVisualFilterManager.filterExecute(_dvisualFilterState, {
+
+      name: _name,  // The name of the filter
+      type: _type,  // The type of the filter (array, dict keys, dict values)
+
+      // The other arguments to the filter function
+      args: { 
+        min: _rangeSliderState.value[0], 
+        max: _rangeSliderState.value[1], 
+      },
     })
 
+    console.log(_rangeSliderState)
+
+    // Call the callback for the filtered data
+    _onFilter(filtered);
+  }
+
+  // The filter slider component
   return (
     <_DVisualFilter { ...props }>
       <RangeSlider defaultValue={ _default } min={ _min } max={ _max } step={ _step } { ..._getRootProps() }>
         <RangeSliderTrack { ..._getTrackProps() }>
           <RangeSliderFilledTrack bg="teal.500" />
         </RangeSliderTrack>
-        <RangeSliderThumb boxSize={ 3 } value={ _rangeSliderState.value[0] } index={ 0 } bg="teal.400"/>
-        <RangeSliderThumb boxSize={ 3 } value={ _rangeSliderState.value[1] } index={ 1 } bg="teal.400"/>
+        <RangeSliderThumb boxSize={ 3 } index={ 0 } bg="teal.400"/>
+        <RangeSliderThumb boxSize={ 3 } index={ 1 } bg="teal.400"/>
       </RangeSlider>
     </_DVisualFilter>
   )

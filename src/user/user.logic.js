@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-13 15:58:45
- * @ Modified time: 2024-07-13 16:05:48
+ * @ Modified time: 2024-07-13 16:25:03
  * @ Description:
  * 
  * A file that holds the logic specific to the files we're using.
@@ -23,11 +23,16 @@ export const UserLogic = (function() {
     const out = {};
 
     // For each piece of metadata...
-    metadata.forEach(d => {
+    Object.keys(metadata).forEach(metadataKey => {
+      
+      // Grab the metadata piece
+      const d = metadata[metadataKey];
+      
+      // For each metadata property
       Object.keys(d).forEach(key => {
         
         // If the key hasn't been placed in the out object
-        if(!out[key])
+        if(!Object.keys(out).includes(key))
           out[key] = d[key]
 
         // Otherwise, compare the values
@@ -51,11 +56,16 @@ export const UserLogic = (function() {
     const out = {};
 
     // For each piece of metadata...
-    metadata.forEach(d => {
+    Object.keys(metadata).forEach(metadataKey => {
+      
+      // Grab the metadata piece
+      const d = metadata[metadataKey];
+      
+      // For each metadata property
       Object.keys(d).forEach(key => {
         
         // If the key hasn't been placed in the out object
-        if(!out[key])
+        if(!Object.keys(out).includes(key))
           out[key] = d[key]
 
         // Otherwise, compare the values

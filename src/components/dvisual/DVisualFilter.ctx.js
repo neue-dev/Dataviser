@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 09:06:58
- * @ Modified time: 2024-07-13 15:08:41
+ * @ Modified time: 2024-07-13 15:44:52
  * @ Description:
  * 
  * The filter state variables.
@@ -30,8 +30,8 @@ export const DVisualFilterManager = (function() {
 
     // Gather the details of the filter to register
     const name = options.name ?? null;
-    const dataCallback = options.dataCallback ?? (() => { return {} });
-    const filterCallback = options.filterCallback ?? (() => { return true });
+    const dataCallback = options.dataCallback ?? (() => []);
+    const filterCallback = options.filterCallback ?? (() => true);
 
     // Name is required
     if(!name)
@@ -57,8 +57,8 @@ export const DVisualFilterManager = (function() {
 
     // Gather the details of the filter to register
     const name = options.name ?? null;
-    const dataCallback = options.dataCallback ?? (() => { return {} });
-    const filterCallback = options.filterCallback ?? (() => { return true });
+    const dataCallback = options.dataCallback ?? (() => []);
+    const filterCallback = options.filterCallback ?? (() => true);
     
     // Name is required
     if(!name)
