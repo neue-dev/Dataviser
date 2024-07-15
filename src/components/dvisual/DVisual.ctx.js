@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 03:49:19
- * @ Modified time: 2024-07-15 08:35:22
+ * @ Modified time: 2024-07-15 08:40:48
  * @ Description:
  * 
  * This stores the state of a given chart or visualization.
@@ -14,6 +14,9 @@ export const DVisualCtx = UtilsContext({
   
   // When we mute a vis, we prevent it from consuming resources by not rendering it live
   isMuted: false,
+
+  // The metadata associated with each of the data keys
+  meta: {},
   
   // The actual data the vis is rendering
   data: [],
@@ -122,6 +125,7 @@ export const DVisualManager = (function() {
     // Grab the callbacks of that filter
     const dataCallback = filters[name].dataCallback;
     const filterCallback = filters[name].filterCallback;
+    const data = dataCallback(state._);
     const wrappedFilter = (d) => filterCallback(d, args);
     
     // For each type, perform a different filter method
@@ -129,20 +133,20 @@ export const DVisualManager = (function() {
       case 'keys':
       case 'key':
       case 'k':
-        return ClientDict.filterKeys(dataCallback(), wrappedFilter);
+        return ClientDict.filterKeys(data, wrappedFilter);
 
       case 'values':
       case 'value':
       case 'vals':
       case 'val':
       case 'v':
-        return ClientDict.filterValues(dataCallback(), wrappedFilter);
+        return ClientDict.filterValues(data, wrappedFilter);
 
       case 'array':
       case 'arr':
       case 'a':
       default:
-        return dataCallback().filter(wrappedFilter);
+        return data.filter(wrappedFilter);
     }
   }
 

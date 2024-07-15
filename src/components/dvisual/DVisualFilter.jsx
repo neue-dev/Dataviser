@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-15 08:34:44
+ * @ Modified time: 2024-07-15 08:41:54
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -33,7 +33,7 @@ function _DVisualFilter(props={}) {
 
   // Some params
   const _name = props.name ?? null;
-  const _dataCallback = props.dataCallback ?? (() => []);
+  const _dataCallback = props.dataCallback ?? (() => (console.log('alas'), []));
   const _filterCallback = props.filterCallback ?? (() => true);
 
   // Register the filter
@@ -107,8 +107,6 @@ export function DVisualFilterSlider(props={}) {
         max: _rangeSliderState.value[1], 
       },
     })
-
-    console.log(_rangeSliderState)
 
     // Call the callback for the filtered data
     _onFilter(filtered);

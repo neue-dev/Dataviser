@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-15 08:33:59
+ * @ Modified time: 2024-07-15 09:01:55
  * @ Description:
  */
 
@@ -53,10 +53,16 @@ const _DVisualButtonFilters = function() {
 
   // The ranges we'll use to filter the data
   const _meta = ClientDF.dfMetaGet();
-  const _metaMin = UserLogic.getMetaMin(_meta);
-  const _metaMax = UserLogic.getMetaMax(_meta);
+  const _metaMin = UserLogic.getMetaMin(_meta) ?? {};
+  const _metaMax = UserLogic.getMetaMax(_meta) ?? {};
+  
+  // Compute slider props
+  const _minDate = _metaMin.date ?? 0;
+  const _maxDate = _metaMax.date ?? 1;
+  const _stepDate = (_minDate - _maxDate) / 100;
 
-  console.log(_meta, _metaMin, _metaMax)
+  // ! remove
+  // console.log(_meta, _metaMin, _metaMax)
 
   // ! remove
   const suggestions = [
@@ -90,13 +96,9 @@ const _DVisualButtonFilters = function() {
         name="filter-date-slider" 
         type="values"
         onFilter={(d) => d}
-        dataCallback={() => ClientDF.dfMetaGet()} 
+        dataCallback={(state) => (console.log(state), [])} 
         filterCallback={ metaFilter } 
-
-        // ! ADD ERROR CHECKING WHEN THESE ARE UNDEFINED AT STARTUP
-        min={ _metaMin.date } 
-        max={ _metaMax.date } 
-        step={ (_metaMax.date - _metaMin.date) / 100 }
+        min={ _minDate } max={ _maxDate } step={ _stepDate }
       />
       <DVisualFilterTags 
         name="filter-province-tags"
