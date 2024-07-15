@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-15 17:32:22
+ * @ Modified time: 2024-07-15 17:49:20
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -11,6 +11,7 @@ import * as React from 'react'
 
 // Visx
 import { Arc } from '@visx/shape';
+import { Group } from '@visx/group'
 import { Chord, Ribbon } from '@visx/chord'
 import { useTooltip, useTooltipInPortal, TooltipWithBounds } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
@@ -105,30 +106,32 @@ export function Chordchart(props={}) {
   return (
     <div style={{ position: 'relative'}}>
       <svg ref={ _containerRef } width={ _width } height={ _height }>
-        <Chord matrix={ _chartData } padAngle={ 0.05 } sortSubgroups={ descending }>
-          {({ chords }) => (
-            <g>
-              {chords.groups.map((group, i) => (
-                <Arc
-                  key={`key-${i}`}
-                  data={group}
-                  innerRadius={_innerRadius}
-                  outerRadius={_outerRadius}
-                  fill={'#808080'}
-                />
-              ))}
-              {chords.map((chord, i) => (
-                <Ribbon
-                  key={`ribbon-${i}`}
-                  chord={chord}
-                  radius={_innerRadius}
-                  fill={'#aaaaaa'}
-                  fillOpacity={0.75}
-                />
-              ))}
-            </g>
-          )}
-        </Chord>
+        <Group top={ _height / 2 } left={ _width / 2 }>
+          <Chord matrix={ _chartData } padAngle={ 0.05 } sortSubgroups={ descending }>
+            {({ chords }) => (
+              <g>
+                {chords.groups.map((group, i) => (
+                  <Arc
+                    key={`key-${i}`}
+                    data={group}
+                    innerRadius={_innerRadius}
+                    outerRadius={_outerRadius}
+                    fill={'#808080'}
+                  />
+                ))}
+                {chords.map((chord, i) => (
+                  <Ribbon
+                    key={`ribbon-${i}`}
+                    chord={chord}
+                    radius={_innerRadius}
+                    fill={'#aaaaaa'}
+                    fillOpacity={0.75}
+                  />
+                ))}
+              </g>
+            )}
+          </Chord>
+        </Group>
       </svg>
       {tooltipOpen && (
         <_TooltipInPortal
