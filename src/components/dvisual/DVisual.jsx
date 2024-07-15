@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-15 13:38:35
+ * @ Modified time: 2024-07-15 17:19:50
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -25,12 +25,12 @@ import { useParentDimensions } from '../../hooks/useParentDimensions.js'
 import { DVisualHeader } from './DVisualHeader.jsx'
 
 // Import the charts and all
-import { Linechart } from './vsix/Linechart.jsx'
+import { Linechart } from './visx/Linechart.jsx'
+import { Barchart } from './visx/Barchart.jsx'
+import { Chordchart } from './visx/Chordchart.jsx'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
-import { useRenderCount } from '@uidotdev/usehooks'
-import { Barchart } from './vsix/Barchart.jsx'
 
 /**
  * The DVisual component houses a D3-backed component.
@@ -152,7 +152,9 @@ export function DVisual(props={}) {
         return (<Barchart data={ _chartData } width={ _chartWidth } height={ _chartHeight } />);
       case 'chord':
       case 'chordchart':
+        return (<Chordchart data={ _chartData } width={ _chartWidth } height={ _chartHeight } />);
         return;
+
     }
   }
 
