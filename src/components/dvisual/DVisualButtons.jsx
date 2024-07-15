@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-13 16:34:16
+ * @ Modified time: 2024-07-15 08:33:59
  * @ Description:
  */
 
@@ -21,7 +21,7 @@ import { BiSolidXCircle } from 'react-icons/bi'
 // Custom components and contexts
 import { DVisualCtx } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
-import { DVisualFilterContainer, DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
+import { DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
@@ -86,25 +86,23 @@ const _DVisualButtonFilters = function() {
       Icon={ BiSlider }
       fontSize='0.5em'
       p='2em'>
-      <DVisualFilterContainer>  
-        <DVisualFilterSlider 
-          name="filter-date-slider" 
-          type="values"
-          onFilter={(d) => d}
-          dataCallback={() => ClientDF.dfMetaGet()} 
-          filterCallback={ metaFilter } 
+      <DVisualFilterSlider 
+        name="filter-date-slider" 
+        type="values"
+        onFilter={(d) => d}
+        dataCallback={() => ClientDF.dfMetaGet()} 
+        filterCallback={ metaFilter } 
 
-          // ! ADD ERROR CHECKING WHEN THESE ARE UNDEFINED AT STARTUP
-          min={ _metaMin.date } 
-          max={ _metaMax.date } 
-          step={ (_metaMax.date - _metaMin.date) / 100 }
-        />
-        <DVisualFilterTags 
-          name="filter-province-tags"
-          label="Select a province."
-          suggestions={ suggestions } 
-        />
-      </DVisualFilterContainer>
+        // ! ADD ERROR CHECKING WHEN THESE ARE UNDEFINED AT STARTUP
+        min={ _metaMin.date } 
+        max={ _metaMax.date } 
+        step={ (_metaMax.date - _metaMin.date) / 100 }
+      />
+      <DVisualFilterTags 
+        name="filter-province-tags"
+        label="Select a province."
+        suggestions={ suggestions } 
+      />
     </_DPopover>
   )
 }
