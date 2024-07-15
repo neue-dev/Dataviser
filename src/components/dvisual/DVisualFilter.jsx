@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-15 08:41:54
+ * @ Modified time: 2024-07-15 10:37:53
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -33,7 +33,7 @@ function _DVisualFilter(props={}) {
 
   // Some params
   const _name = props.name ?? null;
-  const _dataCallback = props.dataCallback ?? (() => (console.log('alas'), []));
+  const _dataCallback = props.dataCallback ?? (() => []);
   const _filterCallback = props.filterCallback ?? (() => true);
 
   // Register the filter
@@ -70,7 +70,6 @@ export function DVisualFilterSlider(props={}) {
   // Grab the name and filter callback function
   const _name = props.name ?? null;
   const _type = props.type ?? null;
-  const _onFilter = props.onFilter ?? (d => d);
 
   // Grab the props
   const _min = props.min ?? 0;      // The minimum value
@@ -94,9 +93,9 @@ export function DVisualFilterSlider(props={}) {
    * Our callback which we execute when the filter changes.
    */
   function onRender() {
-
-    // Get the filtered data
-    const filtered = DVisualManager.filterExecute(_dvisualState, {
+    
+    // Execute the filter
+    DVisualManager.filterExecute(_dvisualState, {
 
       name: _name,  // The name of the filter
       type: _type,  // The type of the filter (array, dict keys, dict values)
@@ -107,9 +106,6 @@ export function DVisualFilterSlider(props={}) {
         max: _rangeSliderState.value[1], 
       },
     })
-
-    // Call the callback for the filtered data
-    _onFilter(filtered);
   }
 
   // The filter slider component

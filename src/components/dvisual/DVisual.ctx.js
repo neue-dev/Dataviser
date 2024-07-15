@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 03:49:19
- * @ Modified time: 2024-07-15 08:40:48
+ * @ Modified time: 2024-07-15 10:35:20
  * @ Description:
  * 
  * This stores the state of a given chart or visualization.
@@ -23,6 +23,9 @@ export const DVisualCtx = UtilsContext({
   
   // Stores the active filters
   filters: {},
+
+  // Stuff to call after we perform filters
+  filterCallbacks: [],
 });
 
 export const DVisualManager = (function() {
@@ -36,7 +39,7 @@ export const DVisualManager = (function() {
    * @param   { State }   state     The dvisual state.
    * @param   { object }  options   The options for the initial dvisual state.
    */
-  _.init = function(state, options) {
+  _.config = function(state, options) {
     state._ = { ...state._, ...options };
   }
 
@@ -61,10 +64,10 @@ export const DVisualManager = (function() {
     const filters = state.get('filters');
 
     // Add the filters
-    filters[name] = { dataCallback, filterCallback, };
+    filters[name] = { dataCallback, filterCallback, result: null, };
 
     // Update the state
-    state.set({ filters });
+    state._.filters = filters;
   }
 
   /**
@@ -95,11 +98,12 @@ export const DVisualManager = (function() {
     filters[name] = { ...filters[name], dataCallback, filterCallback };
 
     // Update the state
-    state.set({ filters });
+    state._.filters = filters;
   } 
 
   /**
-   * 
+   * Executes a given filter and updates its stored result.
+   *  
    * @param   { State }   state     The state of the filter state manager.
    * @param   { object }  options   The options for the filter. 
    * @return  { object }            The filtered dict or array.
@@ -117,6 +121,7 @@ export const DVisualManager = (function() {
 
     // The filters we currently have
     const filters = state.get('filters');
+    const filterCallbacks = state.get('filterCallbacks');
 
     // Name not found
     if(!filters[name])
@@ -133,21 +138,32 @@ export const DVisualManager = (function() {
       case 'keys':
       case 'key':
       case 'k':
-        return ClientDict.filterKeys(data, wrappedFilter);
+        filters[name].result = ClientDict.filterKeys(data, wrappedFilter);
+        break;
 
       case 'values':
       case 'value':
       case 'vals':
       case 'val':
       case 'v':
-        return ClientDict.filterValues(data, wrappedFilter);
+        filters[name].result = ClientDict.filterValues(data, wrappedFilter);
+        break;
 
       case 'array':
       case 'arr':
       case 'a':
       default:
-        return data.filter(wrappedFilter);
+        filters[name].result = data.filter(wrappedFilter);
+        break;
     }
+
+    // We don't want a rerender here so we manually change it
+    state._.filters = filters;
+
+    // We execute each of the filter callbacks
+    filterCallbacks.forEach(filterCallback => {
+      filterCallback(state);
+    })
   }
 
   /**
@@ -174,7 +190,32 @@ export const DVisualManager = (function() {
 
     // Remove the filter and update the state
     delete filters[name];
-    state.set({ filters })
+    state._.filters = filters;
+  }
+
+  /**
+   * Registers a new filter callback.
+   * 
+   * @param   { State }   state     The state of the filter state manager.
+   * @param   { object }  options   The options for the filter. 
+   */
+  _.filterCallback = function(state, options) {
+    
+    // Grab the callback
+    const callback = options.callback ?? null;
+
+    // If no callback, return
+    if(!callback)
+      return;
+
+    // Otherwise, register the function
+    const filterCallbacks = state.get('filterCallbacks');
+
+    // Append the filter callback
+    filterCallbacks.push(callback);
+
+    // Update the state
+    state._.filterCallbacks = filterCallbacks;
   }
 
   return {

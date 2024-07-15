@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-13 16:10:09
+ * @ Modified time: 2024-07-15 09:19:51
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -296,7 +296,7 @@ export const ClientDF = (function() {
    * 
    * @return  { function }  A selector function for the df metadata. 
    */
-  _.dfMetaSelector = function(group='_') {
+  _.dfMetaSelector = function() {
     return (state) => {
       return state.df.meta;
     }

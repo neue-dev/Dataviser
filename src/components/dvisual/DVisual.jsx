@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-13 15:11:25
+ * @ Modified time: 2024-07-15 10:36:43
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -47,10 +47,12 @@ export function DVisual(props={}) {
 
   // The data the component should visualize
   // The timestamp tells the component when updates happen
+  const _meta = useSelector(ClientDF.dfMetaSelector());
   const _data = useSelector(ClientDF.dfDataSelector(_id));
   const _timestamp = useSelector(ClientDF.dfTimestampSelector('_'));
 
   // The dimensions of the visual and margins + paddings
+  const [ _chartData, _setChartData ] = useState(_data);
   const [ _width, _setWidth ] = useState(0);
   const [ _height, _setHeight ] = useState(0);
   const _mx = 8, _my = 10;
@@ -84,10 +86,13 @@ export function DVisual(props={}) {
 
   // Init the state
   useEffect(() => {
-    DVisualManager.init(_dvisualState, {
+
+    // Configure the dvisual state
+    DVisualManager.config(_dvisualState, {
 
       // Primary details
       id: _id,
+      meta: _meta,
       data: _data,
       title: _title,
       subtitle: _subtitle,
@@ -98,7 +103,13 @@ export function DVisual(props={}) {
       mx: _mx, my: _my,
       px: _px, py: _py,
     });
-  }, [ _width, _height ]);
+
+    // Register the callbacks for our filters
+    DVisualManager.filterCallback(_dvisualState, {
+      callback: (state) => console.log(state)
+    })
+    
+  }, [ _meta, _data, _width, _height ]);
 
   // Our condition for checking if the visual has loaded
   const hasLoaded = () => !(!_data.length && _timestamp);
@@ -109,7 +120,7 @@ export function DVisual(props={}) {
       <Container className={ _id } maxW="100vw" ref={ _containerRef } boxShadow="lg" style={ _containerStyle }>
         <DVisualHeader/>  
         <_DVisualSkeleton isLoaded={ hasLoaded() }>
-          <Linechart data={ _data } width={ _chartWidth } height={ _chartHeight } />          
+          <Linechart data={ _chartData } width={ _chartWidth } height={ _chartHeight } />          
         </_DVisualSkeleton>        
       </Container>
     </_dvisualContext.Provider>

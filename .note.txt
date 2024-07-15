@@ -23,4 +23,5 @@ D:\modavid\0. Work\0. Coding Projects\1. Work Projects\dataviser\dataviser\.debu
 [ sankey plot in d3 ]                                     https://gist.github.com/d3noob/013054e8d7807dff76247b81b0e29030
 [ serializing functions in JS ]                           https://stackoverflow.com/questions/7395686/how-can-i-serialize-a-function-in-javascript
 [ updating state in react without a rerender ]            https://stackoverflow.com/questions/54066556/how-to-update-react-state-without-re-rendering-component
+[ useHooks ]                                              https://usehooks.com/
 [ visx library ]                                          https://github.com/airbnb/visx
