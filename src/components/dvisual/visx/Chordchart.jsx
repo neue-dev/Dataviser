@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-15 18:50:35
+ * @ Modified time: 2024-07-15 19:07:32
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -41,6 +41,7 @@ export function Chordchart(props={}) {
   const _filteredSumDf = {};
   const _sums = {};
   let _sumArr = [];
+  let _chordNames = [];
 
   // Create the sum df
   _data.forEach(data => {
@@ -77,7 +78,6 @@ export function Chordchart(props={}) {
   })
   _sumArr.sort((a, b) => b.y - a.y)
   _sumArr.splice(5);
-
   _sumArr.forEach(sum => {
     const key = sum.x;
     const col = _sumDf[key];
@@ -92,7 +92,8 @@ export function Chordchart(props={}) {
     })
   })
 
-  console.log(_filteredSumDf)
+  // Get chord names
+  _chordNames = _sumArr.map(s => s.x);
 
   // Generate the 2d matrix of data
   Object.values(_filteredSumDf).forEach(col => {
@@ -153,6 +154,38 @@ export function Chordchart(props={}) {
   function descending(a, b) {
     return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
   }
+
+  /**
+   * Tooltip for the arcs.
+   * 
+   * @param {*} event 
+   * @param {*} datum 
+   */
+  function onMouseOverArc(event, datum) {
+    const coords = localPoint(event.target.ownerSVGElement, event);
+
+    showTooltip({
+      tooltipLeft: coords.x,
+      tooltipTop: coords.y,
+      tooltipData: datum
+    });
+  }
+
+  /**
+   * Tooltip for the ribbons.
+   * 
+   * @param {*} event 
+   * @param {*} datum 
+   */
+  function onMouseOverRibbon(event, datum) {
+    const coords = localPoint(event.target.ownerSVGElement, event);
+
+    showTooltip({
+      tooltipLeft: coords.x,
+      tooltipTop: coords.y,
+      tooltipData: datum
+    });
+  }
   
   return (
     <div style={{ position: 'relative'}}>
@@ -168,6 +201,8 @@ export function Chordchart(props={}) {
                     innerRadius={_innerRadius}
                     outerRadius={_outerRadius}
                     fill={'#808080'}
+                    onMouseOver={ (e) => onMouseOverArc(e, group) }
+                    onMouseLeave={ hideTooltip }
                   />
                 ))}
                 {chords.map((chord, i) => (
@@ -177,6 +212,8 @@ export function Chordchart(props={}) {
                     radius={_innerRadius}
                     fill={'#aaaaaa'}
                     fillOpacity={0.75}
+                    onMouseOver={ (e) => onMouseOverRibbon(e, chord) }
+                    onMouseLeave={ hideTooltip }
                   />
                 ))}
               </g>
@@ -191,8 +228,26 @@ export function Chordchart(props={}) {
           top={tooltipTop}
           left={tooltipLeft}
         >
-          <strong>{tooltipData.x}</strong><br />
-          {tooltipData.y}
+          {(function() {
+            
+            // We're hovering over a group
+            if(!tooltipData.source || !tooltipData.target)
+              return (
+                <>
+                  <strong>{_chordNames[tooltipData.index]}</strong><br />
+                  {tooltipData.value}
+                </>
+              ) 
+              
+            // We're hovering over a ribbon
+            return (
+              <>
+                <strong>{_chordNames[tooltipData.source.index]} - {_chordNames[tooltipData.target.index]}</strong><br />
+                {'A => B: ' + tooltipData.source.value}<br />
+                {'B => A: ' + tooltipData.target.value}
+              </>
+            ) 
+          })()}
         </_TooltipInPortal>
       )}
     </div>
