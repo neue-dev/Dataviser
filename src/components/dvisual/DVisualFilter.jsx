@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-15 10:37:53
+ * @ Modified time: 2024-07-15 12:48:04
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -33,7 +33,7 @@ function _DVisualFilter(props={}) {
 
   // Some params
   const _name = props.name ?? null;
-  const _dataCallback = props.dataCallback ?? (() => []);
+  const _type = props.type ?? null;
   const _filterCallback = props.filterCallback ?? (() => true);
 
   // Register the filter
@@ -42,7 +42,7 @@ function _DVisualFilter(props={}) {
     // Register the filter
     DVisualManager.filterCreate(_dvisualState, {
       name: _name,
-      dataCallback: _dataCallback,
+      type: _type,
       filterCallback: _filterCallback,
     })
 
@@ -85,22 +85,14 @@ export function DVisualFilterSlider(props={}) {
     getTrackProps: _getTrackProps,
   } = useRangeSlider({ min: _min, max: _max, defaultValue: _default });
 
-  // Execute the associated filter
-  if(_name)
-    onRender();
-
   /**
    * Our callback which we execute when the filter changes.
    */
-  function onRender() {
+  function onChange() {
     
-    // Execute the filter
-    DVisualManager.filterExecute(_dvisualState, {
-
-      name: _name,  // The name of the filter
-      type: _type,  // The type of the filter (array, dict keys, dict values)
-
-      // The other arguments to the filter function
+    // Trigger the filter to update
+    DVisualManager.filterTrigger(_dvisualState, {
+      name: _name,
       args: { 
         min: _rangeSliderState.value[0], 
         max: _rangeSliderState.value[1], 
@@ -111,7 +103,7 @@ export function DVisualFilterSlider(props={}) {
   // The filter slider component
   return (
     <_DVisualFilter { ...props }>
-      <RangeSlider defaultValue={ _default } min={ _min } max={ _max } step={ _step } { ..._getRootProps() }>
+      <RangeSlider defaultValue={ _default } min={ _min } max={ _max } step={ _step } { ..._getRootProps() } onChangeEnd={ e => onChange(e) }>
         <RangeSliderTrack { ..._getTrackProps() }>
           <RangeSliderFilledTrack bg="teal.500" />
         </RangeSliderTrack>

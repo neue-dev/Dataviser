@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-15 10:30:33
+ * @ Modified time: 2024-07-15 11:59:03
  * @ Description:
  */
 
@@ -75,26 +75,16 @@ const _DVisualButtonFilters = function() {
   ]
 
   /**
-   * Retrieves the metadata stored in the dvisual state.
-   * Consider this a selector for the dvisualState.
-   * 
-   * @param   { State }   state   The current value of dvisualState. 
-   * @return  { object }          The metadata from the state. 
-   */
-  function metaAccessor(state) {
-    return state.meta;
-  }
-
-  /**
    * The date filter we pass to the slider.
+   * // ! move this up a component THEN
    * // ! move this to user logic file
    * 
    * @param   { object }    d     The metadata to filter. 
    * @param   { object }    args  The args passed to the filter.
    * @return  { boolean }         Whether or not the metadata passed the filter.
    */
-  function metaFilter(d, args={}) {
-    return d.date >= args.min && d.date <= args.max;
+  function dateFilter(d, args={}) {
+    return d.x.date >= args.min && d.x.date <= args.max;
   }
 
   return (
@@ -105,8 +95,8 @@ const _DVisualButtonFilters = function() {
       p='2em'>
       <DVisualFilterSlider 
         name="filter-date-slider" 
-        type="values"
-        dataCallback={ metaAccessor } filterCallback={ metaFilter } 
+        type="array"
+        filterCallback={ dateFilter } 
         min={ _minDate } max={ _maxDate } step={ _stepDate }
       />
       <DVisualFilterTags 

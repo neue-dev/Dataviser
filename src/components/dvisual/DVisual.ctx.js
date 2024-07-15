@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 03:49:19
- * @ Modified time: 2024-07-15 10:35:20
+ * @ Modified time: 2024-07-15 11:44:34
  * @ Description:
  * 
  * This stores the state of a given chart or visualization.
@@ -25,7 +25,7 @@ export const DVisualCtx = UtilsContext({
   filters: {},
 
   // Stuff to call after we perform filters
-  filterCallbacks: [],
+  filterCallbacks: {},
 });
 
 export const DVisualManager = (function() {
@@ -53,7 +53,7 @@ export const DVisualManager = (function() {
 
     // Gather the details of the filter to register
     const name = options.name ?? null;
-    const dataCallback = options.dataCallback ?? (() => []);
+    const type = options.type ?? 'array';
     const filterCallback = options.filterCallback ?? (() => true);
 
     // Name is required
@@ -64,7 +64,7 @@ export const DVisualManager = (function() {
     const filters = state.get('filters');
 
     // Add the filters
-    filters[name] = { dataCallback, filterCallback, result: null, };
+    filters[name] = { filterCallback, type, args: {}, result: null, };
 
     // Update the state
     state._.filters = filters;
@@ -80,8 +80,6 @@ export const DVisualManager = (function() {
 
     // Gather the details of the filter to register
     const name = options.name ?? null;
-    const dataCallback = options.dataCallback ?? (() => []);
-    const filterCallback = options.filterCallback ?? (() => true);
     
     // Name is required
     if(!name)
@@ -94,12 +92,53 @@ export const DVisualManager = (function() {
     if(!filters[name])
       return;
 
+    // Grab some details of the filter
+    const type = options.type ?? filters[name].type;
+    const args = options.args ?? filters[name].args;
+    const filterCallback = options.filterCallback ?? filters[name].filterCallback;
+
     // Add the filters
-    filters[name] = { ...filters[name], dataCallback, filterCallback };
+    filters[name] = { ...filters[name], type, args, filterCallback };
 
     // Update the state
     state._.filters = filters;
   } 
+
+  /**
+   * Triggers the filter callbacks to execute.
+   * 
+   * @param   { State }   state     The state of the filter state manager.
+   * @param   { object }  options   The options for the filter. 
+   */
+  _.filterTrigger = function(state, options={}) {
+
+    // Gather the details of the filter to register
+    const name = options.name ?? null;  
+    const args = options.args ?? {};
+
+    // Update the filter
+    _.filterUpdate(state, { name, args });    
+
+    // Name is required
+    if(!name)
+      return;
+
+    // Grab the existing filters
+    const filters = state.get('filters');
+    const filterCallbacks = state.get('filterCallbacks');
+
+    // Name not found
+    if(!filters[name])
+      return;
+    
+    // We execute each of the filter callbacks
+    Object.values(filterCallbacks).forEach(filterCallback => {
+      filterCallback(state);
+    })
+
+    // Return the result too
+    return filters[name].result;
+  }
 
   /**
    * Executes a given filter and updates its stored result.
@@ -112,8 +151,7 @@ export const DVisualManager = (function() {
 
     // Gather the details of the filter to register
     const name = options.name ?? null;
-    const type = options.type ?? 'array';
-    const args = options.args ?? {};
+    const data = options.data ?? [];
     
     // Name is required
     if(!name)
@@ -121,16 +159,15 @@ export const DVisualManager = (function() {
 
     // The filters we currently have
     const filters = state.get('filters');
-    const filterCallbacks = state.get('filterCallbacks');
 
     // Name not found
     if(!filters[name])
       return;
 
     // Grab the callbacks of that filter
-    const dataCallback = filters[name].dataCallback;
+    const type = filters[name].type;
+    const args = filters[name].args;
     const filterCallback = filters[name].filterCallback;
-    const data = dataCallback(state._);
     const wrappedFilter = (d) => filterCallback(d, args);
     
     // For each type, perform a different filter method
@@ -160,10 +197,8 @@ export const DVisualManager = (function() {
     // We don't want a rerender here so we manually change it
     state._.filters = filters;
 
-    // We execute each of the filter callbacks
-    filterCallbacks.forEach(filterCallback => {
-      filterCallback(state);
-    })
+    // Return the result too
+    return filters[name].result;
   }
 
   /**
@@ -202,17 +237,18 @@ export const DVisualManager = (function() {
   _.filterCallback = function(state, options) {
     
     // Grab the callback
+    const name = options.name ?? null;
     const callback = options.callback ?? null;
 
-    // If no callback, return
-    if(!callback)
+    // If no callback or no name, return
+    if(!name || !callback)
       return;
 
     // Otherwise, register the function
     const filterCallbacks = state.get('filterCallbacks');
 
     // Append the filter callback
-    filterCallbacks.push(callback);
+    filterCallbacks[name] = callback;
 
     // Update the state
     state._.filterCallbacks = filterCallbacks;

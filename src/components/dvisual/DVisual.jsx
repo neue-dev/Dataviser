@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-15 10:36:43
+ * @ Modified time: 2024-07-15 12:49:25
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -29,6 +29,7 @@ import { Linechart } from './vsix/Linechart.jsx'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
+import { useRenderCount } from '@uidotdev/usehooks'
 
 /**
  * The DVisual component houses a D3-backed component.
@@ -106,13 +107,33 @@ export function DVisual(props={}) {
 
     // Register the callbacks for our filters
     DVisualManager.filterCallback(_dvisualState, {
-      callback: (state) => console.log(state)
+      name: 'chart-update',
+      callback: (state) => updateChartData(state)
     })
     
   }, [ _meta, _data, _width, _height ]);
 
   // Our condition for checking if the visual has loaded
   const hasLoaded = () => !(!_data.length && _timestamp);
+
+  /**
+   * Updates the chart data based on the filter results.
+   * 
+   * @param   { State }   state   The current state of the visual. 
+   */
+  function updateChartData(state) {
+
+    // Perform the filter on the bound data
+    const data = state.get('data');
+    const result = DVisualManager.filterExecute(_dvisualState, {
+      name: 'filter-date-slider',
+      data: data,
+    })
+
+    // Update the chart data
+    _setChartData(result);
+  }
+
 
   // Return the DVisual component
   return (
