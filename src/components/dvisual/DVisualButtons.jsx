@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-15 13:28:09
+ * @ Modified time: 2024-07-15 19:22:24
  * @ Description:
  */
 
@@ -62,17 +62,21 @@ const _DVisualButtonFilters = function() {
   const _stepDate = (_minDate - _maxDate) / 100;
 
   // ! remove
-  // console.log(_meta, _metaMin, _metaMax)
+  console.log(_meta, _metaMin, _metaMax)
 
-  // ! remove
-  const suggestions = [
-    { value: 0, label: 'hi', },
-    { value: 1, label: 'perhaps', },
-    { value: 2, label: 'another dummy', },
-    { value: 3, label: 'dummy', },
-    { value: 5, label: 'hello', },
-    { value: 6, label: 'suggestion', },
-  ]
+  // ! put somwehere else
+  let suggestions = [];
+  
+  // Generate the suggestions
+  Object.keys(_meta).forEach(metaKey => {
+    const rows = _meta[metaKey].rows;
+    const cols = _meta[metaKey].cols;
+
+    rows.forEach(row => suggestions.indexOf(row) < 0 ? suggestions.push(row) : null);
+    cols.forEach(col => suggestions.indexOf(col) < 0 ? suggestions.push(col) : null);
+  })
+
+  suggestions = suggestions.map(s => ({value: suggestions.indexOf(s), label: s }));
 
   /**
    * The date filter we pass to the slider.
@@ -85,6 +89,17 @@ const _DVisualButtonFilters = function() {
    */
   function dateFilter(d, args={}) {
     return d.x.date >= args.min && d.x.date <= args.max;
+  }
+
+  /**
+   * The tag filter we pass to the tag filter.
+   * 
+   * @param   { object }    d     The metadata to filter. 
+   * @param   { object }    args  The args passed to the filter.
+   * @return  { boolean }         Whether or not the metadata passed the filter.
+   */
+  function tagFilter(d, args={}) {
+    // return 
   }
 
   return (
