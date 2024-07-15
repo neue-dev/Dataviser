@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-15 17:08:51
+ * @ Modified time: 2024-07-15 18:22:00
  * @ Description:
  * 
  * Creates a bar chart using the visx library.
@@ -48,19 +48,40 @@ export function Barchart(props={}) {
       })
     })
   })
-  
-  // Add the immigration stats
-
-  // Add the emmigration stats
+    
+  // Add the immigration stats (col sums)
   Object.keys(_sumDf).forEach(col => {
+    const immigration = Object.values(_sumDf[col]).reduce((a, b) => (a + b), 0);
+
     _chartData.push({
       x: col,
-      y: Object.values(_sumDf[col]).reduce((a, b) => (a + b), 0)
+      y: {
+        immigration,
+        emmigration: 0,
+        total: immigration,
+      }
+    })
+  })
+
+  // Add the emmigration stats (row sums)
+  Object.keys(_sumDf).forEach(col => {
+    Object.keys(_sumDf[col]).forEach(row => {
+      
+      // Get the entry to update
+      const entry = _chartData.filter(entry => entry.x == row);
+
+      // Init the row sum
+      if(!entry.length) 
+        return;
+
+      // Update the entry
+      entry[0].y.emmigration += _sumDf[col][row];
+      entry[0].y.total += _sumDf[col][row];
     })
   })
 
   // Get the top 5 or smth
-  _chartData.sort((a, b) => b.y - a.y);
+  _chartData.sort((a, b) => b.y.total - a.y.total);
   _chartData.splice(5);
 
   // Tooltip state
@@ -115,18 +136,41 @@ export function Barchart(props={}) {
           {_chartData.map((d) => {
 
             const barWidth = xScale.bandwidth();
-            const barHeight = _height - _margin - yScale(d.y);
+            const barHeight = _height - _margin - yScale(d.y.emmigration);
             const barX = xScale(d.x);
             const barY = _height - barHeight - _margin / 2;
 
             return (
               <Bar
                 key={`bar-${d.x}`}
-                x={barX}
-                y={barY}
-                width={barWidth}
-                height={barHeight}
-                fill="rgba(23, 200, 217, 1)"
+                x={ barX + barWidth / 2 - 1 }
+                y={ barY }
+                width={ barWidth / 2 }
+                height={ barHeight }
+                fill="#E53E3E"
+                strokeOpacity={ 0 }
+                onMouseOver={ (e) => onMouseOver(e, d) }
+                onMouseOut={ (e) => hideTooltip(e) }
+              />
+            );
+          })}
+
+          {_chartData.map((d) => {
+
+            const barWidth = xScale.bandwidth();
+            const barHeight = _height - _margin - yScale(d.y.immigration);
+            const barX = xScale(d.x);
+            const barY = _height - barHeight - _margin / 2;
+
+            return (
+              <Bar
+                key={`bar-${d.x}`}
+                x={ barX }
+                y={ barY }
+                width={ barWidth / 2 }
+                height={ barHeight }
+                fill="#3182CE"
+                strokeOpacity={ 0 }
                 onMouseOver={ (e) => onMouseOver(e, d) }
                 onMouseOut={ (e) => hideTooltip(e) }
               />
@@ -160,7 +204,8 @@ export function Barchart(props={}) {
           left={tooltipLeft}
         >
           <strong>{tooltipData.x}</strong><br />
-          {tooltipData.y}
+          emmigration: {tooltipData.y.emmigration}<br />
+          immigration: {tooltipData.y.immigration}
         </_TooltipInPortal>
       )}
     </div>

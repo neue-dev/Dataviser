@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-15 17:49:20
+ * @ Modified time: 2024-07-15 18:50:35
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -37,7 +37,10 @@ export function Chordchart(props={}) {
   
   // Create the actual data we want
   const _chartData = []
-  const _sumDf = {}
+  const _sumDf = {};
+  const _filteredSumDf = {};
+  const _sums = {};
+  let _sumArr = [];
 
   // Create the sum df
   _data.forEach(data => {
@@ -54,9 +57,57 @@ export function Chordchart(props={}) {
     })
   })
 
+  // Generate row-col sums so we can sort by default
+  Object.keys(_sumDf).forEach(col => {
+    Object.keys(_sumDf[col]).forEach(row => {
+      
+      // Init the sums
+      if(!_sums[col]) _sums[col] = 0;
+      if(!_sums[row]) _sums[row] = 0;
+
+      // Compute the sums
+      _sums[col] += _sumDf[col][row];
+      _sums[row] += _sumDf[col][row];
+    })
+  })
+
+  // Sort and filter _sumDf
+  _sumArr = Object.keys(_sums).map(sumKey => {
+    return { x: sumKey, y: _sums[sumKey] }
+  })
+  _sumArr.sort((a, b) => b.y - a.y)
+  _sumArr.splice(5);
+
+  _sumArr.forEach(sum => {
+    const key = sum.x;
+    const col = _sumDf[key];
+
+    // Create the filtered df
+    _filteredSumDf[key] = {};
+
+    // Add the stuff we need
+    Object.keys(col).forEach(row => {
+      if(_sumArr.filter(sum => sum.x == row).length)
+        _filteredSumDf[key][row] = col[row];
+    })
+  })
+
+  console.log(_filteredSumDf)
+
   // Generate the 2d matrix of data
-  Object.values(_sumDf).forEach(col => {
-    _chartData.push(Object.values(col))
+  Object.values(_filteredSumDf).forEach(col => {
+    const matRow = [];
+
+    // For each of the row entries
+    Object.keys(col).forEach(entry => {
+      const index = _sumArr.map(e => e.x).indexOf(entry);
+
+      // Update the row
+      matRow[index] = col[entry];
+    })
+
+    // Push the constructed row
+    _chartData.push(matRow);
   })
 
   console.log(_chartData)
