@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-15 19:22:24
+ * @ Modified time: 2024-07-15 19:44:37
  * @ Description:
  */
 
@@ -60,9 +60,6 @@ const _DVisualButtonFilters = function() {
   const _minDate = _metaMin.date ?? 0;
   const _maxDate = _metaMax.date ?? 1;
   const _stepDate = (_minDate - _maxDate) / 100;
-
-  // ! remove
-  console.log(_meta, _metaMin, _metaMax)
 
   // ! put somwehere else
   let suggestions = [];

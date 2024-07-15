@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-15 19:07:32
+ * @ Modified time: 2024-07-15 19:44:34
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -110,8 +110,6 @@ export function Chordchart(props={}) {
     // Push the constructed row
     _chartData.push(matRow);
   })
-
-  console.log(_chartData)
 
   // Tooltip state
   const {
