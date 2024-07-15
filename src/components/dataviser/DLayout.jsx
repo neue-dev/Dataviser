@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-10 07:24:10
+ * @ Modified time: 2024-07-15 13:47:48
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -58,14 +58,14 @@ export function DLayout(props={}) {
       const cols = childProps.cols ?? [];               // Same here
       const group = childProps.i ?? '_';
       const orient = childProps.orient ?? '';           // Tells us whether we want colsums or rowsums
-      const exclude = childProps.exclude ?? [ 'sum' ];  // What columns to exclude
+      const exclude = childProps.exclude ?? [];         // What columns to exclude
 
       // The child doesn't have an id, we don't do anything with it
       if([ 'NA', 'none', 'NONE', '-' ].includes(group))
         return;
 
       // Subscribe the child
-      unsubscribers.push(ClientDF.dfSubscribeGroup({ group, orient, exclude, toast: _toast }))
+      unsubscribers.push(ClientDF.dfSubscribeGroup({ group, rows, cols, orient, exclude, toast: _toast }))
     })
 
     // Return the clean up function

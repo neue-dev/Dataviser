@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-13 15:58:45
- * @ Modified time: 2024-07-13 16:25:03
+ * @ Modified time: 2024-07-15 14:31:28
  * @ Description:
  * 
  * A file that holds the logic specific to the files we're using.
@@ -10,6 +10,21 @@
 export const UserLogic = (function() {
 
   const _ = {}
+
+  /**
+   * Tells us whether or not metaA comes before or after metaB.
+   * 
+   * @param   { object }  metaA   The first metadata instance.
+   * @param   { object }  metaB   The second metadata instance.
+   * @return  { number }          -1 means metaA < metaB, 0 means theyre the same, 1 means metaA > metaB
+   */
+  _.metaComparator = function(metaA, metaB) {
+    if(metaA.date > metaB.date)
+      return 1;
+    if(metaA.date < metaB.date)
+      return -1;
+    return 0;
+  }
 
   /**
    * Returns the minimum value of each property in the metadata.

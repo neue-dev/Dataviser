@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-15 12:48:04
+ * @ Modified time: 2024-07-15 13:29:24
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -69,7 +69,6 @@ export function DVisualFilterSlider(props={}) {
 
   // Grab the name and filter callback function
   const _name = props.name ?? null;
-  const _type = props.type ?? null;
 
   // Grab the props
   const _min = props.min ?? 0;      // The minimum value
@@ -88,14 +87,14 @@ export function DVisualFilterSlider(props={}) {
   /**
    * Our callback which we execute when the filter changes.
    */
-  function onChange() {
+  function onChange(min, max) {
     
     // Trigger the filter to update
     DVisualManager.filterTrigger(_dvisualState, {
       name: _name,
       args: { 
-        min: _rangeSliderState.value[0], 
-        max: _rangeSliderState.value[1], 
+        min: min ?? _rangeSliderState.value[0], 
+        max: max ?? _rangeSliderState.value[1], 
       },
     })
   }
@@ -103,7 +102,8 @@ export function DVisualFilterSlider(props={}) {
   // The filter slider component
   return (
     <_DVisualFilter { ...props }>
-      <RangeSlider defaultValue={ _default } min={ _min } max={ _max } step={ _step } { ..._getRootProps() } onChangeEnd={ e => onChange(e) }>
+      <RangeSlider defaultValue={ _default } min={ _min } max={ _max } step={ _step } 
+        onChangeEnd={ () => onChange() } { ..._getRootProps() }>
         <RangeSliderTrack { ..._getTrackProps() }>
           <RangeSliderFilledTrack bg="teal.500" />
         </RangeSliderTrack>

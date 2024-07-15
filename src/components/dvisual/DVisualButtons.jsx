@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-15 11:59:03
+ * @ Modified time: 2024-07-15 13:28:09
  * @ Description:
  */
 
@@ -95,7 +95,6 @@ const _DVisualButtonFilters = function() {
       p='2em'>
       <DVisualFilterSlider 
         name="filter-date-slider" 
-        type="array"
         filterCallback={ dateFilter } 
         min={ _minDate } max={ _maxDate } step={ _stepDate }
       />

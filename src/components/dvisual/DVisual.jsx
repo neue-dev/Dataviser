@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-15 12:49:25
+ * @ Modified time: 2024-07-15 13:38:35
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -30,6 +30,7 @@ import { Linechart } from './vsix/Linechart.jsx'
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
 import { useRenderCount } from '@uidotdev/usehooks'
+import { Barchart } from './vsix/Barchart.jsx'
 
 /**
  * The DVisual component houses a D3-backed component.
@@ -60,6 +61,7 @@ export function DVisual(props={}) {
   const _px = 24, _py = 32;
 
   // Grab some of the props
+  const _type = props.type ?? 'linechart';
   const _title = props.title ?? 'Graph';
   const _subtitle = props.subtitle ?? 'No description.';
 
@@ -128,10 +130,30 @@ export function DVisual(props={}) {
     const result = DVisualManager.filterExecute(_dvisualState, {
       name: 'filter-date-slider',
       data: data,
-    })
+    }) ?? []
 
     // Update the chart data
     _setChartData(result);
+  }
+
+  /**
+   * Generates the appropriate chart for the given type.
+   * 
+   * @param   { string }      type  The type of chart to render. 
+   * @return  { Component }         A react component of the chart.
+   */
+  function createChart(type) {
+    switch(_type) {
+      case 'line':
+      case 'linechart':
+        return (<Linechart data={ _chartData } width={ _chartWidth } height={ _chartHeight } />)
+      case 'bar':
+      case 'barchart':
+        return (<Barchart data={ _chartData } width={ _chartWidth } height={ _chartHeight } />);
+      case 'chord':
+      case 'chordchart':
+        return;
+    }
   }
 
 
@@ -141,7 +163,7 @@ export function DVisual(props={}) {
       <Container className={ _id } maxW="100vw" ref={ _containerRef } boxShadow="lg" style={ _containerStyle }>
         <DVisualHeader/>  
         <_DVisualSkeleton isLoaded={ hasLoaded() }>
-          <Linechart data={ _chartData } width={ _chartWidth } height={ _chartHeight } />          
+          { createChart(_type) }          
         </_DVisualSkeleton>        
       </Container>
     </_dvisualContext.Provider>
