@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-10 08:55:16
+ * @ Modified time: 2024-07-15 16:39:15
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -50,8 +50,8 @@ export function Linechart(props={}) {
     <XYChart 
       width={ _width } height={ _height } 
       xScale={{ type: 'band' }} yScale={{ type: 'linear' }}>
-      <AnimatedAxis orientation="bottom" />
-      <AnimatedAxis orientation="left" />
+      <AnimatedAxis orientation="bottom" numTicks={ 4 }/>
+      <AnimatedAxis orientation="left" numTicks={ 4 } />
       <AnimatedGrid columns={ false } numTicks={ 4 } />
       <AnimatedLineSeries dataKey={ keys[3] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(3)}/>
       <AnimatedLineSeries dataKey={ keys[4] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(4)}/>

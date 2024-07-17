@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-09 13:07:51
+ * @ Modified time: 2024-07-15 14:36:04
  * @ Description:
  * 
  * This represents the header of the application.
@@ -28,6 +28,10 @@ import { useSelector } from 'react-redux';
 import { ClientFS } from '../../client/client.fs'
 import { ClientDF } from '../../client/client.df'
 import { ClientOps } from '../../client/client.ops'
+
+// ! remove
+import { ClientStore } from '../../client/client.store.api'
+import userLogic, { UserLogic } from '../../user/user.logic';
 
 // Our logic
 import { ourMetaParser } from '../../our/our'
@@ -70,7 +74,10 @@ export function DHeader() {
    * //! todo
    */
   function viewFiles() {
+    
     console.log(Object.values(_filenames));
+
+    ClientDF.dfSumGet({ comparator: UserLogic.metaComparator });
   }
 
   /**

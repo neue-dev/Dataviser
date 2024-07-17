@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:19:57
- * @ Modified time: 2024-07-13 16:10:09
+ * @ Modified time: 2024-07-15 14:47:18
  * @ Description:
  * 
  * This file deals with managing the interplay of JS and Python DF data.
@@ -134,6 +134,63 @@ export const ClientDF = (function() {
   }
 
   /**
+   * Computes the sum of the dfs in the given range.
+   * 
+   * @param   { array }     dfs         The dfs to iterate over. 
+   * @param   { object }    meta        The metadata associated with the dfs.
+   * @param   { string }    start       The start key of the sum range.
+   * @param   { string }    end         The end key of the sum range.
+   * @param   { Function }  comparator  The function we use to determine order of df metadata.
+   * @return  { object }                The dataframe sum of the dfs in the range. 
+   */
+  const _dfComputeSum = function(dfs, meta, start, end, comparator) {
+
+    // The dispatcher and the dfkeys
+    const dispatch = ClientStore.storeDispatcher('df/dfSumCreate');
+    const dfKeys = Object.keys(dfs);
+    const dfSum = {};
+
+    // Save each of the dfs to the store
+    dfKeys.forEach(dfKey => {
+
+      // If the key is between the start and end
+      if(comparator(meta[dfKey], start) >= 0 && 
+        comparator(meta[dfKey], end) <= 0) {
+        
+        // Get the df instance
+        const df = dfs[dfKey];
+
+        // Iterate over the df
+        Object.keys(df).forEach(col => {
+          Object.keys(df[col]).forEach(row => {
+
+            // Compute the sum of the dfs
+            if(!dfSum[col])
+              dfSum[col] = {};
+
+            if(!dfSum[col][row])
+              dfSum[col][row] = 0;
+
+            dfSum[col][row] += isNaN(df[col][row]) ? 0 : df[col][row];
+          })
+        })
+      }
+    })
+
+    // Save the sum
+    dispatch({
+      start: start,
+      end: end,
+      sum: dfSum,
+    });
+
+    console.warn(dfSum)
+
+    // Return the sum
+    return dfSum;
+  }
+
+  /**
    * Update the timestamp for the specified group.
    * 
    * @param   { string }  group   The group we want to update.
@@ -252,6 +309,45 @@ export const ClientDF = (function() {
   }
 
   /**
+   * Retrieves the sum from the store; otherwise, it computes it.
+   * 
+   * @param   { object }  options   The options for which group of dataframes we want.
+   * @return  { object }            The requested dataframe sum.
+   */
+  _.dfSumGet = function(options={}) {
+    
+    // Get options
+    const dfs = _.dfGet();
+    const meta = _.dfMetaGet();
+    const keys = Object.keys(dfs);
+    const startKey = options.start ?? keys[0];
+    const endKey = options.end ?? keys[keys.length - 1];
+    const comparator = options.comparator ?? null;
+
+    // Required comparator
+    if(!comparator)
+      return;
+    
+    // Attempt to request the sum
+    const start = ClientStore.select(state => state.df.sums[startKey]);
+
+    // Compute the sum since it hasn't been computed
+    if(!start)
+      return _dfComputeSum(dfs, meta, startKey, endKey, comparator);
+
+    // Attempt to request sum
+    const end = ClientStore.select(state => state.df.sums[startKey][endKey])
+
+    // Compute the sum since it hasn't been computed
+    if(!end)
+      return _dfComputeSum(dfs, meta, startKey, endKey, comparator);
+
+    // The sum should exist by now
+    return ClientStore.select(state => state.df.sums[startKey][endKey])
+
+  }
+
+  /**
    * Creates a selector that retrieves the group of dfs.
    * 
    * @param   { string }    group   The name of the group of dfs to retrieve.
@@ -296,7 +392,7 @@ export const ClientDF = (function() {
    * 
    * @return  { function }  A selector function for the df metadata. 
    */
-  _.dfMetaSelector = function(group='_') {
+  _.dfMetaSelector = function() {
     return (state) => {
       return state.df.meta;
     }

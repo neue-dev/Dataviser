@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-13 16:34:16
+ * @ Modified time: 2024-07-15 19:44:37
  * @ Description:
  */
 
@@ -21,7 +21,7 @@ import { BiSolidXCircle } from 'react-icons/bi'
 // Custom components and contexts
 import { DVisualCtx } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
-import { DVisualFilterContainer, DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
+import { DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
@@ -53,31 +53,50 @@ const _DVisualButtonFilters = function() {
 
   // The ranges we'll use to filter the data
   const _meta = ClientDF.dfMetaGet();
-  const _metaMin = UserLogic.getMetaMin(_meta);
-  const _metaMax = UserLogic.getMetaMax(_meta);
+  const _metaMin = UserLogic.getMetaMin(_meta) ?? {};
+  const _metaMax = UserLogic.getMetaMax(_meta) ?? {};
+  
+  // Compute slider props
+  const _minDate = _metaMin.date ?? 0;
+  const _maxDate = _metaMax.date ?? 1;
+  const _stepDate = (_minDate - _maxDate) / 100;
 
-  console.log(_meta, _metaMin, _metaMax)
+  // ! put somwehere else
+  let suggestions = [];
+  
+  // Generate the suggestions
+  Object.keys(_meta).forEach(metaKey => {
+    const rows = _meta[metaKey].rows;
+    const cols = _meta[metaKey].cols;
 
-  // ! remove
-  const suggestions = [
-    { value: 0, label: 'hi', },
-    { value: 1, label: 'perhaps', },
-    { value: 2, label: 'another dummy', },
-    { value: 3, label: 'dummy', },
-    { value: 5, label: 'hello', },
-    { value: 6, label: 'suggestion', },
-  ]
+    rows.forEach(row => suggestions.indexOf(row) < 0 ? suggestions.push(row) : null);
+    cols.forEach(col => suggestions.indexOf(col) < 0 ? suggestions.push(col) : null);
+  })
+
+  suggestions = suggestions.map(s => ({value: suggestions.indexOf(s), label: s }));
 
   /**
    * The date filter we pass to the slider.
+   * // ! move this up a component THEN
    * // ! move this to user logic file
    * 
    * @param   { object }    d     The metadata to filter. 
    * @param   { object }    args  The args passed to the filter.
    * @return  { boolean }         Whether or not the metadata passed the filter.
    */
-  function metaFilter(d, args={}) {
-    return d.date >= args.min && d.date <= args.max;
+  function dateFilter(d, args={}) {
+    return d.x.date >= args.min && d.x.date <= args.max;
+  }
+
+  /**
+   * The tag filter we pass to the tag filter.
+   * 
+   * @param   { object }    d     The metadata to filter. 
+   * @param   { object }    args  The args passed to the filter.
+   * @return  { boolean }         Whether or not the metadata passed the filter.
+   */
+  function tagFilter(d, args={}) {
+    // return 
   }
 
   return (
@@ -86,25 +105,16 @@ const _DVisualButtonFilters = function() {
       Icon={ BiSlider }
       fontSize='0.5em'
       p='2em'>
-      <DVisualFilterContainer>  
-        <DVisualFilterSlider 
-          name="filter-date-slider" 
-          type="values"
-          onFilter={(d) => d}
-          dataCallback={() => ClientDF.dfMetaGet()} 
-          filterCallback={ metaFilter } 
-
-          // ! ADD ERROR CHECKING WHEN THESE ARE UNDEFINED AT STARTUP
-          min={ _metaMin.date } 
-          max={ _metaMax.date } 
-          step={ (_metaMax.date - _metaMin.date) / 100 }
-        />
-        <DVisualFilterTags 
-          name="filter-province-tags"
-          label="Select a province."
-          suggestions={ suggestions } 
-        />
-      </DVisualFilterContainer>
+      <DVisualFilterSlider 
+        name="filter-date-slider" 
+        filterCallback={ dateFilter } 
+        min={ _minDate } max={ _maxDate } step={ _stepDate }
+      />
+      <DVisualFilterTags 
+        name="filter-province-tags"
+        label="Select a province."
+        suggestions={ suggestions } 
+      />
     </_DPopover>
   )
 }

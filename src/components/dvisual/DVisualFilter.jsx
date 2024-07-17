@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-13 16:32:58
+ * @ Modified time: 2024-07-15 19:18:46
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -18,25 +18,7 @@ import { RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack
 import { useRangeSlider } from '@chakra-ui/react'
 
 // Custom hooks and contexts
-import { DVisualFilterCtx, DVisualFilterManager } from './DVisualFilter.ctx'
-
-/**
- * Wraps around the state modified by the filters.
- * 
- * @component 
- */
-export function DVisualFilterContainer(props={}) {
-
-  // Create the context for us
-  const _dvisualFilterState = DVisualFilterCtx.newCtx();
-  const _dvisualFilterContext = DVisualFilterCtx.getCtx();
-
-  return (
-    <_dvisualFilterContext.Provider value={ _dvisualFilterState }>
-      { props.children }
-    </_dvisualFilterContext.Provider>
-  )
-}
+import { DVisualCtx, DVisualManager } from './DVisual.ctx'
 
 /**
  * A helper component to wrap our filters with some state.
@@ -47,25 +29,25 @@ export function DVisualFilterContainer(props={}) {
 function _DVisualFilter(props={}) {
 
   // Use the context
-  const _dvisualFilterState = DVisualFilterCtx.useCtx();
+  const _dvisualState = DVisualCtx.useCtx();
 
   // Some params
   const _name = props.name ?? null;
-  const _dataCallback = props.dataCallback ?? (() => []);
+  const _type = props.type ?? null;
   const _filterCallback = props.filterCallback ?? (() => true);
 
   // Register the filter
   useEffect(() => {
 
     // Register the filter
-    DVisualFilterManager.filterCreate(_dvisualFilterState, {
+    DVisualManager.filterCreate(_dvisualState, {
       name: _name,
-      dataCallback: _dataCallback,
+      type: _type,
       filterCallback: _filterCallback,
     })
 
     // Return a cleanup function that removes the filter
-    return () => DVisualFilterManager.filterRemove(_dvisualFilterState, { name: _name });
+    return () => DVisualManager.filterRemove(_dvisualState, { name: _name });
 
   }, [])
   
@@ -83,12 +65,10 @@ function _DVisualFilter(props={}) {
 export function DVisualFilterSlider(props={}) {
 
   // Use the context
-  const _dvisualFilterState = DVisualFilterCtx.useCtx();
+  const _dvisualState = DVisualCtx.useCtx();
 
   // Grab the name and filter callback function
   const _name = props.name ?? null;
-  const _type = props.type ?? null;
-  const _onFilter = props.onFilter ?? (d => d);
 
   // Grab the props
   const _min = props.min ?? 0;      // The minimum value
@@ -104,38 +84,26 @@ export function DVisualFilterSlider(props={}) {
     getTrackProps: _getTrackProps,
   } = useRangeSlider({ min: _min, max: _max, defaultValue: _default });
 
-  // Execute the associated filter
-  if(_name)
-    onRender();
-
   /**
    * Our callback which we execute when the filter changes.
    */
-  function onRender() {
-
-    // Get the filtered data
-    const filtered = DVisualFilterManager.filterExecute(_dvisualFilterState, {
-
-      name: _name,  // The name of the filter
-      type: _type,  // The type of the filter (array, dict keys, dict values)
-
-      // The other arguments to the filter function
+  function onChange(min, max) {
+    
+    // Trigger the filter to update
+    DVisualManager.filterTrigger(_dvisualState, {
+      name: _name,
       args: { 
-        min: _rangeSliderState.value[0], 
-        max: _rangeSliderState.value[1], 
+        min: min ?? _rangeSliderState.value[0], 
+        max: max ?? _rangeSliderState.value[1], 
       },
     })
-
-    console.log(_rangeSliderState)
-
-    // Call the callback for the filtered data
-    _onFilter(filtered);
   }
 
   // The filter slider component
   return (
     <_DVisualFilter { ...props }>
-      <RangeSlider defaultValue={ _default } min={ _min } max={ _max } step={ _step } { ..._getRootProps() }>
+      <RangeSlider defaultValue={ _default } min={ _min } max={ _max } step={ _step } 
+        onChangeEnd={ () => onChange() } { ..._getRootProps() }>
         <RangeSliderTrack { ..._getTrackProps() }>
           <RangeSliderFilledTrack bg="teal.500" />
         </RangeSliderTrack>
@@ -155,7 +123,7 @@ export function DVisualFilterSlider(props={}) {
 export function DVisualFilterTags(props={}) {
 
   // Use the context
-  const _dvisualFilterState = DVisualFilterCtx.useCtx();
+  const _dvisualState = DVisualCtx.useCtx();
   const id = useRef(crypto.randomUUID());
   
   // The selected tags and the allowed tags

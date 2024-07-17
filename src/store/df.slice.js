@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-28 21:12:24
- * @ Modified time: 2024-07-10 02:35:52
+ * @ Modified time: 2024-07-15 13:59:56
  * @ Description:
  * 
  * This portion of redux manages our dataframe data.
@@ -30,6 +30,9 @@ export const dfSlice = createSlice({
 
     // The metadata of each of the dfs
     meta: {},
+
+    // Stores sum ranges of different dfs
+    sums: {},
   },
 
   // Reducers
@@ -141,6 +144,46 @@ export const dfSlice = createSlice({
       // Delete the metadata
       delete state.meta[id];
     },
+
+    /**
+     * Stores a sum within a sum range. 
+     * The summing is done outside of this function.
+     * 
+     * @param { state }   state   The value of the current state. 
+     * @param { action }  action  The details of the action.
+     */
+    dfSumCreate: (state, action) => {
+      
+      // Grab the action details
+      const keys = Object.keys(state.dfs._ ?? {});
+
+      // No dfs yet
+      if(!keys.length)
+        return;
+
+      // Grab the other options
+      const start = action.start ?? keys[0];
+      const end = action.end ?? keys[keys.length - 1];
+      const sum = action.sum ?? null;
+      
+      // If sum isn't defined, we return
+      if(!sum)
+        return;
+
+      // Update the state
+      if(!state.sums[start])
+        state.sums[start] = {};
+
+      if(!state.sums[start][end])
+        state.sums[start][end] = {};
+
+      // Save the sum
+      state.sums[start][end] = {}; 
+    },
+
+    // ! 
+    // ! Create df sum remove method, used when a certian df has new data
+    // !
 
     /**
      * Updates the timestamp for the given group.
