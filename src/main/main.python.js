@@ -1,13 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:41:45
- * @ Modified time: 2024-07-06 07:47:23
+ * @ Modified time: 2024-07-18 20:09:54
  * @ Description:
  * 
  * This file reads all the python scripts and forwards them to the renderer process.
  */
 
 const fs = require('node:fs');
+const path = require('path')
 import { ipcMain } from 'electron';
 
 export const Python = (function() {
@@ -15,11 +16,11 @@ export const Python = (function() {
   const _ = {};
   const _cache = {};  // Where the actual file contents are stored until we send them to the IPC
   const _scripts = {
-    df: './src/pyscripts/df.py',
-    df_out: './src/pyscripts/df_out.py',
-    df_filters: './src/pyscripts/df_filters.py',
-    df_transformers: './src/pyscripts/df_transformers.py',
-    df_preprocess: './src/pyscripts/df_preprocess.py',
+    df: './pyscripts/df.py',
+    df_out: './pyscripts/df_out.py',
+    df_filters: './pyscripts/df_filters.py',
+    df_transformers: './pyscripts/df_transformers.py',
+    df_preprocess: './pyscripts/df_preprocess.py',
   };
 
   /**
@@ -43,9 +44,18 @@ export const Python = (function() {
 
     // For each script
     scriptNames.forEach(scriptName => {
+
+      // Get the folder for the resources
+      // ! move to its own file maybe
+      const resourcesPath = !process.env.NODE_ENV || process.env.NODE_ENV === "production"
+        ? process.resourcesPath
+        : 'src';
+
+      // Generate the path to the script
+      const scriptPath = path.join(resourcesPath, _scripts[scriptName]);
       
       // Grab the code content of the script
-      _cache[scriptName] = _scriptLoad(_scripts[scriptName]);
+      _cache[scriptName] = _scriptLoad(scriptPath);
     });
   }
 

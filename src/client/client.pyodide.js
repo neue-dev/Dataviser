@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-11 16:30:23
- * @ Modified time: 2024-07-03 20:05:39
+ * @ Modified time: 2024-07-17 10:38:36
  * @ Description:
  */
 
@@ -134,7 +134,7 @@ export const ClientPyodide = (function() {
         } else if(!result) {
 
           // Log that it returned nothing
-          console.log('Python script executed and returned nothing.');
+          console.log('Python script executed and returned nothing.', script);
           resolveHandle('');
         }
       })
