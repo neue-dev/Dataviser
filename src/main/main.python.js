@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 02:41:45
- * @ Modified time: 2024-07-18 20:09:54
+ * @ Modified time: 2024-07-18 20:25:01
  * @ Description:
  * 
  * This file reads all the python scripts and forwards them to the renderer process.
@@ -10,6 +10,7 @@
 const fs = require('node:fs');
 const path = require('path')
 import { ipcMain } from 'electron';
+import { FS } from './main.fs';
 
 export const Python = (function() {
   
@@ -45,14 +46,8 @@ export const Python = (function() {
     // For each script
     scriptNames.forEach(scriptName => {
 
-      // Get the folder for the resources
-      // ! move to its own file maybe
-      const resourcesPath = !process.env.NODE_ENV || process.env.NODE_ENV === "production"
-        ? process.resourcesPath
-        : 'src';
-
       // Generate the path to the script
-      const scriptPath = path.join(resourcesPath, _scripts[scriptName]);
+      const scriptPath = FS.getResourcePath(_scripts[scriptName]);
       
       // Grab the code content of the script
       _cache[scriptName] = _scriptLoad(scriptPath);

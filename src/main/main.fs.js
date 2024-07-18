@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-06 16:30:31
- * @ Modified time: 2024-07-02 15:26:57
+ * @ Modified time: 2024-07-18 20:25:44
  * @ Description:
  * 
  * This module has some file system handling utilities.
@@ -9,6 +9,7 @@
 
 // Modules
 const fs = require('node:fs');
+const path = require('path');
 const { dialog } = require('electron'); 
 
 // Utils
@@ -147,6 +148,36 @@ export const FS = (function() {
       // Return the data
       return result;
     }
+  }
+
+  /**
+   * Gets the resource path of our custom files, including pyscripts.
+   * This function is needed because the filepaths are different during dev and production.
+   * This is the case because packaging our app requires us to put any extra files in ./resources.
+   * 
+   * @param   { string }  filepath  A file we wish to locate in the resources folder.
+   * @return  { string }            The parent path of our resources in the current environment.
+   */
+  _.getResourcePath = function(filepath=null) {
+
+    // Get the folder for the resources
+    const resourcesPath = 
+      
+      // If the current environment is undefined or
+      !process.env.NODE_ENV || 
+      
+      // The current environment isn't dev
+      process.env.NODE_ENV === "production"
+
+        ? process.resourcesPath   // Get the production resource path 
+        : 'src';                  // Otherwise, get the dev environment source code folder
+
+    // Return the resource path
+    if(!filepath)
+      return resourcesPath;
+
+    // Otherwise, return resource location
+    return path.join(resourcesPath, filepath);
   }
 
   return {
