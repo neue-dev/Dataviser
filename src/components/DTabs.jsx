@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-23 23:31:48
- * @ Modified time: 2024-07-23 23:47:21
+ * @ Modified time: 2024-07-24 00:21:27
  * @ Description:
  */
 
@@ -23,15 +23,22 @@ export function DTabs() {
   const _dataviserState = DataviserCtx.useCtx();
 
   // Create an array to store the children of the _dvisuals
-  const _dlayout = _dataviserState.get('dvisuals').map(dvisual => {
-    const id = dvisual.id;
-    return (<DVisual { ...dvisual } i={ id } key={ id }/>)
-  });
+  const _doverview = _dataviserState.get('dvisuals')
+    .filter(dvisual => dvisual.class == 'overview')
+    .map(dvisual => (<DVisual { ...dvisual } i={ dvisual.id } key={ dvisual.id }/>));
+
+  // Create an array to store the children of the _dvisuals
+  const _dregional = _dataviserState.get('dvisuals')
+    .filter(dvisual => dvisual.class == 'regional')
+    .map(dvisual => (<DVisual { ...dvisual } i={ dvisual.id } key={ dvisual.id }/>));
   
   return (
     <TabPanels>
       <TabPanel padding={ 0 } margin={ 0 }>
-        <DLayout children={ _dlayout }/>
+        <DLayout children={ _doverview }/>
+      </TabPanel>
+      <TabPanel padding={ 0 } margin={ 0 }>
+        <DLayout children={ _dregional }/>
       </TabPanel>
     </TabPanels>
   )
