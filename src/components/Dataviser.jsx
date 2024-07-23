@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-10 07:35:13
+ * @ Modified time: 2024-07-23 23:30:36
  * @ Description:
  * 
  * The main component that houses the app.
@@ -18,6 +18,7 @@ import { DVisual } from './dvisual/DVisual.jsx';
 
 // Import the context of the app
 import { DataviserCtx, DataviserManager } from './Dataviser.ctx.js';
+import { useWindowDimensions } from '../hooks/useWIndowDimensions.js';
 
 /**
  * Dataviser component class.
@@ -30,18 +31,26 @@ export function Dataviser() {
   const _dataviserState = DataviserCtx.newCtx();
   const _dataviserContext = DataviserCtx.getCtx();
 
+  // Window dimensions
+  const { 
+    width: _width, 
+    height: _height 
+  } = useWindowDimensions();
+  
+  // Header height
+  const _headerHeight = _dataviserState.get('headerHeight') * _height;
+
   // Create an array to store the children of the _dvisuals
-  const _header = (<DHeader i="-" static="true" w="max" h="3" />);
-  const _dlayout = [ _header, ..._dataviserState.get('dvisuals').map(dvisual => {
+  const _dlayout = _dataviserState.get('dvisuals').map(dvisual => {
     const id = dvisual.id;
     return (<DVisual { ...dvisual } i={ id } key={ id }/>)
-  })];
+  });
 
   // Pass the state to everyone else
   return (
     <_dataviserContext.Provider value={ _dataviserState }>
-      <DLayout children={ _dlayout }> 
-      </DLayout>
+      <DHeader height={ _headerHeight } />
+      <DLayout children={ _dlayout } />
     </_dataviserContext.Provider>
   )
 }

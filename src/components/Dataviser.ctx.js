@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-15 19:40:15
+ * @ Modified time: 2024-07-23 23:18:41
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -19,6 +19,15 @@ export const DataviserCtx = UtilsContext({
     { id: '_' + crypto.randomUUID(), type: 'choropleth', title: 'Heat Map', subtitle: '', x: 16, y: 0, w: 16, h: 9, orient: 'cols' },
     { id: '_' + crypto.randomUUID(), type: 'bar', title: 'Bar Graph', subtitle: '', x: 16, y: 8, w: 16, h: 6, orient: '', exclude: [ 'sum' ], },
   ],
+
+  // Width and height
+  width: 1.0,
+  height: 0.85,
+  headerHeight: 0.15,
+
+  // The number of rows and columns
+  rowCount: 15,
+  colCount: 32,
 });
 
 export const DataviserManager = (function() {

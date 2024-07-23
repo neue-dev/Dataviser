@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-15 14:36:04
+ * @ Modified time: 2024-07-23 23:25:04
  * @ Description:
  * 
  * This represents the header of the application.
@@ -44,7 +44,7 @@ import { DataviserCtx, DataviserManager } from '../Dataviser.ctx';
  * 
  * @component
  */
-export function DHeader() {
+export function DHeader(props={}) {
 
   // Grab the filenames for display, toast for toasting
   // ! change this so it doesn't return root state
@@ -98,7 +98,7 @@ export function DHeader() {
   }
 
   return (
-    <VStack align="left" pb="1.5em">
+    <VStack align="left" pb="1em" height={ props.height }>
       <HStack spacing={ 3 } pt="1.5em" pl="2.4em">
         <DHeaderButton text="add files" action={ addFiles } Icon={ BiFolderPlus } />
         <DHeaderButton text="view files" action={ viewFiles } Icon={ BiFolderOpen } />

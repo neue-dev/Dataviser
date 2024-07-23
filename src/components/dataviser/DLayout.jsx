@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-01 23:06:45
- * @ Modified time: 2024-07-15 13:47:48
+ * @ Modified time: 2024-07-23 23:22:23
  * @ Description:
  * 
  * This inherits from the grid layout functional component we installed.
@@ -9,8 +9,11 @@
 
 import * as React from 'react';
 import { useEffect } from 'react';
+import { useState } from 'react';
+import { useRef } from 'react';
 
-// Toaster
+// Chakra
+import { Tabs, TabList, TabPanel, TabPanels, Container } from '@chakra-ui/react'
 import { useToast } from '@chakra-ui/react'
 
 // React grid layout
@@ -20,6 +23,7 @@ import GridLayout from 'react-grid-layout';
 import { useWindowDimensions } from '../../hooks/useWIndowDimensions'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx';
 import { ClientDF } from '../../client/client.df';
+import { useParentDimensions } from '../../hooks/useParentDimensions';
 
 /**
  * This acts as the grid that holds all our components together.
@@ -33,9 +37,19 @@ export function DLayout(props={}) {
   const _dvisuals = _dataviserState.get('dvisuals');
   const _toast = useToast();
 
+  // Window dimensions
+  const { 
+    width: _windowWidth, 
+    height: _windowHeight 
+  } = useWindowDimensions();
+
+  // The width and height of the layout
+  const _width = _dataviserState.get('width') * _windowWidth;
+  const _height = _dataviserState.get('height') * _windowHeight;
+
   // Dimensions and sizing
-  const { width: _width, height: _height } = useWindowDimensions();   // Window dimensions
-  const _rowCount = 18, _colCount = 32;                               // Row and column counts
+  const _rowCount = _dataviserState.get('rowCount');                  // Row count
+  const _colCount = _dataviserState.get('colCount');                  // Col count
   const _rowHeight = _height / _rowCount;                             // The size of each row
   const _colWidth = _width / _colCount;                               // The size of each column
   
@@ -106,22 +120,24 @@ export function DLayout(props={}) {
 
   // Create the grid layout
   return (
-    <GridLayout className="layout" layout={ _layout } 
-      containerPadding={ [0, 0] } margin={ [0, 0] }
+    <Container padding={ 0 } margin={ 0 }>
+      <GridLayout className="layout" layout={ _layout } 
+        containerPadding={ [0, 0] } margin={ [0, 0] }
 
-      // Dimensions and sizing
-      cols={ _colCount } rowHeight={ _rowHeight } 
-      width={ _width } height={ _height }
-      
-      // Update the location of the item when drag and dropping
-      onDragStop={ onDragStop }>
-      
-      { _layout.map(child => (
-        <div key={ child.i }>
-          { props.children[props.children.indexOf(child.elem)] }
-        </div>))
-      }
-    </GridLayout>
+        // Dimensions and sizing
+        cols={ _colCount } rowHeight={ _rowHeight } 
+        width={ _width } height={ _height }
+        
+        // Update the location of the item when drag and dropping
+        onDragStop={ onDragStop }>
+        
+        { _layout.map(child => (
+          <div key={ child.i }>
+            { props.children[props.children.indexOf(child.elem)] }
+          </div>))
+        }
+      </GridLayout>
+    </Container>
   );
 }
 
