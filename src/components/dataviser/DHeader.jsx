@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-23 23:25:04
+ * @ Modified time: 2024-07-23 23:57:31
  * @ Description:
  * 
  * This represents the header of the application.
@@ -13,6 +13,7 @@ import * as React from 'react'
 // Chakra components
 import { Heading, Text } from '@chakra-ui/react'
 import { Button, Divider, HStack, VStack } from '@chakra-ui/react'
+import { Tab, TabList } from '@chakra-ui/react' 
 import { useToast } from '@chakra-ui/react';
 
 // Icons
@@ -105,6 +106,10 @@ export function DHeader(props={}) {
         <DHeaderButton text="add chart" action={ addChart } Icon={ BiLayerPlus } />
         <DHeaderButton text="exit app" action={ appExit } Icon={ BiWindowClose } />
         <Heading className="title" mt="0.01em" ml="0.5em" opacity="0.6">dataviser</Heading>
+        <TabList>
+          <Tab>overview</Tab>
+          <Tab>regional</Tab>
+        </TabList>
       </HStack>
       <Divider orientation="horizontal"/>
     </VStack>

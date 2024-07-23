@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-23 23:30:36
+ * @ Modified time: 2024-07-23 23:54:37
  * @ Description:
  * 
  * The main component that houses the app.
@@ -11,10 +11,12 @@
 import * as React from 'react';
 import { useState } from 'react'
 
+// Chakra
+import { Tabs } from '@chakra-ui/react'
+
 // Custom components
-import { DLayout } from './dataviser/DLayout.jsx';
+import { DTabs } from './DTabs.jsx';
 import { DHeader } from './dataviser/DHeader.jsx'
-import { DVisual } from './dvisual/DVisual.jsx';
 
 // Import the context of the app
 import { DataviserCtx, DataviserManager } from './Dataviser.ctx.js';
@@ -40,17 +42,13 @@ export function Dataviser() {
   // Header height
   const _headerHeight = _dataviserState.get('headerHeight') * _height;
 
-  // Create an array to store the children of the _dvisuals
-  const _dlayout = _dataviserState.get('dvisuals').map(dvisual => {
-    const id = dvisual.id;
-    return (<DVisual { ...dvisual } i={ id } key={ id }/>)
-  });
-
   // Pass the state to everyone else
   return (
     <_dataviserContext.Provider value={ _dataviserState }>
-      <DHeader height={ _headerHeight } />
-      <DLayout children={ _dlayout } />
+      <Tabs>
+        <DHeader height={ _headerHeight } />
+        <DTabs />
+      </Tabs>
     </_dataviserContext.Provider>
   )
 }
