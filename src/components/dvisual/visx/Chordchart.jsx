@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-15 19:44:34
+ * @ Modified time: 2024-07-24 00:29:37
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -184,6 +184,10 @@ export function Chordchart(props={}) {
       tooltipData: datum
     });
   }
+
+  // Invalid dimensions
+  if(_width <= 0 || _height <= 0)
+    return (<></>)
   
   return (
     <div style={{ position: 'relative'}}>
