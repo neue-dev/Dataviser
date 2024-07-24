@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-23 23:57:31
+ * @ Modified time: 2024-07-24 13:23:44
  * @ Description:
  * 
  * This represents the header of the application.
@@ -12,7 +12,7 @@ import * as React from 'react'
 
 // Chakra components
 import { Heading, Text } from '@chakra-ui/react'
-import { Button, Divider, HStack, VStack } from '@chakra-ui/react'
+import { Button, Divider, HStack, VStack, Spacer } from '@chakra-ui/react'
 import { Tab, TabList } from '@chakra-ui/react' 
 import { useToast } from '@chakra-ui/react';
 
@@ -100,16 +100,20 @@ export function DHeader(props={}) {
 
   return (
     <VStack align="left" pb="1em" height={ props.height }>
-      <HStack spacing={ 3 } pt="1.5em" pl="2.4em">
-        <DHeaderButton text="add files" action={ addFiles } Icon={ BiFolderPlus } />
-        <DHeaderButton text="view files" action={ viewFiles } Icon={ BiFolderOpen } />
-        <DHeaderButton text="add chart" action={ addChart } Icon={ BiLayerPlus } />
-        <DHeaderButton text="exit app" action={ appExit } Icon={ BiWindowClose } />
-        <Heading className="title" mt="0.01em" ml="0.5em" opacity="0.6">dataviser</Heading>
-        <TabList>
-          <Tab>overview</Tab>
-          <Tab>regional</Tab>
-        </TabList>
+      <HStack pt="1.5em" pl="2.4em">
+        <HStack spacing={ 3 }>
+          <_DHeaderButton text="add files" action={ addFiles } Icon={ BiFolderPlus } />
+          <_DHeaderButton text="view files" action={ viewFiles } Icon={ BiFolderOpen } />
+          <_DHeaderButton text="add chart" action={ addChart } Icon={ BiLayerPlus } />
+          <_DHeaderButton text="exit app" action={ appExit } Icon={ BiWindowClose } />
+          <Spacer />
+          <TabList>
+            <Tab>overview</Tab>
+            <Tab>regional</Tab>
+            <Tab>help</Tab>
+          </TabList>
+        </HStack>
+        <Heading w="full" className="title" mt="0.01em" ml="0.5em" opacity="0.1">dataviser</Heading>
       </HStack>
       <Divider orientation="horizontal"/>
     </VStack>
@@ -121,7 +125,7 @@ export function DHeader(props={}) {
  * 
  * @component
  */
-function DHeaderButton(props={}) {
+function _DHeaderButton(props={}) {
   
   // Grab the props
   const text = props.text ?? '';
@@ -130,7 +134,7 @@ function DHeaderButton(props={}) {
 
   // Create the button
   return (
-    <Button w="10em" h="5.4em" fontSize="0.5rem" onClick={ action }>
+    <Button w="8em" h="5.4em" fontSize="0.5rem" onClick={ action }>
       <VStack spacing="0" fontSize="0.6rem" align="left">
         <div style={{ marginBottom: '0.1em', display: 'block' }}> <Icon /> </div>
         <Text fontSize="0.8em"> { text } </Text>

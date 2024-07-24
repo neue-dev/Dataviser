@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-15 18:22:00
+ * @ Modified time: 2024-07-24 00:30:41
  * @ Description:
  * 
  * Creates a bar chart using the visx library.
@@ -128,6 +128,10 @@ export function Barchart(props={}) {
       tooltipData: datum
     });
   };
+
+  // Invalid dimensions
+  if(_width <= 0 || _height <= 0)
+    return (<></>)
   
   return (
     <div style={{ position: 'relative'}}>

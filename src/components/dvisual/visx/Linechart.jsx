@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-15 16:39:15
+ * @ Modified time: 2024-07-24 00:30:47
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -45,6 +45,10 @@ export function Linechart(props={}) {
       return d.y[keys[province]][0];
     }
   }
+
+  // Invalid dimensions
+  if(_width <= 0 || _height <= 0)
+    return (<></>)
   
   return (
     <XYChart 

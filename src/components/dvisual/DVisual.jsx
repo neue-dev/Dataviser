@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-15 19:40:51
+ * @ Modified time: 2024-07-24 13:12:06
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -165,7 +165,13 @@ export function DVisual(props={}) {
   // Return the DVisual component
   return (
     <_dvisualContext.Provider value={ _dvisualState }>
-      <Container className={ _id } maxW="100vw" ref={ _containerRef } boxShadow="lg" style={ _containerStyle }>
+      <Container 
+        ref={ _containerRef } 
+        className={ _id } 
+        boxShadow="lg" 
+        maxW="100vw" 
+        style={ _containerStyle }>
+
         <DVisualHeader/>  
         <_DVisualSkeleton isLoaded={ hasLoaded() }>
           { createChart(_type) }          
