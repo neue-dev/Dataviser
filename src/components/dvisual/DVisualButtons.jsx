@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-15 19:44:37
+ * @ Modified time: 2024-07-24 14:51:32
  * @ Description:
  */
 
@@ -25,6 +25,7 @@ import { DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
+import { ClientDict } from '../../client/client.dict.js'
 
 // User logic
 import { UserLogic } from '../../user/user.logic.js'
@@ -85,7 +86,10 @@ const _DVisualButtonFilters = function() {
    * @return  { boolean }         Whether or not the metadata passed the filter.
    */
   function dateFilter(d, args={}) {
-    return d.x.date >= args.min && d.x.date <= args.max;
+    return {
+      pass: d.x.date >= args.min && d.x.date <= args.max,
+      value: d,
+    };
   }
 
   /**
@@ -96,7 +100,26 @@ const _DVisualButtonFilters = function() {
    * @return  { boolean }         Whether or not the metadata passed the filter.
    */
   function tagFilter(d, args={}) {
-    // return 
+    
+    // Skip the filter if invalid
+    if(!args.tags)
+      return { pass: true, value: d }
+
+    // Create new values for filter
+    const keys = args.tags.map(tag => tag.label);
+    const out = {
+      x: d.x,
+      y: ClientDict.filterKeys(d.y, (key) => keys.includes(key))
+    }
+
+    console.log('NEW')
+    console.log(keys)
+    console.log(out)
+
+    return {
+      pass: true,
+      value: out,
+    };
   }
 
   return (
@@ -113,6 +136,7 @@ const _DVisualButtonFilters = function() {
       <DVisualFilterTags 
         name="filter-province-tags"
         label="Select a province."
+        filterCallback={ tagFilter }
         suggestions={ suggestions } 
       />
     </_DPopover>

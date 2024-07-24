@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-24 13:12:06
+ * @ Modified time: 2024-07-24 14:28:52
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -128,9 +128,20 @@ export function DVisual(props={}) {
 
     // Perform the filter on the bound data
     const data = state.get('data');
-    const result = DVisualManager.filterExecute(_dvisualState, {
+    
+    // Compute the result
+    let result = data;
+
+    // First filter (date filter)
+    result = DVisualManager.filterExecute(_dvisualState, {
       name: 'filter-date-slider',
-      data: data,
+      data: result,
+    }) ?? []
+
+    // Tag filter
+    result = DVisualManager.filterExecute(_dvisualState, {
+      name: 'filter-province-tags',
+      data: result,
     }) ?? []
 
     // Update the chart data

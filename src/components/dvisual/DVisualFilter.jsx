@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-15 19:18:46
+ * @ Modified time: 2024-07-24 14:26:57
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -124,7 +124,9 @@ export function DVisualFilterTags(props={}) {
 
   // Use the context
   const _dvisualState = DVisualCtx.useCtx();
-  const id = useRef(crypto.randomUUID());
+
+  // Grab the name and filter callback function
+  const _name = props.name ?? null;
   
   // The selected tags and the allowed tags
   const [ _selected, _setSelected ] = useState([]);
@@ -137,6 +139,18 @@ export function DVisualFilterTags(props={}) {
   const _noOptions = props.noOptions ?? 'No matches.';
 
   /**
+   * Our callback which we execute when the filter changes.
+   */
+  function onChange(tags) {
+    
+    // Trigger the filter to update
+    DVisualManager.filterTrigger(_dvisualState, {
+      name: _name,
+      args: { tags },
+    })
+  }
+
+  /**
    * Adds a tag to the selected tags.
    * 
    * @param   { object }  newTag  The tag data. 
@@ -146,9 +160,10 @@ export function DVisualFilterTags(props={}) {
     // Create the new selected
     const newSelected = [ ..._selected, newTag ];
 
-    // Update the state and call the callback
+    // Update the state and call the callbacks
     _setSelected(newSelected);
     _addTagCallback(newSelected);
+    onChange(newSelected);
   }
   
   /**
@@ -161,20 +176,23 @@ export function DVisualFilterTags(props={}) {
     // Create the new selected
     const newSelected = _selected.filter((e, i) => i != tagIndex);
 
-    // Update the state and call the callback
+    // Update the state and call the callbacks
     _setSelected(newSelected);
     _removeTagCallback(newSelected);
+    onChange(newSelected);
   }
 
   return (
-    <ReactTags 
-      labelText={ _label }
-      selected={ _selected }
-      suggestions={ _suggestions }
-      onAdd={ onAddTag }
-      onDelete={ onRemoveTag }
-      noOptionsText={ _noOptions }
-    />
+    <_DVisualFilter { ...props }>
+      <ReactTags 
+        labelText={ _label }
+        selected={ _selected }
+        suggestions={ _suggestions }
+        onAdd={ onAddTag }
+        onDelete={ onRemoveTag }
+        noOptionsText={ _noOptions }
+      />
+    </_DVisualFilter>
   )
 }
 

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 03:49:19
- * @ Modified time: 2024-07-15 11:44:34
+ * @ Modified time: 2024-07-24 14:41:36
  * @ Description:
  * 
  * This stores the state of a given chart or visualization.
@@ -126,11 +126,11 @@ export const DVisualManager = (function() {
     // Grab the existing filters
     const filters = state.get('filters');
     const filterCallbacks = state.get('filterCallbacks');
-
+    
     // Name not found
     if(!filters[name])
       return;
-    
+  
     // We execute each of the filter callbacks
     Object.values(filterCallbacks).forEach(filterCallback => {
       filterCallback(state);
@@ -168,14 +168,20 @@ export const DVisualManager = (function() {
     const type = filters[name].type;
     const args = filters[name].args;
     const filterCallback = filters[name].filterCallback;
-    const wrappedFilter = (d) => filterCallback(d, args);
+    const wrappedFilterValue = (d) => filterCallback(d, args).value;
+    const wrappedFilterPass = (d) => filterCallback(d, args).pass;
     
     // For each type, perform a different filter method
     switch(type) {
       case 'keys':
       case 'key':
       case 'k':
-        filters[name].result = ClientDict.filterKeys(data, wrappedFilter);
+        filters[name].result = ClientDict.filterKeys(data, wrappedFilterPass);
+        
+        // We map each of them 
+        Object.keys(filters[name].result).forEach(key => {
+          filters[name].result[key] = wrappedFilterValue(key);
+        });
         break;
 
       case 'values':
@@ -183,14 +189,23 @@ export const DVisualManager = (function() {
       case 'vals':
       case 'val':
       case 'v':
-        filters[name].result = ClientDict.filterValues(data, wrappedFilter);
+        filters[name].result = ClientDict.filterValues(data, wrappedFilterPass);
+
+        // We map each of them 
+        Object.keys(filters[name].result).forEach(key => {
+          const value = filters[name].result[key];
+          filters[name].result[key] = wrappedFilterValue(value);
+        });
         break;
 
       case 'array':
       case 'arr':
       case 'a':
       default:
-        filters[name].result = data.filter(wrappedFilter);
+        filters[name].result = data.filter(wrappedFilterPass);
+
+        // We map each of them 
+        filters[name].result = filters[name].result.map(data => wrappedFilterValue(data));
         break;
     }
 
