@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-24 14:51:32
+ * @ Modified time: 2024-07-24 15:05:24
  * @ Description:
  */
 
@@ -58,9 +58,9 @@ const _DVisualButtonFilters = function() {
   const _metaMax = UserLogic.getMetaMax(_meta) ?? {};
   
   // Compute slider props
-  const _minDate = _metaMin.date ?? 0;
-  const _maxDate = _metaMax.date ?? 1;
-  const _stepDate = (_minDate - _maxDate) / 100;
+  const _minDate = _metaMin.date ?? null;
+  const _maxDate = _metaMax.date ?? null;
+  const _stepDate = (_minDate - _maxDate ?? 0) / 100;
 
   // ! put somwehere else
   let suggestions = [];

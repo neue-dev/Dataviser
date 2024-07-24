@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-10 03:09:15
- * @ Modified time: 2024-07-24 14:26:57
+ * @ Modified time: 2024-07-24 14:58:14
  * @ Description:
  * 
  * This file handles our filters for each visualization.
@@ -71,10 +71,12 @@ export function DVisualFilterSlider(props={}) {
   const _name = props.name ?? null;
 
   // Grab the props
-  const _min = props.min ?? 0;      // The minimum value
-  const _max = props.max ?? 100;    // The maximum value
-  const _step = props.step ?? 1;    // The step size
-  const _default = [ _min, _max ];  // The default range
+  const _min = props.min ?? Number.MIN_SAFE_INTEGER;      // The minimum value
+  const _max = props.max ?? Number.MAX_SAFE_INTEGER;      // The maximum value
+  const _step = props.step ?? 1;                          // The step size
+  const _default = [ _min, _max ];                        // The default range
+
+  console.log(_min, _max)
 
   // The slider state
   const { 

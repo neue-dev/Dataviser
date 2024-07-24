@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-24 00:30:47
+ * @ Modified time: 2024-07-24 15:18:51
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -25,6 +25,7 @@ export function Linechart(props={}) {
   const _lines = props.lines ?? [];   // The name of the different series we're plotting
   const _width = props.width ?? 0;    // The width of the visual
   const _height = props.height ?? 0;  // The height of the visual
+  const _limit = 7;                   // The maximum number of lines we can plot
 
   // ! put somewhere else
   // Sort the data first
@@ -32,6 +33,8 @@ export function Linechart(props={}) {
 
   // ! remove
   const keys = _data[0] ? Object.keys(_data[0].y) : [];
+  
+  console.log(_data, keys)
   
   // The accessors
   // ! Make this come from the parent of Linechart
@@ -57,11 +60,21 @@ export function Linechart(props={}) {
       <AnimatedAxis orientation="bottom" numTicks={ 4 }/>
       <AnimatedAxis orientation="left" numTicks={ 4 } />
       <AnimatedGrid columns={ false } numTicks={ 4 } />
-      <AnimatedLineSeries dataKey={ keys[3] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(3)}/>
-      <AnimatedLineSeries dataKey={ keys[4] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(4)}/>
-      <AnimatedLineSeries dataKey={ keys[5] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(5)}/>
-      {/* <AnimatedLineSeries dataKey={ keys[6] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(6)}/> */}
-      <AnimatedLineSeries dataKey={ keys[7] } data={_data} xAccessor={accessors.xAccessor} yAccessor={createYAccessor(7)}/>
+      {
+        keys.map((key, i) => {
+
+          // Don't go beyond limit
+          if(i > _limit)
+            return (<></>)
+
+          // Return a line for each series we have
+          return (<AnimatedLineSeries 
+            dataKey={ key } 
+            data={ _data } 
+            xAccessor={ accessors.xAccessor } 
+            yAccessor={ createYAccessor(i) }/>)
+        })
+      }      
       <Tooltip
         snapTooltipToDatumX
         snapTooltipToDatumY
