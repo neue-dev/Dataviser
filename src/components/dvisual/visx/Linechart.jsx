@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-25 14:37:32
+ * @ Modified time: 2024-07-25 15:19:02
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -48,16 +48,16 @@ export function Linechart(props={}) {
   };
 
   // ! remove
-  const createYAccessor = (province) => {
+  const createYAccessor = (key) => {
     return (d) => {
-      return d.y[keys[province]][0];
+      return d.y[key][0];
     }
   }
 
   // Invalid dimensions
   if(_width <= 0 || _height <= 0)
     return (<></>)
-  
+
   return (
     <XYChart 
       width={ _width } height={ _height } 
@@ -68,7 +68,6 @@ export function Linechart(props={}) {
       {
         keys.map((key, i) => {
 
-
           // Don't go beyond limit
           if(i > _limit)
             return (<></>)
@@ -78,12 +77,13 @@ export function Linechart(props={}) {
 
           // Return a line for each series we have
           return (<AnimatedLineSeries 
+            key={ key }
             dataKey={ key } 
             data={ _data } 
             color={ color }
             stroke={ color }
             xAccessor={ accessors.xAccessor } 
-            yAccessor={ createYAccessor(i) }/>)
+            yAccessor={ createYAccessor(key) }/>)
         })
       }      
       <Tooltip
@@ -91,16 +91,22 @@ export function Linechart(props={}) {
         snapTooltipToDatumY
         showVerticalCrosshair
         showSeriesGlyphs
-        renderTooltip={({ tooltipData, colorScale }) => (
-          <div>
-            <div style={{ color: DataviserManager.paletteGet(_dataviserState, { key: tooltipData.nearestDatum.key }) }}>
-              {tooltipData.nearestDatum.key}
+        renderTooltip={({ tooltipData, colorScale }) => {
+          const key = tooltipData.nearestDatum.key;
+          const datum = tooltipData.nearestDatum.datum;
+          const color = DataviserManager.paletteGet(_dataviserState, { key });
+
+          return (<div>
+            <div style={{ color }}>
+              {key}
             </div>
-            {accessors.xAccessor(tooltipData.nearestDatum.datum)}
-            {', '}
-            {''}
-          </div>
-        )}
+            {createYAccessor(key)(datum)}
+            <br />
+            <span style={{ fontSize: '0.5em', opacity: 0.5 }}>            
+              {accessors.xAccessor(datum)}
+            </span>
+          </div>)
+        }}
       />
     </XYChart>
   )

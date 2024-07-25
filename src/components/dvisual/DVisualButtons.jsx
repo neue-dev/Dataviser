@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-25 13:48:04
+ * @ Modified time: 2024-07-25 15:11:58
  * @ Description:
  */
 
@@ -113,10 +113,6 @@ const _DVisualButtonFilters = function() {
       x: d.x,
       y: ClientDict.filterKeys(d.y, (key) => keys.includes(key))
     }
-
-    console.log('NEW')
-    console.log(keys)
-    console.log(out)
 
     return {
       pass: true,

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-25 14:41:46
+ * @ Modified time: 2024-07-25 15:18:52
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -23,9 +23,7 @@ export const DataviserCtx = UtilsContext({
   ],
 
   // Associates keys with colors from the palette
-  colorTable: [
-    
-  ],
+  colorTable: {},
 
   // The palette to use for all the visualizations
   // These colors were generated through chroma-js
@@ -144,7 +142,7 @@ export const DataviserManager = (function() {
 
     // Check if key in table, and if not generate new color
     if(!colorTable[key]) {
-      colorTable[key] = palette[Math.floor(Math.random() * 11)];
+      colorTable[key] = palette[Math.floor(Math.random() * palette.length)];
     
       // Update the state
       state._.colorTable = colorTable;
