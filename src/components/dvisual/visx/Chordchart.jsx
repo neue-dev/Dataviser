@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-25 14:27:46
+ * @ Modified time: 2024-07-25 16:44:00
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -13,6 +13,7 @@ import * as React from 'react'
 import { Arc } from '@visx/shape';
 import { Group } from '@visx/group'
 import { Chord, Ribbon } from '@visx/chord'
+import { LinearGradient } from '@visx/gradient';
 import { useTooltip, useTooltipInPortal, TooltipWithBounds } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 
@@ -78,11 +79,11 @@ export function Chordchart(props={}) {
   })
 
   // Sort and filter _sumDf
-  _sumArr = Object.keys(_sums).map(sumKey => {
-    return { x: sumKey, y: _sums[sumKey] }
-  })
+  _sumArr = Object.keys(_sums)
+    .filter(sumKey => sumKey.length)
+    .map(sumKey => ({ x: sumKey, y: _sums[sumKey] }))  
   _sumArr.sort((a, b) => b.y - a.y)
-  _sumArr.splice(5);
+  _sumArr.splice(7);
   _sumArr.forEach(sum => {
     const key = sum.x;
     const col = _sumDf[key];
@@ -201,28 +202,53 @@ export function Chordchart(props={}) {
           <Chord matrix={ _chartData } padAngle={ 0.05 } sortSubgroups={ descending }>
             {({ chords }) => (
               <g>
-                {chords.groups.map((group, i) => (
-                  <Arc
+                {chords.groups.map((group, i) => {
+
+                  // Grab the key and the color
+                  const key = _chordNames[group.index];
+                  const color = DataviserManager.paletteGet(_dataviserState, { key });
+
+                  // Create the arc                  
+                  return (<Arc
                     key={`key-${i}`}
                     data={group}
                     innerRadius={_innerRadius}
                     outerRadius={_outerRadius}
-                    fill={'#808080'}
+                    fill={ color }
                     onMouseOver={ (e) => onMouseOverArc(e, group) }
                     onMouseLeave={ hideTooltip }
                   />
-                ))}
-                {chords.map((chord, i) => (
-                  <Ribbon
-                    key={`ribbon-${i}`}
-                    chord={chord}
-                    radius={_innerRadius}
-                    fill={'#aaaaaa'}
-                    fillOpacity={0.75}
-                    onMouseOver={ (e) => onMouseOverRibbon(e, chord) }
-                    onMouseLeave={ hideTooltip }
-                  />
-                ))}
+                )})}
+                {chords.map((chord, i) => {
+
+                  // Grab the keys and the colors
+                  const sourceKey = _chordNames[chord.source.index];
+                  const targetKey = _chordNames[chord.target.index];
+                  const sourceColor = DataviserManager.paletteGet(_dataviserState, { key: sourceKey });
+                  const targetColor = DataviserManager.paletteGet(_dataviserState, { key: targetKey });
+                  const id = `${chord.source.index}-${chord.target.index}`;
+                
+                  // Transform components
+                  const angle = (chord.target.startAngle + chord.target.endAngle) / 2;
+
+                  return (
+                    <>
+                      <LinearGradient
+                        key={`gradient-${i}`}
+                        width={ _outerRadius * 4 }
+                        height={ _outerRadius * 4 }
+                        rotate={ -angle }
+                        id={ id } from={ targetColor } to={ sourceColor } />
+                      <Ribbon
+                        key={`ribbon-${i}`}
+                        chord={chord}
+                        radius={_innerRadius}
+                        fill={ `url("#${id}")` }
+                        fillOpacity={0.75}
+                        onMouseOver={ (e) => onMouseOverRibbon(e, chord) }
+                        onMouseLeave={ hideTooltip }/>
+                    </>)
+                })}
               </g>
             )}
           </Chord>
@@ -236,23 +262,40 @@ export function Chordchart(props={}) {
           left={tooltipLeft}
         >
           {(function() {
+
+            // Grab the data
+            const source = tooltipData.source;
+            const target = tooltipData.target;
+            const index = tooltipData.index;
+            const value = tooltipData.value;
+            const key = _chordNames[index];
             
             // We're hovering over a group
-            if(!tooltipData.source || !tooltipData.target)
+            if(!source || !target)
               return (
                 <>
-                  <strong>{_chordNames[tooltipData.index]}</strong><br />
-                  {tooltipData.value}
+                  <strong>
+                    { key }
+                  </strong><br />
+                  { value + ' (going out)' }
                 </>
               ) 
+            
+            // Grab source and target details
+            const sourceKey = _chordNames[source.index];
+            const targetKey = _chordNames[target.index];
+            const sourceValue = source.value;
+            const targetValue = target.value;
               
             // We're hovering over a ribbon
             return (
               <>
-                <strong>{_chordNames[tooltipData.source.index]} - {_chordNames[tooltipData.target.index]}</strong><br />
-                {'A => B: ' + tooltipData.source.value}<br />
-                {'B => A: ' + tooltipData.target.value}
-              </>
+                <strong>
+                  { sourceKey } - { targetKey }
+                </strong><br />
+                {`${sourceKey} => ${targetKey} (${sourceValue})`} <br />
+                {`${targetKey} => ${sourceKey} (${targetValue})`}
+                </>
             ) 
           })()}
         </_TooltipInPortal>

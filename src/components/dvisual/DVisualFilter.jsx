@@ -76,8 +76,6 @@ export function DVisualFilterSlider(props={}) {
   const _step = props.step ?? 1;                          // The step size
   const _default = [ _min, _max ];                        // The default range
 
-  console.log(_min, _max)
-
   // The slider state
   const { 
     state: _rangeSliderState,

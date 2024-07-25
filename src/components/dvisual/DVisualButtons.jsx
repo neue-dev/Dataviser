@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-25 15:11:58
+ * @ Modified time: 2024-07-25 16:37:53
  * @ Description:
  */
 
@@ -108,11 +108,19 @@ const _DVisualButtonFilters = function() {
       return { pass: true, value: d }
 
     // Create new values for filter
+    const origKeys = Object.keys(d.y);
     const keys = args.tags.map(tag => tag.label);
     const out = {
       x: d.x,
-      y: ClientDict.filterKeys(d.y, (key) => keys.includes(key))
+      y: ClientDict.filterKeys(d.y, (key) => (keys.includes(key) || !origKeys.includes(key)))
     }
+
+    // For each output y value, we filter the cols too
+    Object.keys(out.y).forEach(col => {
+      out.y[col] = ClientDict.filterKeys(out.y[col], (key) => (keys.includes(key) || !origKeys.includes(key)))
+    })
+
+    console.log(out)
 
     return {
       pass: true,
