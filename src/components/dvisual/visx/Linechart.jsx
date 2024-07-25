@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-25 15:19:02
+ * @ Modified time: 2024-07-25 16:51:23
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -38,8 +38,6 @@ export function Linechart(props={}) {
 
   // ! remove
   const keys = _data[0] ? Object.keys(_data[0].y) : [];
-  
-  console.log(_data, keys)
   
   // The accessors
   // ! Make this come from the parent of Linechart

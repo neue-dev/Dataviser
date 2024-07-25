@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-15 19:37:40
- * @ Modified time: 2024-07-24 13:15:15
+ * @ Modified time: 2024-07-25 16:56:00
  * @ Description:
  * 
  * Our leaflet map for the heat map.
@@ -11,8 +11,12 @@ import * as React from 'react';
 import { useRef } from 'react';
 
 // Leaflet stuff
-import { MapContainer, TileLayer } from 'react-leaflet';
+import L from 'leaflet'
+import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+
+// Import thai geojson
+import { ThaiGeoJson } from '../../../user/thai-geodata'
 
 export function Choropleth(props={}) {
   
@@ -39,6 +43,7 @@ export function Choropleth(props={}) {
     <MapContainer center={[ _latitude, _longitude ]} zoom={ 5 } ref={ _ref } 
       style={ _containerStyle }>
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+      <GeoJSON data={ ThaiGeoJson } />
     </MapContainer>
   );
 }
