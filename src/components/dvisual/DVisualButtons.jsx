@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-24 15:05:24
+ * @ Modified time: 2024-07-25 13:48:04
  * @ Description:
  */
 
@@ -74,7 +74,9 @@ const _DVisualButtonFilters = function() {
     cols.forEach(col => suggestions.indexOf(col) < 0 ? suggestions.push(col) : null);
   })
 
+  // Create and sort the suggestions for the tag filters
   suggestions = suggestions.map(s => ({value: suggestions.indexOf(s), label: s }));
+  suggestions = suggestions.sort((a, b) => a.label.localeCompare(b.label));
 
   /**
    * The date filter we pass to the slider.

@@ -1,13 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-24 00:26:30
+ * @ Modified time: 2024-07-25 14:41:46
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
  * For instance, reference to the currently active charts and visualizations.
  */
 
+// Utils context
 import { UtilsContext } from "./utils/utils.context"
 
 export const DataviserCtx = UtilsContext({
@@ -20,6 +21,15 @@ export const DataviserCtx = UtilsContext({
     { id: '_' + crypto.randomUUID(), class: 'overview', type: 'bar', title: 'Bar Graph', subtitle: '', x: 16, y: 8, w: 16, h: 6, orient: '', exclude: [ 'sum' ], },
     { id: '_' + crypto.randomUUID(), class: 'regional', type: 'bar', title: 'A graph', subtitle: '', x: 0, y: 0, w: 32, h: 15, orient: '', exclude: [ 'sum' ], },
   ],
+
+  // Associates keys with colors from the palette
+  colorTable: [
+    
+  ],
+
+  // The palette to use for all the visualizations
+  // These colors were generated through chroma-js
+  palette: [ '#22333B', '#EDCB96', '#F08080', '#721817', '#0B6E4F' ],
 
   // Width and height
   width: 1.0,
@@ -114,6 +124,34 @@ export const DataviserManager = (function() {
 
     // Update the state
     state.set({ dvisuals })
+  }
+
+  /**
+   * Retrieves a color from the palette with the given key.
+   * If the key is not in the color table, an association is generated for that key.
+   * 
+   * @param   { State }   state     The dataviser state.
+   * @param   { object }  options   The options for the updated dvisual.
+   */
+  _.paletteGet = function(state, options) {
+
+    // Grab the key we want
+    const key = options.key ?? '';
+    
+    // Grab the state components we need
+    const palette = state.get('palette');
+    const colorTable = state.get('colorTable');
+
+    // Check if key in table, and if not generate new color
+    if(!colorTable[key]) {
+      colorTable[key] = palette[Math.floor(Math.random() * 11)];
+    
+      // Update the state
+      state._.colorTable = colorTable;
+    }
+
+    // Return the color
+    return colorTable[key];
   }
 
   return {

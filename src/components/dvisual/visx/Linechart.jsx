@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-24 15:18:51
+ * @ Modified time: 2024-07-25 14:37:32
  * @ Description:
  * 
  * Creates a line chart using the visx library.
@@ -11,7 +11,9 @@ import * as React from 'react'
 
 // Visx
 import { AnimatedAxis, AnimatedGrid, AnimatedLineSeries, Tooltip, XYChart } from '@visx/xychart'
-import * as Scale from '@visx/scale'
+
+// Dataviser state
+import { DataviserCtx, DataviserManager } from '../../Dataviser.ctx';
 
 /**
  * The linechart component.
@@ -19,6 +21,9 @@ import * as Scale from '@visx/scale'
  * @component
  */
 export function Linechart(props={}) {
+
+  // Get the dataviser state
+  const _dataviserState = DataviserCtx.useCtx();
 
   // Grab the props
   const _data = props.data;           // Contains all the data of all the series
@@ -63,14 +68,20 @@ export function Linechart(props={}) {
       {
         keys.map((key, i) => {
 
+
           // Don't go beyond limit
           if(i > _limit)
             return (<></>)
+          
+          // Grab the color for this locale
+          let color = DataviserManager.paletteGet(_dataviserState, { key })
 
           // Return a line for each series we have
           return (<AnimatedLineSeries 
             dataKey={ key } 
             data={ _data } 
+            color={ color }
+            stroke={ color }
             xAccessor={ accessors.xAccessor } 
             yAccessor={ createYAccessor(i) }/>)
         })
@@ -82,7 +93,7 @@ export function Linechart(props={}) {
         showSeriesGlyphs
         renderTooltip={({ tooltipData, colorScale }) => (
           <div>
-            <div style={{ color: colorScale(tooltipData.nearestDatum.key) }}>
+            <div style={{ color: DataviserManager.paletteGet(_dataviserState, { key: tooltipData.nearestDatum.key }) }}>
               {tooltipData.nearestDatum.key}
             </div>
             {accessors.xAccessor(tooltipData.nearestDatum.datum)}

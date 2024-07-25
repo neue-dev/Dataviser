@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-03 03:49:19
- * @ Modified time: 2024-07-24 14:41:36
+ * @ Modified time: 2024-07-25 14:13:16
  * @ Description:
  * 
  * This stores the state of a given chart or visualization.

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-24 00:29:37
+ * @ Modified time: 2024-07-25 14:27:46
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -15,7 +15,9 @@ import { Group } from '@visx/group'
 import { Chord, Ribbon } from '@visx/chord'
 import { useTooltip, useTooltipInPortal, TooltipWithBounds } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import * as Scale from '@visx/scale'
+
+// Dataviser state
+import { DataviserCtx, DataviserManager } from '../../Dataviser.ctx';
 
 /**
  * The linechart component.
@@ -24,7 +26,10 @@ import * as Scale from '@visx/scale'
  */
 export function Chordchart(props={}) {
 
-  // Grab the props
+  // Get the state
+  const _dataviserState = DataviserCtx.useCtx();
+
+  // Grab the prop
   const _data = props.data;             // Contains all the data of all the series
   const _width = props.width ?? 0;      // The width of the visual
   const _height = props.height ?? 0;    // The height of the visual
