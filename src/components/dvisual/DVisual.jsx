@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-25 15:13:54
+ * @ Modified time: 2024-07-25 17:53:33
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -32,6 +32,7 @@ import { Choropleth } from './visx/Choropleth.jsx'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
+import { DForm } from './DForm.jsx'
 
 /**
  * The DVisual component houses a D3-backed component.
@@ -156,6 +157,8 @@ export function DVisual(props={}) {
    */
   function createChart(type) {
     switch(_type) {
+      case 'form':
+        return (<DForm { ...props } />)
       case 'line':
       case 'linechart':
         return (<Linechart data={ _chartData } width={ _chartWidth } height={ _chartHeight } />)
@@ -182,8 +185,7 @@ export function DVisual(props={}) {
         boxShadow="lg" 
         maxW="100vw" 
         style={ _containerStyle }>
-
-        <DVisualHeader/>  
+        {(_type == 'form' ? (<></>) : (<DVisualHeader/>))}
         <_DVisualSkeleton isLoaded={ hasLoaded() }>
           { createChart(_type) }          
         </_DVisualSkeleton>        

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-24 13:23:44
+ * @ Modified time: 2024-07-25 18:08:42
  * @ Description:
  * 
  * This represents the header of the application.
@@ -88,6 +88,7 @@ export function DHeader(props={}) {
   function addChart() {
     DataviserManager.dvisualCreate(_dataviserState, { 
       title: 'new graph',
+      class: 'overview',
     });
   }
 
@@ -104,7 +105,7 @@ export function DHeader(props={}) {
         <HStack spacing={ 3 }>
           <_DHeaderButton text="add files" action={ addFiles } Icon={ BiFolderPlus } />
           <_DHeaderButton text="view files" action={ viewFiles } Icon={ BiFolderOpen } />
-          <_DHeaderButton text="add chart" action={ addChart } Icon={ BiLayerPlus } />
+          {/* <_DHeaderButton text="add chart" action={ addChart } Icon={ BiLayerPlus } /> */}
           <_DHeaderButton text="exit app" action={ appExit } Icon={ BiWindowClose } />
           <Spacer />
           <TabList>

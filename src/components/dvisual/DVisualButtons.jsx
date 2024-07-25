@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-25 16:37:53
+ * @ Modified time: 2024-07-25 18:09:36
  * @ Description:
  */
 
@@ -40,7 +40,7 @@ export const DVisualButtons = function(props={}) {
     <HStack>
       <_DVisualButtonFilters />
       <_DVisualButtonExpand />
-      <_DVisualButtonRemove />
+      {/* <_DVisualButtonRemove /> */}
     </HStack>
   )
 }
