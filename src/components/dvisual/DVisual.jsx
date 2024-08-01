@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-25 18:38:07
+ * @ Modified time: 2024-08-01 23:29:34
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -29,6 +29,7 @@ import { Linechart } from './visx/Linechart.jsx'
 import { Barchart } from './visx/Barchart.jsx'
 import { Chordchart } from './visx/Chordchart.jsx'
 import { Choropleth } from './visx/Choropleth.jsx'
+import { Sankey } from './visx/Sankey.jsx'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
@@ -174,6 +175,9 @@ export function DVisual(props={}) {
       case 'choro':
       case 'choropleth':
         return (<Choropleth data={ _chartData } width={ _chartWidth } height={ _chartHeight } />);
+      case 'sankey':
+      case 'sankeyplot':
+        return (<Sankey data={ _chartData } width = { _chartWidth } height={ _chartHeight } />);
     }
   }
 

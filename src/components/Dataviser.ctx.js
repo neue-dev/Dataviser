@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-25 18:33:00
+ * @ Modified time: 2024-08-01 23:28:14
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -20,7 +20,7 @@ export const DataviserCtx = UtilsContext({
     { id: '_' + crypto.randomUUID(), class: 'overview', type: 'choropleth', title: 'Heat Map of Immigration per Province', subtitle: '', x: 16, y: 0, w: 16, h: 9, orient: 'cols' },
     { id: '_' + crypto.randomUUID(), class: 'overview', type: 'bar', title: 'Total Migration per Province', subtitle: '', x: 16, y: 8, w: 16, h: 6, orient: '', exclude: [ 'sum' ], },
     { id: '_' + crypto.randomUUID(), class: 'regional', type: 'form', title: 'Select a Province', subtitle: '', x: 0, y: 0, w: 6, h: 15, orient: '', exclude: [ 'sum' ], },
-    { id: '_' + crypto.randomUUID(), class: 'regional', type: 'line', title: 'Province Sankey Plot', subtitle: '', x: 6, y: 0, w: 26, h: 15, orient: '', exclude: [ 'sum' ], },
+    { id: '_' + crypto.randomUUID(), class: 'regional', type: 'sankey', title: 'Province Sankey Plot', subtitle: '', x: 6, y: 0, w: 26, h: 15, orient: '', exclude: [ 'sum' ], },
   ],
 
   // Associates keys with colors from the palette
