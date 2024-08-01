@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-25 17:44:22
- * @ Modified time: 2024-07-25 17:59:47
+ * @ Modified time: 2024-07-25 18:13:29
  * @ Description:
  * 
  * Represents how we get user input through dvisuals.
@@ -11,7 +11,7 @@ import * as React from 'react'
 
 // Chakra
 import { Heading, Text } from '@chakra-ui/react'
-import { Divider, Flex, VStack } from '@chakra-ui/react'
+import { Divider, Flex, Select, VStack } from '@chakra-ui/react'
 
 /**
  * A form component.
@@ -23,9 +23,17 @@ export function DForm(props={}) {
   // The form title and subtitle
   const _title = props.title ?? 'Form';
   const _subtitle = props.title ?? 'Fill in the necessary information.'
+  const _suggestions = props.suggestions ?? [];
 
   return (<>
     <_DFormHeader title={ _title } subtitle={ _subtitle } />
+    <Select placeholder='none selected' size="sm">
+      { _suggestions.map(suggestion => {
+
+        // Create the option
+        return (<option value={ suggestion }>{ suggestion }</option>)
+      })}
+    </Select>
   </>)
 }
 

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-07-25 17:53:33
+ * @ Modified time: 2024-07-25 18:38:07
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -66,6 +66,7 @@ export function DVisual(props={}) {
   const _type = props.type ?? 'linechart';
   const _title = props.title ?? 'Graph';
   const _subtitle = props.subtitle ?? 'No description.';
+  const _deepFilter = props.deepFilter ?? false;
 
   // Container properties
   const _containerWidth = _width - _mx * 2;
@@ -101,6 +102,7 @@ export function DVisual(props={}) {
       data: _data,
       title: _title,
       subtitle: _subtitle,
+      deepFilter: _deepFilter,
       
       // Dimensions and sizing
       containerWidth: _containerWidth, containerHeight: _containerHeight,

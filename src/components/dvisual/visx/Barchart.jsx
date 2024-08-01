@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-24 00:30:41
+ * @ Modified time: 2024-07-25 18:31:20
  * @ Description:
  * 
  * Creates a bar chart using the visx library.

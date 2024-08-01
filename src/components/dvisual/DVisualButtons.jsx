@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 06:06:48
- * @ Modified time: 2024-07-25 18:09:36
+ * @ Modified time: 2024-07-25 18:43:40
  * @ Description:
  */
 
@@ -19,7 +19,7 @@ import { BiExpand } from "react-icons/bi";
 import { BiSolidXCircle } from 'react-icons/bi'
 
 // Custom components and contexts
-import { DVisualCtx } from './DVisual.ctx'
+import { DVisualCtx, DVisualManager } from './DVisual.ctx'
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx'
 import { DVisualFilterSlider, DVisualFilterTags } from './DVisualFilter.jsx'
 
@@ -51,6 +51,10 @@ export const DVisualButtons = function(props={}) {
  * @component
  */
 const _DVisualButtonFilters = function() {
+
+  // Get the state
+  const _dvisualState = DVisualCtx.useCtx();
+  const _deepFilter = _dvisualState.get('deepFilter');
 
   // The ranges we'll use to filter the data
   const _meta = ClientDF.dfMetaGet();
@@ -119,8 +123,6 @@ const _DVisualButtonFilters = function() {
     Object.keys(out.y).forEach(col => {
       out.y[col] = ClientDict.filterKeys(out.y[col], (key) => (keys.includes(key) || !origKeys.includes(key)))
     })
-
-    console.log(out)
 
     return {
       pass: true,

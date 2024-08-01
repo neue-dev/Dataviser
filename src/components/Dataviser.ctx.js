@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-07-25 18:05:16
+ * @ Modified time: 2024-07-25 18:33:00
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -16,7 +16,7 @@ export const DataviserCtx = UtilsContext({
   // Stores all our current charts and what not
   dvisuals: [
     { id: '_' + crypto.randomUUID(), class: 'overview', type: 'line', title: 'Migration Over Time per Province', subtitle: 'Immigration over time.', x: 0, y: 0, w: 16, h: 6, orient: 'cols', exclude: [ 'sum' ] },
-    { id: '_' + crypto.randomUUID(), class: 'overview', type: 'chord', title: 'Migration Across Provinces', subtitle: '', x: 0, y: 8, w: 16, h: 9, orient: '', exclude: [ 'sum' ] },
+    { id: '_' + crypto.randomUUID(), class: 'overview', type: 'chord', title: 'Migration Across Provinces', subtitle: 'Note that the totals shown here are only across the selected provinces.', x: 0, y: 8, w: 16, h: 9, orient: '', exclude: [ 'sum' ], deepFilter: true, },
     { id: '_' + crypto.randomUUID(), class: 'overview', type: 'choropleth', title: 'Heat Map of Immigration per Province', subtitle: '', x: 16, y: 0, w: 16, h: 9, orient: 'cols' },
     { id: '_' + crypto.randomUUID(), class: 'overview', type: 'bar', title: 'Total Migration per Province', subtitle: '', x: 16, y: 8, w: 16, h: 6, orient: '', exclude: [ 'sum' ], },
     { id: '_' + crypto.randomUUID(), class: 'regional', type: 'form', title: 'Select a Province', subtitle: '', x: 0, y: 0, w: 6, h: 15, orient: '', exclude: [ 'sum' ], },
