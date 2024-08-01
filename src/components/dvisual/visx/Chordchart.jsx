@@ -1,13 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-07-25 16:44:00
+ * @ Modified time: 2024-08-02 01:31:02
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
  */
 
 import * as React from 'react'
+import { useState } from 'react';
 
 // Visx
 import { Arc } from '@visx/shape';
@@ -48,6 +49,8 @@ export function Chordchart(props={}) {
   const _sums = {};
   let _sumArr = [];
   let _chordNames = [];
+
+  const _defaultColor = '#808080';
 
   // Create the sum df
   _data.forEach(data => {
@@ -159,6 +162,9 @@ export function Chordchart(props={}) {
     return b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
   }
 
+  // The unfocus events
+  const [ _unfocus, _setUnfocus ] = useState([]);
+
   /**
    * Tooltip for the arcs.
    * 
@@ -167,6 +173,32 @@ export function Chordchart(props={}) {
    */
   function onMouseOverArc(event, datum) {
     const coords = localPoint(event.target.ownerSVGElement, event);
+
+    // Grab the chord info
+    const chord = _chordNames[datum.index];
+    const chords = document.getElementsByClassName(chord);
+
+    // Grab the array
+    const unfocus = _unfocus.filter(() => true);
+
+    // Cancel all pending timeouts
+    while(unfocus.length)
+      unfocus.pop()()
+
+    // Create new timeouts
+    let element = event.target;
+    element.setAttribute('filter', 'url(#focus)');
+    unfocus.push(() => element.setAttribute('filter', 'url(#unfocus)'));
+
+    // Do it for the chords too
+    for(let i = 0; i < chords.length; i++) {
+      let element = chords[i]; 
+      element.setAttribute('filter', 'url(#focus)'),
+      unfocus.push(() => element.setAttribute('filter', 'url(#unfocus)'));
+    }
+
+    // Update the state
+    _setUnfocus(unfocus);
 
     showTooltip({
       tooltipLeft: coords.x,
@@ -184,6 +216,21 @@ export function Chordchart(props={}) {
   function onMouseOverRibbon(event, datum) {
     const coords = localPoint(event.target.ownerSVGElement, event);
 
+    // Grab the array
+    const unfocus = _unfocus.filter(() => true);
+
+    // Cancel all pending timeouts
+    while(unfocus.length)
+      unfocus.pop()()
+
+    // Cancel the timeout each time
+    let element = event.target;
+    element.setAttribute('filter', 'url(#focus)');
+    unfocus.push(() => element.setAttribute('filter', 'url(#unfocus)'));
+
+    // Update the state
+    _setUnfocus(unfocus);
+
     showTooltip({
       tooltipLeft: coords.x,
       tooltipTop: coords.y,
@@ -191,6 +238,25 @@ export function Chordchart(props={}) {
     });
   }
 
+  /**
+   * Automatic cleanup on mouseout.
+   * 
+   * @param {*} event 
+   * @param {*} datum 
+   */  
+  function onMouseOut(event, datum) {
+    
+    // Hide the tooltip
+    hideTooltip();
+
+    // Clear the colors
+    while(_unfocus.length)
+      _unfocus.pop()()
+
+    // Clear the array
+    _setUnfocus([]);
+  }
+  
   // Invalid dimensions
   if(_width <= 0 || _height <= 0)
     return (<></>)
@@ -198,6 +264,17 @@ export function Chordchart(props={}) {
   return (
     <div style={{ position: 'relative'}}>
       <svg ref={ _containerRef } width={ _width } height={ _height }>
+        <filter id="unfocus">
+          <feColorMatrix type="saturate" in="SourceGraphic" values="0" />
+          <feComponentTransfer>
+            <feFuncR type="linear" slope="1" />
+            <feFuncG type="linear" slope="1" />
+            <feFuncB type="linear" slope="1" />
+          </feComponentTransfer>
+        </filter>
+        <filter id="focus">
+          <feColorMatrix type="saturate" in="SourceGraphic" values="1.0" />
+        </filter>
         <Group top={ _height / 2 } left={ _width / 2 }>
           <Chord matrix={ _chartData } padAngle={ 0.05 } sortSubgroups={ descending }>
             {({ chords }) => (
@@ -210,13 +287,14 @@ export function Chordchart(props={}) {
 
                   // Create the arc                  
                   return (<Arc
-                    key={`key-${i}`}
-                    data={group}
-                    innerRadius={_innerRadius}
-                    outerRadius={_outerRadius}
+                    key={ `key-${key}` }
+                    data={ group }
+                    innerRadius={ _innerRadius }
+                    outerRadius={ _outerRadius }
                     fill={ color }
-                    onMouseOver={ (e) => onMouseOverArc(e, group) }
-                    onMouseLeave={ hideTooltip }
+                    filter={ 'url(#unfocus)' }
+                    onMouseOver={ (e) => onMouseOverArc(e, group ) }
+                    onMouseLeave={ (e) => onMouseOut(e) }
                   />
                 )})}
                 {chords.map((chord, i) => {
@@ -234,19 +312,21 @@ export function Chordchart(props={}) {
                   return (
                     <>
                       <LinearGradient
-                        key={`gradient-${i}`}
+                        key={ `gradient-${sourceKey}-${targetKey}` }
                         width={ _outerRadius * 4 }
                         height={ _outerRadius * 4 }
                         rotate={ -angle }
-                        id={ id } from={ targetColor } to={ sourceColor } />
+                        id={ id } from={ sourceColor } to={ targetColor } />
                       <Ribbon
-                        key={`ribbon-${i}`}
-                        chord={chord}
-                        radius={_innerRadius}
+                        className={ `${sourceKey} ${targetKey}` }
+                        key={ `ribbon-${sourceKey}-${targetKey}` }
+                        chord={ chord }
+                        radius={ _innerRadius }
                         fill={ `url("#${id}")` }
                         fillOpacity={0.75}
+                        filter={ 'url(#unfocus)' }
                         onMouseOver={ (e) => onMouseOverRibbon(e, chord) }
-                        onMouseLeave={ hideTooltip }/>
+                        onMouseLeave={ (e) => onMouseOut(e) }/>
                     </>)
                 })}
               </g>
