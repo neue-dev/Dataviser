@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-08-01 22:58:44
- * @ Modified time: 2024-08-02 15:05:03
+ * @ Modified time: 2024-08-02 17:09:22
  * @ Description:
  * 
  * A sankey drawing component.
@@ -94,9 +94,6 @@ export function Sankey(props={}) {
       value: _sumDf[key][_subject],
     })
   })
-
-  console.log(_nodes);
-  console.log(_links)
 
   // Empty data
   if(_nodes.length <= 0 || _links.length <= 0)

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-08-01 23:29:34
+ * @ Modified time: 2024-08-02 18:36:44
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -55,8 +55,9 @@ export function DVisual(props={}) {
   const _meta = useSelector(ClientDF.dfMetaSelector());
   const _data = useSelector(ClientDF.dfDataSelector(_id));
   const _timestamp = useSelector(ClientDF.dfTimestampSelector('_'));
-
+  
   // The dimensions of the visual and margins + paddings
+  const [ _lastUpdate, _setLastUpdate ] = useState(_timestamp);
   const [ _chartData, _setChartData ] = useState(_data);
   const [ _width, _setWidth ] = useState(0);
   const [ _height, _setHeight ] = useState(0);
@@ -119,9 +120,16 @@ export function DVisual(props={}) {
     })
     
   }, [ _meta, _data, _width, _height ]);
-
+  
   // Our condition for checking if the visual has loaded
   const hasLoaded = () => !(!_data.length && _timestamp);
+  
+  // If the last data is different
+  // This finally worked!
+  if(_lastUpdate != _timestamp && hasLoaded()) {
+    _setLastUpdate(_timestamp);
+    _setChartData(_data);
+  }
 
   /**
    * Updates the chart data based on the filter results.
@@ -140,13 +148,13 @@ export function DVisual(props={}) {
     result = DVisualManager.filterExecute(_dvisualState, {
       name: 'filter-date-slider',
       data: result,
-    }) ?? []
+    }) ?? _data;
 
     // Tag filter
     result = DVisualManager.filterExecute(_dvisualState, {
       name: 'filter-province-tags',
       data: result,
-    }) ?? []
+    }) ?? _data;
 
     // Update the chart data
     _setChartData(result);
@@ -161,7 +169,7 @@ export function DVisual(props={}) {
   function createChart(type) {
     switch(_type) {
       case 'form':
-        return (<DForm { ...props } />)
+        return (<DForm data={ _chartData } width={ _chartWidth } height={ _chartHeight } />)
       case 'line':
       case 'linechart':
         return (<Linechart data={ _chartData } width={ _chartWidth } height={ _chartHeight } />)
