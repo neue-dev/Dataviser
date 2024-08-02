@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-08-01 22:58:44
- * @ Modified time: 2024-08-02 17:09:22
+ * @ Modified time: 2024-08-02 19:22:59
  * @ Description:
  * 
  * A sankey drawing component.
@@ -9,6 +9,10 @@
 
 import * as React from 'react'
 import * as d3 from 'd3-sankey'
+
+// Visx
+import { useTooltip, useTooltipInPortal, TooltipWithBounds } from '@visx/tooltip';
+import { localPoint } from '@visx/event';
 
 // The dataviser state
 import { DataviserCtx, DataviserManager } from '../../Dataviser.ctx';
@@ -27,6 +31,22 @@ export function Sankey(props={}) {
   const _data = props.data ?? {};
   // ! remove default value "Chanthaburi"
   const _subject = _dataviserState.get('subject') || "Chanthaburi";
+
+  // The tooltip stuff
+  const {
+    tooltipData,
+    tooltipLeft,
+    tooltipTop,
+    tooltipOpen,
+    showTooltip,
+    hideTooltip,
+  } = useTooltip();
+
+  // Tooltip portal
+  const { containerRef: _containerRef, TooltipInPortal: _TooltipInPortal } = useTooltipInPortal({
+    detectBounds: true,
+    scroll: true,
+  })
 
   // The sumdf
   const _sumDf = {}
@@ -118,10 +138,20 @@ export function Sankey(props={}) {
 
   const { nodes, links } = _sankeyGenerator(data);
 
+  function onMouseOverNode(event, datum) {
+    const coords = localPoint(event.target.ownerSVGElement, event);
+
+    showTooltip({
+      tooltipLeft: coords.x,
+      tooltipTop: coords.y,
+      tooltipData: datum
+    });
+  }
+
   // Draw the nodes
   const allNodes = nodes.map((node) => {
     return (
-      <g key={node.index}>
+      <g key={node.index} onMouseOver={ (e) => onMouseOverNode(e, node) }>
         <rect
           height={node.y1 - node.y0}
           width={_sankeyGenerator.nodeWidth()}
@@ -153,10 +183,39 @@ export function Sankey(props={}) {
   });
 
   return (
-    <svg width={ _width } height={ _height } >
-      {allNodes}
-      {allLinks}
-    </svg>
+    <>
+      <svg ref={ _containerRef } width={ _width } height={ _height } >
+        {allNodes}
+        {allLinks}
+      </svg>
+      {tooltipOpen && (
+        <_TooltipInPortal
+          // set this to random so it correctly updates with parent bounds
+          key={Math.random()}
+          top={tooltipTop}
+          left={tooltipLeft}
+        >
+          {(function() {
+
+            console.log(tooltipData)
+
+            // We're hovering over a ribbon
+            return (
+              <>
+                {/* // ! change this so it doesnt use a specific delimiting character  */}
+                <strong>{ tooltipData.name.split('-')[0] }</strong><br />
+                { tooltipData.sourceLinks.length 
+                    ? tooltipData.sourceLinks.reduce((acc, curr) => acc + curr.value, 0) + ' emmigrated' 
+                    : '' }<br />
+                { tooltipData.targetLinks.length
+                    ? tooltipData.targetLinks.reduce((acc, curr) => acc + curr.value, 0) + ' immigrated' 
+                    : '' }<br />
+              </>
+            ) 
+          })()}
+        </_TooltipInPortal>
+      )}
+    </>
   )
 }
 

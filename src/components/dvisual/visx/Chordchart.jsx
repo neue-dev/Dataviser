@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-08-02 18:47:19
+ * @ Modified time: 2024-08-02 18:57:50
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -51,7 +51,7 @@ export function Chordchart(props={}) {
     matrix: _chartData,
   } = VisualFormatter.dfToMatrix(_data, {
     mapper: d => d.y,
-    limit: 7,
+    limit: 5,
   });
 
   // Tooltip state
@@ -68,22 +68,6 @@ export function Chordchart(props={}) {
     detectBounds: true,
     scroll: true,
   })
-
-  /**
-   * For the tooltip.
-   * 
-   * @param   { Event }   event 
-   * @param   { object }  datum 
-   */
-  const onMouseOver = (event, datum) => {
-    const coords = localPoint(event.target.ownerSVGElement, event);
-
-    showTooltip({
-      tooltipLeft: coords.x,
-      tooltipTop: coords.y,
-      tooltipData: datum
-    });
-  };
 
   /**
    * Helps us sort the data

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-25 17:44:22
- * @ Modified time: 2024-08-02 18:21:14
+ * @ Modified time: 2024-08-02 19:24:57
  * @ Description:
  * 
  * Represents how we get user input through dvisuals.
@@ -25,6 +25,13 @@ export function DForm(props={}) {
   const _subtitle = props.title ?? 'Fill in the necessary information.'
   const _data = props.data ?? [];
   const _suggestions = _data[0] ? Object.keys(_data[0].y) : [];
+
+  /**
+   * Run the callback after selecting an option.
+   */
+  function onSelect(e) {
+    
+  }
   
   return (<>
     <_DFormHeader title={ _title } subtitle={ _subtitle } />
