@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 20:58:02
- * @ Modified time: 2024-08-02 00:25:34
+ * @ Modified time: 2024-08-02 10:00:51
  * @ Description:
  * 
  * This holds some information about the app which we don't keep in the store.
@@ -38,6 +38,9 @@ export const DataviserCtx = UtilsContext({
   // The number of rows and columns
   rowCount: 15,
   colCount: 32,
+
+  // The subject we're focusing on in the next page
+  subject: null,
 });
 
 export const DataviserManager = (function() {
