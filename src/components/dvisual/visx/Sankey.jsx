@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-08-01 22:58:44
- * @ Modified time: 2024-08-02 19:22:59
+ * @ Modified time: 2024-08-02 19:38:46
  * @ Description:
  * 
  * A sankey drawing component.
@@ -30,7 +30,10 @@ export function Sankey(props={}) {
   const _height = props.height ?? 0;
   const _data = props.data ?? {};
   // ! remove default value "Chanthaburi"
-  const _subject = _dataviserState.get('subject') || "Chanthaburi";
+  const _subject = _dataviserState.get('subject') || "Bangkok";
+
+  // Get the subject
+  console.log(_dataviserState.get('subject'));
 
   // The tooltip stuff
   const {
@@ -127,8 +130,8 @@ export function Sankey(props={}) {
   const MARGIN_X = 10;
   const MARGIN_Y = 10;
   const _sankeyGenerator = _sankey()
-    .nodeWidth(64)                  // width of the node in pixels
-    .nodePadding(8)                // space between nodes
+    .nodeWidth(100)                 // width of the node in pixels
+    .nodePadding(2)                 // space between nodes
     .extent([                       // chart area:
       [MARGIN_X, MARGIN_Y],                   // top-left coordinates
       [_width - MARGIN_X, _height - MARGIN_Y],  // botton-right coordinates

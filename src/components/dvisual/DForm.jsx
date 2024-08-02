@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-25 17:44:22
- * @ Modified time: 2024-08-02 19:24:57
+ * @ Modified time: 2024-08-02 19:32:11
  * @ Description:
  * 
  * Represents how we get user input through dvisuals.
@@ -13,12 +13,18 @@ import * as React from 'react'
 import { Heading, Text } from '@chakra-ui/react'
 import { Divider, Flex, Select, VStack } from '@chakra-ui/react'
 
+// State managers
+import { DataviserCtx, DataviserManager } from '../Dataviser.ctx';
+
 /**
  * A form component.
  * 
  * @component
  */
 export function DForm(props={}) {
+
+  // Get the state
+  const _dataviserState = DataviserCtx.useCtx();
 
   // The form title and subtitle
   const _title = props.title ?? 'Form';
@@ -30,12 +36,12 @@ export function DForm(props={}) {
    * Run the callback after selecting an option.
    */
   function onSelect(e) {
-    
+    _dataviserState.set({ subject: e.target.value });
   }
   
   return (<>
     <_DFormHeader title={ _title } subtitle={ _subtitle } />
-    <Select placeholder='none selected' size="sm" onChange={ e => console.log(e) }>
+    <Select placeholder='none selected' size="sm" onChange={ e => onSelect(e) }>
       { _suggestions.map(suggestion => {
 
         // Create the option
