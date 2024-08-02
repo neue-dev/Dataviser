@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-08-01 22:58:44
- * @ Modified time: 2024-08-02 10:40:33
+ * @ Modified time: 2024-08-02 15:05:03
  * @ Description:
  * 
  * A sankey drawing component.
@@ -121,9 +121,7 @@ export function Sankey(props={}) {
 
   const { nodes, links } = _sankeyGenerator(data);
 
-  //
   // Draw the nodes
-  //
   const allNodes = nodes.map((node) => {
     return (
       <g key={node.index}>
@@ -140,9 +138,7 @@ export function Sankey(props={}) {
     );
   });
 
-  //
   // Draw the links
-  //
   const allLinks = links.map((link, i) => {
     const linkGenerator = d3.sankeyLinkHorizontal();
     const path = linkGenerator(link);

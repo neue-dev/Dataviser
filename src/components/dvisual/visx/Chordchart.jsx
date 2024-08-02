@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-08-02 01:31:02
+ * @ Modified time: 2024-08-02 16:48:12
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -17,6 +17,9 @@ import { Chord, Ribbon } from '@visx/chord'
 import { LinearGradient } from '@visx/gradient';
 import { useTooltip, useTooltipInPortal, TooltipWithBounds } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
+
+// Visual utils
+import { VisualFormatter } from '../../visual/visual.formatter'
 
 // Dataviser state
 import { DataviserCtx, DataviserManager } from '../../Dataviser.ctx';
@@ -43,82 +46,13 @@ export function Chordchart(props={}) {
   const _innerRadius = _outerRadius - _centerSize;
   
   // Create the actual data we want
-  const _chartData = []
-  const _sumDf = {};
-  const _filteredSumDf = {};
-  const _sums = {};
-  let _sumArr = [];
-  let _chordNames = [];
-
-  const _defaultColor = '#808080';
-
-  // Create the sum df
-  _data.forEach(data => {
-    const df = data.y
-    
-    Object.keys(df).forEach(col => {
-      Object.keys(df[col]).forEach(row => {
-        if(!_sumDf[col]) _sumDf[col] = {};
-        if(!_sumDf[col][row]) _sumDf[col][row] = 0;
-        
-        // Sum them all
-        _sumDf[col][row] += df[col][row];
-      })
-    })
-  })
-
-  // Generate row-col sums so we can sort by default
-  Object.keys(_sumDf).forEach(col => {
-    Object.keys(_sumDf[col]).forEach(row => {
-      
-      // Init the sums
-      if(!_sums[col]) _sums[col] = 0;
-      if(!_sums[row]) _sums[row] = 0;
-
-      // Compute the sums
-      _sums[col] += _sumDf[col][row];
-      _sums[row] += _sumDf[col][row];
-    })
-  })
-
-  // Sort and filter _sumDf
-  _sumArr = Object.keys(_sums)
-    .filter(sumKey => sumKey.length)
-    .map(sumKey => ({ x: sumKey, y: _sums[sumKey] }))  
-  _sumArr.sort((a, b) => b.y - a.y)
-  _sumArr.splice(7);
-  _sumArr.forEach(sum => {
-    const key = sum.x;
-    const col = _sumDf[key];
-
-    // Create the filtered df
-    _filteredSumDf[key] = {};
-
-    // Add the stuff we need
-    Object.keys(col).forEach(row => {
-      if(_sumArr.filter(sum => sum.x == row).length)
-        _filteredSumDf[key][row] = col[row];
-    })
-  })
-
-  // Get chord names
-  _chordNames = _sumArr.map(s => s.x);
-
-  // Generate the 2d matrix of data
-  Object.values(_filteredSumDf).forEach(col => {
-    const matRow = [];
-
-    // For each of the row entries
-    Object.keys(col).forEach(entry => {
-      const index = _sumArr.map(e => e.x).indexOf(entry);
-
-      // Update the row
-      matRow[index] = col[entry];
-    })
-
-    // Push the constructed row
-    _chartData.push(matRow);
-  })
+  const { 
+    keys: _chordNames, 
+    matrix: _chartData,
+  } = VisualFormatter.dfToMatrix(_data, {
+    mapper: d => d.y,
+    limit: 7,
+  });
 
   // Tooltip state
   const {
