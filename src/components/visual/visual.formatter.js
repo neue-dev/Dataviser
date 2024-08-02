@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-08-01 23:09:01
- * @ Modified time: 2024-08-02 16:46:08
+ * @ Modified time: 2024-08-02 18:46:35
  * @ Description:
  * 
  * Formats the data for each of the visuals we have.
@@ -288,6 +288,7 @@ export const VisualFormatter = (function() {
     
     // An array of the sums
     const filteredKeys = Object.keys(sums)
+      .filter(key => key.length)
       .map(key => ({ key: key, value: sums[key] }))  
       .toSorted((a, b) => b.value - a.value)
       .toSpliced(limit)

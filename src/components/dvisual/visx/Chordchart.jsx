@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-09 11:09:03
- * @ Modified time: 2024-08-02 16:48:12
+ * @ Modified time: 2024-08-02 18:47:19
  * @ Description:
  * 
  * Creates a chord chart using the visx library.
@@ -35,7 +35,7 @@ export function Chordchart(props={}) {
   const _dataviserState = DataviserCtx.useCtx();
 
   // Grab the prop
-  const _data = props.data;             // Contains all the data of all the series
+  const _data = props.data ?? [];       // Contains all the data of all the series
   const _width = props.width ?? 0;      // The width of the visual
   const _height = props.height ?? 0;    // The height of the visual
   const _margin = props.margin ?? 50;   // The margins
