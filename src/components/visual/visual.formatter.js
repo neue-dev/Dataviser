@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-08-01 23:09:01
- * @ Modified time: 2024-08-02 18:46:35
+ * @ Modified time: 2024-08-03 16:48:12
  * @ Description:
  * 
  * Formats the data for each of the visuals we have.
@@ -103,6 +103,15 @@ export const VisualFormatter = (function() {
       })
     })
 
+    // Compute the max value
+    const keys = Object.keys(rowSums);
+    const min = keys.reduce((acc, curr) => acc = rowSums[curr] < acc ? rowSums[curr] : acc, Number.POSITIVE_INFINITY);
+    const max = keys.reduce((acc, curr) => acc = rowSums[curr] > acc ? rowSums[curr] : acc, Number.NEGATIVE_INFINITY);
+    
+    // Save the properties
+    rowSums.min = min;
+    rowSums.max = max;
+
     // Return the rowSums
     return rowSums;
   }
@@ -132,6 +141,15 @@ export const VisualFormatter = (function() {
             colSums[col] += df[col][row];
       })
     })
+
+    // Compute the max value
+    const keys = Object.keys(colSums);
+    const min = keys.reduce((acc, curr) => acc = colSums[curr] < acc ? colSums[curr] : acc, Number.POSITIVE_INFINITY);
+    const max = keys.reduce((acc, curr) => acc = colSums[curr] > acc ? colSums[curr] : acc, Number.NEGATIVE_INFINITY);
+    
+    // Save the properties
+    colSums.min = min;
+    colSums.max = max;
 
     // Return the col sums
     return colSums;
@@ -288,7 +306,11 @@ export const VisualFormatter = (function() {
     
     // An array of the sums
     const filteredKeys = Object.keys(sums)
+
+    // ! remove this part and make sure the component does the cleanup, not this file
       .filter(key => key.length)
+
+      // ! keep
       .map(key => ({ key: key, value: sums[key] }))  
       .toSorted((a, b) => b.value - a.value)
       .toSpliced(limit)
@@ -306,6 +328,48 @@ export const VisualFormatter = (function() {
 
     // Return the keys and the matrix
     return { keys, matrix }; 
+  }
+
+  /**
+   * Converts the dataframe into a bunch of row sums.
+   * 
+   * @param   { Object }  data      The data to parse.
+   * @param   { Object }  options   The options for converting the dataframe.
+   */
+  _.dfToRowSums = function(data, options={}) {
+
+    // Get the options
+    const mapper = options.mapper ?? (d => d);
+
+    // Convert to dfArray
+    const dfArray = data.map(d => mapper(d));
+    
+    // Get the sum df first
+    const sumDf = _computeDfSum(dfArray);
+
+    // Retrieve the row sum data
+    return _computeDfRowSums(sumDf);
+  }
+
+  /**
+   * Converts the dataframes into a bunch of col sums.
+   * 
+   * @param   { Object }  data      The data to parse.
+   * @param   { Object }  options   The options for converting the dataframe.
+   */
+  _.dfToColSums = function(data, options={}) {
+   
+    // Get the options
+    const mapper = options.mapper ?? (d => d);
+
+    // Convert to dfArray
+    const dfArray = data.map(d => mapper(d));
+    
+    // Get the sum df first
+    const sumDf = _computeDfSum(dfArray);
+
+    // Retrieve the row sum data
+    return _computeDfColSums(sumDf);
   }
 
   /**
