@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-08-01 22:58:44
- * @ Modified time: 2024-08-02 19:38:46
+ * @ Modified time: 2024-08-03 15:03:20
  * @ Description:
  * 
  * A sankey drawing component.
@@ -29,11 +29,7 @@ export function Sankey(props={}) {
   const _width = props.width ?? 0;
   const _height = props.height ?? 0;
   const _data = props.data ?? {};
-  // ! remove default value "Chanthaburi"
-  const _subject = _dataviserState.get('subject') || "Bangkok";
-
-  // Get the subject
-  console.log(_dataviserState.get('subject'));
+  const _subject = _dataviserState.get('subject');
 
   // The tooltip stuff
   const {
@@ -118,6 +114,10 @@ export function Sankey(props={}) {
     })
   })
 
+  console.log(_subject)
+  console.log(_sumDf)
+  console.log(_nodes, _links)
+
   // Empty data
   if(_nodes.length <= 0 || _links.length <= 0)
     return (<></>)
@@ -149,6 +149,16 @@ export function Sankey(props={}) {
       tooltipTop: coords.y,
       tooltipData: datum
     });
+  }
+
+  /**
+   * Hides the tooltip.
+   * 
+   * @param {*} event 
+   * @param {*} datum 
+   */
+  function onMouseOut(event, datum) {
+    hideTooltip();
   }
 
   // Draw the nodes
@@ -187,7 +197,7 @@ export function Sankey(props={}) {
 
   return (
     <>
-      <svg ref={ _containerRef } width={ _width } height={ _height } >
+      <svg ref={ _containerRef } width={ _width } height={ _height } onMouseLeave={ (e) => onMouseOut(e) } >
         {allNodes}
         {allLinks}
       </svg>
@@ -199,8 +209,6 @@ export function Sankey(props={}) {
           left={tooltipLeft}
         >
           {(function() {
-
-            console.log(tooltipData)
 
             // We're hovering over a ribbon
             return (

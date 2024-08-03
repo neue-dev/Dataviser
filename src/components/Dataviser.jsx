@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-05 16:56:26
- * @ Modified time: 2024-07-23 23:54:37
+ * @ Modified time: 2024-08-03 15:00:40
  * @ Description:
  * 
  * The main component that houses the app.
@@ -9,7 +9,6 @@
  */
 
 import * as React from 'react';
-import { useState } from 'react'
 
 // Chakra
 import { Tabs } from '@chakra-ui/react'

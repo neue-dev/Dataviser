@@ -1,13 +1,14 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-25 17:44:22
- * @ Modified time: 2024-08-02 19:32:11
+ * @ Modified time: 2024-08-02 20:48:42
  * @ Description:
  * 
  * Represents how we get user input through dvisuals.
  */
 
 import * as React from 'react'
+import { useMemo } from 'react'
 
 // Chakra
 import { Heading, Text } from '@chakra-ui/react'
@@ -34,9 +35,12 @@ export function DForm(props={}) {
 
   /**
    * Run the callback after selecting an option.
+   * 
+   * // ! fix this infinite loop ????
    */
   function onSelect(e) {
-    _dataviserState.set({ subject: e.target.value });
+    if(_dataviserState.get('subject') != e.target.value && e.target.value)
+      _dataviserState.set({ subject: e.target.value });
   }
   
   return (<>
@@ -45,7 +49,7 @@ export function DForm(props={}) {
       { _suggestions.map(suggestion => {
 
         // Create the option
-        return (<option value={ suggestion }>{ suggestion }</option>)
+        return (<option key={ suggestion } value={ suggestion }>{ suggestion }</option>)
       })}
     </Select>
   </>)
