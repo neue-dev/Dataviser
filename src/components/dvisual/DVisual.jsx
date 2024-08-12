@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-06-15 22:13:05
- * @ Modified time: 2024-08-02 18:39:53
+ * @ Modified time: 2024-08-12 13:58:12
  * @ Description:
  * 
  * A wrapper around our d3 visualizations.
@@ -25,11 +25,11 @@ import { useParentDimensions } from '../../hooks/useParentDimensions.js'
 import { DVisualHeader } from './DVisualHeader.jsx'
 
 // Import the charts and all
-import { Linechart } from './visx/Linechart.jsx'
-import { Barchart } from './visx/Barchart.jsx'
-import { Chordchart } from './visx/Chordchart.jsx'
-import { Choropleth } from './visx/Choropleth.jsx'
-import { Sankey } from './visx/Sankey.jsx'
+import { Linechart } from './charts/Linechart.jsx'
+import { Barchart } from './charts/Barchart.jsx'
+import { Chordchart } from './charts/Chordchart.jsx'
+import { Choropleth } from './charts/Choropleth.jsx'
+import { Sankey } from './charts/Sankey.jsx'
 
 // Client stuff
 import { ClientDF } from '../../client/client.df.js'
