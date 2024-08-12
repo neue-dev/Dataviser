@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-02 01:31:00
- * @ Modified time: 2024-07-25 18:08:42
+ * @ Modified time: 2024-08-12 13:51:56
  * @ Description:
  * 
  * This represents the header of the application.
@@ -32,10 +32,7 @@ import { ClientOps } from '../../client/client.ops'
 
 // ! remove
 import { ClientStore } from '../../client/client.store.api'
-import userLogic, { UserLogic } from '../../user/user.logic';
-
-// Our logic
-import { ourMetaParser } from '../../our/our'
+import { UserLogic } from '../../user/user.logic';
 
 // Comps and contexts
 import { DataviserCtx, DataviserManager } from '../Dataviser.ctx';
@@ -61,7 +58,7 @@ export function DHeader(props={}) {
 
     // Callback options
     const chooseOptions = { type: 'directory' };
-    const loadOptions = { encoding: 'utf-8', metaParser: ourMetaParser };
+    const loadOptions = { encoding: 'utf-8', metaParser: UserLogic.metaParser };
 
     // Select the files, save them, then load them as dfs
     ClientFS.fileChoose(chooseOptions)(_toast)

@@ -1,7 +1,7 @@
 /**
  * @ Author: Mo David
  * @ Create Time: 2024-07-13 15:58:45
- * @ Modified time: 2024-07-15 14:31:28
+ * @ Modified time: 2024-08-12 13:50:53
  * @ Description:
  * 
  * A file that holds the logic specific to the files we're using.
@@ -10,6 +10,29 @@
 export const UserLogic = (function() {
 
   const _ = {}
+
+  /**
+   * A function that extracts metadata from the filenames of our files.
+   * Extracts the date of the file from the filename.
+   * 
+   * @param   { string }  filename  The name of the file to parse.
+   * @return  { object }            Contains date information about the file.
+   */
+  _.metaParser = function(filename) {
+    
+    // Define some other params abt the file
+    const dateString = filename.split('_').slice(-1)[0].split('.')[0];
+    const months = [ 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec' ];
+    
+    // Define the date params
+    const day = parseInt(dateString.slice(-2))
+    const month = months.indexOf(dateString.slice(0, 3).toLowerCase())
+    const year = 2024;
+    const date = (new Date(year, month, day)).getTime();
+
+    // Return the metadata
+    return { day, month, year, date };
+  }
 
   /**
    * Tells us whether or not metaA comes before or after metaB.
